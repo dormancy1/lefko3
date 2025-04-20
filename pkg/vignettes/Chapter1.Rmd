@@ -1,0 +1,737 @@
+---
+title: "Basic theory and concepts"
+author: Richard P. Shefferson, Shun Kurokawa, and Johan Ehrlén
+output: rmarkdown::html_vignette
+bibliography: Lefko3Tutorial.bib
+vignette: >
+  %\VignetteIndexEntry{Basic theory and concepts}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## INTRODUCTION TO PACKAGE `LEFKO3`   
+  
+  <p style="text-indent: 20px">R package `lefko3` is a complete environment for the construction and analysis of matrix projection models (MPMs) and integral projection models (IPMs) [@shefferson_lefko3_2021]. It was originally developed to estimate and analyze *historical* size-classified matrix projection models (hMPMs), which not only current state but also past history in terms of previous states. hMPM matrices are large, typically having dimensions higher than their standard, ahistorical counterparts (the latter will be hereafter referred to as ahistorical MPMs, or ahMPMs, while the acronym MPM will be used to refer to all matrix projection models, whether historical or not). As this package has developed, we have broadened the scope of this package to include age-classified, age-by-stage, and stage-classified MPMs and IPMs, with function-based MPMs and IPMs capable of handling a large range of possible response distributions. We have also added the ability to project matrices and IPMs in customized, complex ways. Through it all, we have prioritized the development of core algorithms and methods to construct these models and projections quickly, efficiently, and at least relatively painlessly. Perhaps most importantly, we have incorporated quality control routines in the core functions of all steps of the workflow, giving users the opportunity to assess where weaknesses and errors lie.</p>
+  
+  <p style="text-indent: 20px">This vignette was written as a basic introduction to the concepts and methods underlying `lefko3`. The target audience is everyone from beginners with little knowledge of population ecology and even less of *R*, to experienced ecologists with advanced working knowledge of *R* and the analysis of population dynamics. We have also created an online book entitled **lefko3: a gentle introduction**, and a series of vignettes focused on specific practical examples using the package to run suites of comprehensive analyses. The book covers all major uses of the package and contains basic through advanced information and examples, and the vignettes show the development of raw and function-based MPMs, IPMs, and age-by-stage MPMs using three demographic datasets and one published MPM. All of these materials are available on the <a href = "http://www.sheffersonlab.com/projects.html">projects page</a> of the <a href = "http://www.sheffersonlab.com/">Shefferson lab website</a>.</p>
+  
+## BASIC CONCEPTS   
+  
+### Life history models and projection matrices   
+  
+  <p style="text-indent: 20px">Matrix projection models (MPMs) are representations of the dynamics of a population across all life history stages deemed relevant, across the most relevant time interval (typically one year, and assumed to be consistent within each analysis). They require a complete model of the organism's life history prior to construction, and this model must explicitly describe all life stages and all life history transitions to be modeled. Each stage is mutually exclusive, meaning that an individual can only be in a single stage at a given time. Each stage is represented in the matrix by a single column and a single row. Each transition takes exactly one full time step, which needs to be defined consistently and should be equivalent to the approximate amount of time between consecutive monitoring occasions. Matrix elements ($a_{kj}$) show either the probability of transition for an individual in stage $j$ at occasion *t* (along the columns), to stage $k$ at occasion *t*+1 (along the rows), or the mean rate of production of new recruits into stage $k$ at occasion *t*+1 (along the rows) by individuals in reproductive stage $j$ in occasion *t* (along the columns). Conceptually, each individual is in a particular stage in the instance of monitoring or observation, and then either dies or completes a transition in the interval between that occasion's observation and the next occasion's observation. Death is not an explicit life stage and so is not modeled as such, instead becoming a potential endpoint of each transition.</p>
+  
+  <p style="text-indent: 20px">Stages are generally defined under the assumption that they are unique moments in an organism's life. This uniqueness is assumed to extend to the demography of the organism during its time within that stage. In some cases, stages are defined as developmental stages, as happens with insect instars. In other cases, stages are defined almost purely on the basis of size, as occurs with perennial herbs that may exhibit a different number of stems, leaves, and flowers in each growing season. In still other cases, stages may be defined via other characteristics. For example, the vegetative dormancy stage of some perennial herbs is defined by a lack of aboveground size, and so is characteristically not observable [@shefferson_estimating_2001]. In still other cases, age may also fall into a stage's definition, as may the maturity status, observability, etc.</p>
+  
+  <p style="text-indent: 20px">The timing of monitoring relative to the reproductive season impacts the structure of life history models. Life history models are typically categorized as either **pre-breeding** or **post-breeding**. Here, "breeding" refers to the production of offspring, and so a pre-breeding model assumes that monitoring is conducted immediately before the new recruits are born, while a post-breeding model assumes that the monitoring is conducted just after new recruits are born (in both cases, breeding is assumed to be seasonal). In a pre-breeding model, fecundity equals the production of newborns multiplied by the survival of newborns to age 1, since fecundity must take place over a full time step and the timing of the census misses both the birth event itself and the time in which the organism is a newborn [@kendall_persistent_2019]. In a post-breeding model, fecundity equals the survival of the parent from the stage/age preceding reproduction to reproduction itself, multiplied by the number of newborns produced [@kendall_persistent_2019].</p>
+  
+  <p style="text-indent: 20px">In monitoring studies of plant populations, the typical life history model a pre-breeding model, in which fecundity is estimated as the production of seeds in a given year multiplied by their over-winter survival probability as seeds and their germination probability in the following year. If the life history includes seed dormancy, then it is modeled by multiplying seed production by seed survival (which is given as the probability of maintaining seed viability from one year to the next), in the first instance, and then as seed survival for seeds already produced and dormant (seed survival may be modeled to decrease with increasing age of dormant seed). Added complexity can arise if there are multiple fecundity pathways, for example when clonal reproduction is also possible, or if multiple propagule stages exist, or if recruitment can be to seeds that immediately germinate as well as to seeds that are dormant for one or more years. We urge users to be careful with this step, as properly defining the life history model has important implications for all analyses of population dynamics [@kendall_persistent_2019].</p>
+  
+  <p style="text-indent: 20px">Figure 1 is a simple example of a stage-based life history model (technically a **life cycle graph**) and its associated Lefkovitch matrix for a terrestrial orchid species, *Cypripedium candidum* [@shefferson_estimating_2001]. Here, we show each stage as a node, and each transition as a uni-directional arrow (a). The rates and probabilities are shown as mathematical symbols in (b), with $S_{kj}$ denoting survival-transition probability from stage $j$ in occasion *t* to stage $k$ in occasion *t*+1, and $F_{kj}$ denoting the fecundity of reproductive stage $j$ into recruit stage $k$ in this life history.</p>
+  
+<img src = "matrix1.png" width = "700"></img>  
+  
+Figure 1.1. Simple life history model (a) and ahistorical MPM (b) for *Cypripedium candidum*, a North American herbaceous plant species. Here, **S** is the dormant seed stage, **J** is the seedling stage, **D** is adult vegetative dormancy, **V** is adult vegetative sprouting, and **F** is flowering.
+  
+### Ahistorical vs. historical matrix models    
+  
+  <p style="text-indent: 20px">Figure 1b is an example of an **ahistorical MPM** (ahMPM), which is a matrix projection model in which the future stage of an individual is dependent only on its current stage, and not on previous stages. In other words, individual history is not incorporated into ahMPMs. It may seem odd that individual history is not incorporated into the matrices given that demographic datasets are composed of records of individual histories spanning several or even many observation events. However, construction of a typical ahMPM breaks up these individual histories into pairs of consecutive stages across time, with each pair treated as independent of every other pair of consecutive stages. For example, if an individual is in stage *A* in occasion 1, stage *B* in occasion 2, stage *E* in occasion 3, and dead in occasion 4, then its individual history is broken up into *A*-*B*, *B*-*E*, and *E*-*Dead*, with each pair assumed to be independent. The resulting projection matrix would be the same if these transitions originated from different individuals or the same one - their order and relationships do not have any impacts in ahMPM construction.</p>
+  
+  <p style="text-indent: 20px">The matrix shown in figure 1.1 can be used to project population dynamics by predicting the future numbers of individuals in each stage. For this example, we can project forward by multiplying the projection matrix by a column vector of the numbers of individuals in each stage, given in the same order as the order of stages corresponding to the rows and columns of the matrix, in a particular time, as in</p>
+  
+\begin{equation}
+\tag{1}
+\left[\begin{array}
+{rrrrr}
+n _{2,S} \\
+n _{2,J} \\
+n _{2,V} \\
+n _{2,D} \\
+n _{2,F}
+\end{array}\right] = \left[\begin{array}
+{rrrrr}
+S _{SS} & 0 & 0 & 0 & F _{SF} \\
+S _{JS} & S _{JJ} & 0 & 0 & F _{JF} \\
+0 & S _{VJ} & S _{VV} & S _{VD} & S _{VF} \\
+0 & S _{DJ} & S _{DV} & S _{DD} & S _{DF} \\
+0 & 0 & S _{FV} & S _{FD} & S _{FF}
+\end{array}\right] \left[\begin{array}
+{rrrrr}
+n _{1,S} \\
+n _{1,J} \\
+n _{1,V} \\
+n _{1,D} \\
+n _{1,F}
+\end{array}\right]  
+\end{equation}
+  
+where $n _{1,S}$ is the number of individuals in stage $S$ in occasion 1. The total population size in any given occasion is the sum of the numbers of individuals in all stages in that occasion. The actual discrete population growth rate is calculated as the ratio of total population size in occasion 2 to the total population size in occasion 1, and the asymptotic growth rate $\lambda$ can be estimated as the dominant eigenvalue of this matrix.
+  
+  <p style="text-indent: 20px">The independence of consecutive stage-pairs reflects a central assumption in ahMPM analysis: the stage of an individual in the next occasion is influenced only by its current stage. Conceptually, if an organism's stage in the next occasion is entirely determined by its current stage, then its previous states do not influence these transitions. Thus, standard ahMPMs are two dimensional and reflect only the current and next immediate stage of individuals, given by the columns and rows, respectively. This is ultimately an extension of the *iid* assumption in statistics - that the states of individuals are independent and originate from identically-distributed random variables.</p>
+  
+  <p style="text-indent: 20px">MPMs have been estimated since the 1940s [@caswell_matrix_2001]. We have never done a meta-analysis of all of these studies, but nonetheless it is safe to say that studies considering individual history are rare. The typical MPM study uses ahMPMs, and so assumes independence of stage transitions across time even from the same individual. In fact, at the time of writing, we are aware of only five examples of studies breaking these assumptions and using a **historical** approach, meaning that they incorporated some degree of individual history into matrix estimation and analysis [@ehrlen_dynamics_2000; @shefferson_life_2014; @shefferson_predicting_2017; @shefferson_drivers_2018; @de_vries_demography_2018].</p>
+  
+  <p style="text-indent: 20px">The **historical MPM** (hMPM) is an extension of the matrix projection model that incorporates information on one previous occasion into the determination of vital rates. Thus, the expected survival-transition probability of an individual in stage $j$ at occasion *t* to stage $k$ at occasion *t*+1 depends not only on its stage in occasion *t* but also on its stage in occasion *t*-1. Population ecologists considering this problem analytically might be inclined to add an extra dimension to the matrix to deal with this, thus creating a 3d array or cube. However, this is mathematically intractable, with many analyses becoming impossible [@de_vries_demography_2018]. Instead, we utilize the approach developed by @ehrlen_dynamics_2000, in which rows and columns represent life history stages paired in consecutive occasions. Thus, columns now represent the **From** pair of stages (stage in occasions *t* and *t*-1), and rows now represent the **To** pair of stages (stage in occasions *t* and *t*+1), as in Figure 1.2. This model is equivalent to the second-order model proposed by @de_vries_demography_2018, although the latter incorporates more history into transitions involving individuals just born (we explain the difference further in this vignette).</p>
+  
+<img src = "matrix2.png" width = "700"></img>  
+  
+Figure 1.2. Historical MPM for *Cypripedium candidum*, a North American herbaceous plant.   
+  
+  <p style="text-indent: 20px">Here, we can refer to matrix elements as $a_{kjl}$, where the element represents the rate at which individuals transition to stage $k$ in occasion *t*+1 after having been stage $j$ in occasion *t* and stage $l$ in occasion *t*-1. If $n_{kjl}$ is the number of individuals making this transition, $n_{.jl}$ is the total number of individuals in stage $j$ in occasion *t* and stage $l$ in occasion *t*-1 regardless of stage or even status as alive or dead in occasion *t*+1, $m$ is the number of stages in the life history model, and $d$ is the number of stages plus death in the life history model (so $d=m+1$), then we have</p>
+  
+\begin{equation}
+\tag{2}
+a _{kjl} = \frac{n _{kjl}}{n _{.jl}} = \frac{n _{kjl}}{\sum_{i=1}^{d} n _{ijl}}
+\end{equation}
+  
+These values can be used to determine the associated elements of matrices in ahistorical MPMs, as follows:
+  
+\begin{equation}
+\tag{3}
+a _{kj} = \frac{\sum_{l=1}^{m} n _{kjl}}{\sum_{l=1}^{m} \sum_{i=1}^{d} n _{ijl}}
+\end{equation}
+  
+Note that although one can use the actual numbers of individuals making historical transitions to estimate ahistorical MPMs, one cannot use the matrix elements in a historical MPM to calculate the associated ahistorical MPM elements (and vice versa). Historical transitions must be weighted by the numbers of individuals corresponding to each transition from occasion *t* to *t*+1 that were in each previous stage to produce the correct ahistorical matrix element. Historical matrix elements are equal only to the ratios of numbers of individuals in these categories, rather than to the numbers of individuals themselves, and contain no information allowing the inference of the latter.
+  
+  <p style="text-indent: 20px">Historical MPMs can be projected forward in the same way that ahMPMs can. Here we see an example of a projection going forward one time step, using the hMPM shown in figure 1.2.</p>
+  
+\begin{equation}
+\tag{4}
+\tiny
+\left[\begin{array}
+{rrrrrrrrrrrrrrrrr}
+n _{2,SS} \\
+n _{2,JS} \\
+n _{2,JJ} \\
+n _{2,VJ} \\
+n _{2,DJ} \\
+n _{2,FJ} \\
+n _{2,VV} \\
+n _{2,DV} \\
+n _{2,FV} \\
+n _{2,VD} \\
+n _{2,DD} \\
+n _{2,FD} \\
+n _{2,VF} \\
+n _{2,DF} \\
+n _{2,FF} \\
+n _{2,SF} \\
+n _{2,JF}
+\end{array}\right] = \left[\begin{array}
+{rrrrrrrrrrrrrrrrr}
+S _{SSS} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & F _{SSF} & 0 \\
+S _{JSS} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & F _{JSF} & 0 \\
+0 & S _{JJS} & S _{JJJ} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & F _{JJF} \\
+0 & S _{VJS} & S _{VJJ} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & F _{VJF} \\
+0 & S _{DJS} & S _{DJJ} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & F _{DJF} \\
+0 & S _{FJS} & S _{FJJ} & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & F _{FJF} \\
+0 & 0 & 0 & S _{VVJ} & 0 & 0 & S _{VVV} & 0 & 0 & S _{VVD} & 0 & 0 & S _{VVF} & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & S _{DVJ} & 0 & 0 & S _{DVV} & 0 & 0 & S _{DVD} & 0 & 0 & S _{DVF} & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & S _{FVJ} & 0 & 0 & S _{FVV} & 0 & 0 & S _{FVD} & 0 & 0 & S _{FVF} & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & S _{VDJ} & 0 & 0 & S _{VDV} & 0 & 0 & S _{VDD} & 0 & 0 & S _{VDF} & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & S _{DDJ} & 0 & 0 & S _{DDV} & 0 & 0 & S _{DDD} & 0 & 0 & S _{DDF} & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & S _{FDJ} & 0 & 0 & S _{FDV} & 0 & 0 & S _{FDD} & 0 & 0 & S _{FDF} & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & S _{VFV} & 0 & 0 & S _{VFD} & 0 & 0 & S _{VFF} & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & S _{DFV} & 0 & 0 & S _{DFD} & 0 & 0 & S _{DFF} & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & S _{FFV} & 0 & 0 & S _{FFD} & 0 & 0 & S _{FFF} & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & F _{SFJ} & 0 & 0 & F _{SFV} & 0 & 0 & F _{SFD} & 0 & 0 & F _{SFF} & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & F _{JFJ} & 0 & 0 & F _{JFV} & 0 & 0 & F _{JFD} & 0 & 0 & F _{JFF} & 0 & 0 \\
+\end{array}\right] \left[\begin{array}
+{rrrrrrrrrrrrrrrrr}
+n _{1,SS} \\
+n _{1,JS} \\
+n _{1,JJ} \\
+n _{1,VJ} \\
+n _{1,DJ} \\
+n _{1,FJ} \\
+n _{1,VV} \\
+n _{1,DV} \\
+n _{1,FV} \\
+n _{1,VD} \\
+n _{1,DD} \\
+n _{1,FD} \\
+n _{1,VF} \\
+n _{1,DF} \\
+n _{1,FF} \\
+n _{1,SF} \\
+n _{1,JF}
+\end{array}\right]  
+\end{equation}
+  
+Here, $n _{1,SS}$ is the number of individuals that were in stage $S$ in both occasions 0 and 1, and $n _{2,DF}$ is the number of individuals that were in stage $D$ in occasion 2 and stage $F$ in occasion 1.
+  
+  <p style="text-indent: 20px">Historical MPMs normally require a much larger number of elements to be parameterized than ahMPMs do. Figure 1.2 illustrates this issue, but the function-based matrix analysis in our *Cypripedium candidum* vignette provides a more realistic example. In that case study, we use a life history with 54 life stages, of which the first is a dormant seed stage, the next four are immature stages, the sixth is adult vegetative dormancy, the next 24 stages are size-classified non-flowering adults, and the final 24 stages are size-classified flowering adults. A life history with 54 stages yields an ahistorical matrix with 54 columns and 54 rows, and so 2,916 elements. A full historical matrix should have $54 \times 54 = 2,916$ columns and 2,916 rows, consisting of 8,503,056 elements, because the column and row stages represent pairs of stages.</p>
+  
+  <p style="text-indent: 20px">In an ahistorical matrix, the only true zeros will be those elements corresponding to biologically impossible transitions, or, in the raw matrix case, those elements without any individuals taking the respective transition in a given time step. However, most elements in a historical MPM are structural zeros. This happens because transition elements in hMPMs are only estimable if stage at occasion *t* is equal in the column and row stage pairs. For example, the transition probability between stage A in occasion *t*-1 and stage B in occasion *t* (column stage), to stage C in occasion *t* and stage D in occasion *t*+1 (row stage) equals 0, because an organism cannot be in both stages B and C in occasion *t*. Increasing the number of stages in a life history model causes these structural zeros to increase at a faster rate than the rate at which the number of truly estimable elements increases. In fact, if there are $m$ stages in a life history, yielding $m^2$ elements in an ahistorical matrix, then although there will be $m^4$ elements in the historical matrix, only $m^3$ will be *potentially* estimable while $(m-1)m^3$ are structural zeros (we say *potentially* because some of the logically possible transitions may still be biologically impossible, or may have no data to yield values other than 0). Thus, in the *Cypripedium candidum* example, all 2,916 elements of the ahMPM are potentially estimable (although some are biologically impossible), while only 157,464 of the 8,503,056 elements of the associated hMPM are potentially estimable and the rest are structural zeros.</p>
+  
+### Raw vs. function-based matrix models, including integral projection models    
+  
+  <p style="text-indent: 20px">Matrix projection models, whether historical or ahistorical, can also be categorized as either **raw** or **function-based**. The oldest and most common in the literature is the **raw** MPM, in which transition probabilities in the matrix are estimated by counting all of the individuals alive in a particular stage at occasion *t*, and dividing that number into the number of individuals from that set that are still alive in each possible stage in occasion *t*+1 (equations 2 and 3). For example, if 100 individuals are alive in stage D in year 2010, and 20 of these are alive in stage D in year 2011, as are a further 40 in stage V and a further 25 in stage F, then the associated transition probabilities are 0.20, 0.40, and 0.25, respectively. The overall survival probability for stage D is the sum of these transitions, or 0.85.</p>
+  
+  <p style="text-indent: 20px">Methods for estimating fecundity in raw matrices vary. In the *Cypripedium candidum* vignette, we used counts of the number of fruits produced by each individual in a given year, and multiplied by the mean number of seeds per fruit and the mean germination probability in the next year. This study was conducted as a pre-breeding census - fecundity was estimated using a count of the seeds or other propagules that the plant produces (or a proxy thereof, such as the number of fruits multiplied by the mean number of seeds per fruit) multiplied by the probability of that propagule surviving to the next year in order to make sure that fecundity reflects demographic processes across a full time step [@kendall_persistent_2019]. In other systems in which offspring may be observed and tracked, counts of actual recruits may be possible, such as in studies of nesting birds, and as in *Lathyrus vernus*, an herbaceous perennial plant that is the subject of some vignettes included in this package.</p>
+  
+  <p style="text-indent: 20px">In **function-based** MPMs, matrix elements are populated by kernels that link together functions representing key demographic processes governing each transition. Typically, demographic datasets are analyzed via linear models to estimate demographic parameters such as survival probability, the probability of becoming a certain size assuming survival, and fecundity. These linear models are developed using nested subsets of the demographic data used in a study in order to estimate conditional probabilities reflecting all of the demographic processes that must occur over the span of a single time step. Matrix elements are then estimated as products of responses from these linear models set to particular inputs corresponding to stage at occasion *t* and occasion *t*+1, as well as any other parameters governing the construction of the matrix. Function-based MPMs are more recent inventions than raw MPMs, and their strengths are making them increasingly common in the literature.</p>
+  
+  <p style="text-indent: 20px">@easterling_size-specific_2000 proposed a method of analyzing population dynamics called the **integral projection model (IPM)**, which modeled the life history of an organism using a continuous size metric modeled on a Gaussian distribution. At least theoretically, the aim was to produce a model that was not contingent on a stage classification together with a function-based kernel to model population dynamics. In practice, however, size was and is discretized into many fine-scale size classes. The result is that, in practice, IPMs are actually high resolution function-based MPMs, breaking up a life history into many fine-scale size classes using a continuous measure of size and then estimating survival-transitions and fecundity according to these fine-scale size classes [@ellner_integral_2006]. Package *lefko3* easily handles the creation and analysis of IPMs. We include a vignette in `lefko3` showing an example, and also devote a chapter of the free e-book ***lefko3: a gentle introduction*** to the topic.</p>
+  
+  <p style="text-indent: 20px">The example from Figures 1.1 and 1.2 may help to illustrate the procedure of creating a function-based MPM. In *Cypripedium candidum*, the simple life history model shown in Figure 1 includes one adult stage that is not observable (*D* - vegetative dormancy), one adult stage that is observable but not reproductive (*V* - vegetative sprouting), and one adult stage that is both observable and reproductive (*F* - flowering). If $\sigma _{.jl}$ is the probability of survival from stage $j$ in occasion *t* and stage $l$ in occasion *t*-1 to any stage in occasion *t*+1, $\rho _{.jl}$ is the probability of sprouting in occasion *t*+1 after being stage $j$ in occasion *t* and stage $l$ in occasion *t*-1 and surviving to occasion *t*+1, and $\gamma _{.jl}$ is the probability of flowering in occasion *t*+1 after being stage $j$ in occasion *t* and stage $l$ in occasion *t*-1 and surviving to and sprouting in occasion *t*+1, then</p>
+  
+\begin{equation}
+\tag{5}
+a _{DDD} = \sigma _{.DD} (1 - \rho _{.DD})
+\end{equation}
+  
+\begin{equation}
+\tag{6}
+a _{VDD} = \sigma _{.DD} \rho _{.DD} (1 - \gamma _{.DD})
+\end{equation}
+  
+\begin{equation}
+\tag{7}
+a _{FDD} = \sigma _{.DD} \rho _{.DD} \gamma _{.DD}
+\end{equation}
+  
+  <p style="text-indent: 20px">In both raw and function-based MPMs, most estimated elements are *survival-transition probabilities*. In ahMPMs, these give the probability of an individual in stage $j$ at occasion *t* surviving and transitioning to stage $k$ at occasion *t*+1. Fewer elements are devoted to fecundity, although life history models with more reproductive stages and more recruit stages will have more fecundity elements. In Figure 1.1, fecundity is shown in the top-right of the matrix, as the mean production of seeds either dormant or germinating in the next occasion. Ignoring the fecundity elements, we have a **survival-transition matrix** (symbolized as either **U** or **T**), in which the column sums correspond to the expected survival probabilities of individuals in each stage from occasion *t* to occasion *t*+1. Ignoring the survival-transition terms, we have the **fecundity matrix** (symbolized as **F**), in which the column sums correspond to the expected overall time-specific fecundity of individuals in these respective stages. The full MPM (symbolized as **A**) is the matrix sum of the survival-transition matrix and the fecundity matrix.</p>
+  
+  <p style="text-indent: 20px">In principle, everything just noted about function-based ahMPMs also applies to function-based hMPMs. However, there is a key difference in terms of the distribution of elements within the matrix. The inclusion of stage or condition in occasion *t*-1 increases both the number of survival-transition elements and the number of fecundity elements, and also has the effect of dispersing the locations of these elements across the matrix. Whereas estimated transitions in ahMPMs will generally occur in dense patches of estimated elements, in hMPMs, most elements are structural zeros, with elements occurring either individually surrounded by zeros, or in small patches of estimated elements surrounded by zeros. This makes error-checking more challenging, because the user needs to be aware of where elements are supposed to occur in order to check their values properly.</p>
+  
+### Different parameterizations of the historical MPM   
+  
+  <p style="text-indent: 20px">@de_vries_demography_2018 detail different approaches to the development of hMPMs, differing in how state or stage in occasion *t*-1 is incorporated into the matrix. **Full prior stage dependence models** deal with history by incorporating prior condition as the exact stage of an organism in occasion *t*-1, yielding a matrix showing stage pairs in occasion *t*-1 and *t* along the columns of the matrix, and stage pairs in occasion *t* and *t*+1 along the rows of the matrix. **Prior condition models** deal with history by making the transition from stage *t* to stage *t*+1 a function of stage at occasion *t* and condition in occasion *t*-1. Prior condition can be determined in the same way that current stage is determined (e.g. size classification), or a different measure of condition can be used, such as growth (i.e. the change in size between occasions *t*-1 and *t*).</p>
+  
+  <p style="text-indent: 20px">One key feature proposed by @de_vries_demography_2018 is the addition of a new stage to account for the prior status of newborn individuals. This reflects a slightly different interpretation from @ehrlen_dynamics_2000 of the historical transition. In @ehrlen_dynamics_2000, all matrix elements simply reflect the order of the events in a single transition, including both fecundity and survival-transition events. However, in @de_vries_demography_2018, these matrix elements must also reflect the history of specific individuals. In the latter case, the fact that a newborn in occasion *t* did not exist in occasion *t*-1 leads to the creation of a new prior stage to account for the time immediately prior to birth. This new stage only exists in the immediate prior occasion, and is only used for newborns in the first survival transition from birth. So, for example, in a three stage MPM where the 1st stage is the newborn stage and only the 3rd stage is reproductive, we add a 4th stage to the prior portion of the row and column. Thus, we may start with the following hMPM in @ehrlen_dynamics_2000 format:</p>
+  
+\begin{equation}
+\tag{8}
+\tiny
+\left[\begin{array}
+{rrrrrrrrr}
+n _{2,AA} \\
+n _{2,BA} \\
+n _{2,CA} \\
+n _{2,AB} \\
+n _{2,BB} \\
+n _{2,CB} \\
+n _{2,AC} \\
+n _{2,BC} \\
+n _{2,CC}
+\end{array}\right] = \left[\begin{array}
+{rrrrrrrrr}
+S _{AAA} & 0 & 0 & S _{AAB} & 0 & 0 & S _{AAC} & 0 & 0 \\
+S _{BAA} & 0 & 0 & S _{BAB} & 0 & 0 & S _{BAC} & 0 & 0 \\
+S _{CAA} & 0 & 0 & S _{CAB} & 0 & 0 & S _{CAC} & 0 & 0 \\
+0 & S _{ABA} & 0 & 0 & S _{ABB} & 0 & 0 & S _{ABC} & 0 \\
+0 & S _{BBA} & 0 & 0 & S _{BBB} & 0 & 0 & S _{BBC} & 0 \\
+0 & S _{CBA} & 0 & 0 & S _{CBB} & 0 & 0 & S _{CBC} & 0 \\
+0 & 0 & S _{ACA} + F _{ACA} & 0 & 0 & S _{ACB} + F _{ACB} & 0 & 0 & S _{ACC} + F _{ACC} \\
+0 & 0 & S _{BCA} & 0 & 0 & S _{BCB} & 0 & 0 & S _{BCC} \\
+0 & 0 & S _{CCA} & 0 & 0 & S _{CCB} & 0 & 0 & S _{CCC} \\
+\end{array}\right] \left[\begin{array}
+{rrrrrrrrr}
+n _{1,AA} \\
+n _{1,BA} \\
+n _{1,CA} \\
+n _{1,AB} \\
+n _{1,BB} \\
+n _{1,CB} \\
+n _{1,AC} \\
+n _{1,BC} \\
+n _{1,CC}
+\end{array}\right]  
+\end{equation}
+  
+This hMPM becomes as follows in @de_vries_demography_2018 format:
+  
+\begin{equation}
+\tag{9}
+\tiny
+\left[\begin{array}
+{rrrrrrrrrrrr}
+n _{2,AA} \\
+n _{2,BA} \\
+n _{2,CA} \\
+n _{2,AB} \\
+n _{2,BB} \\
+n _{2,CB} \\
+n _{2,AC} \\
+n _{2,BC} \\
+n _{2,CC} \\
+n _{2,AP} \\
+n _{2,BP} \\
+n _{2,CP}
+\end{array}\right] = \left[\begin{array}
+{rrrrrrrrrrrr}
+S _{AAA} & 0 & 0 & S _{AAB} & 0 & 0 & S _{AAC} & 0 & 0 & S _{AA,AP} & 0 & 0 \\
+S _{BAA} & 0 & 0 & S _{BAB} & 0 & 0 & S _{BAC} & 0 & 0 & S _{BA,AP} & 0 & 0 \\
+S _{CAA} & 0 & 0 & S _{CAB} & 0 & 0 & S _{CAC} & 0 & 0 & S _{CA,AP} & 0 & 0 \\
+0 & S _{ABA} & 0 & 0 & S _{ABB} & 0 & 0 & S _{ABC} & 0 & 0 & 0 & 0 \\
+0 & S _{BBA} & 0 & 0 & S _{BBB} & 0 & 0 & S _{BBC} & 0 & 0 & 0 & 0 \\
+0 & S _{CBA} & 0 & 0 & S _{CBB} & 0 & 0 & S _{CBC} & 0 & 0 & 0 & 0 \\
+0 & 0 & S _{ACA} & 0 & 0 & S _{ACB} & 0 & 0 & S _{ACC} & 0 & 0 & 0 \\
+0 & 0 & S _{BCA} & 0 & 0 & S _{BCB} & 0 & 0 & S _{BCC} & 0 & 0 & 0 \\
+0 & 0 & S _{CCA} & 0 & 0 & S _{CCB} & 0 & 0 & S _{CCC} & 0 & 0 & 0 \\
+0 & 0 & F _{AP,CA} & 0 & 0 & F _{AP,CB} & 0 & 0 & F _{AP,CC} & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+\end{array}\right] \left[\begin{array}
+{rrrrrrrrrrrr}
+n _{1,AA} \\
+n _{1,BA} \\
+n _{1,CA} \\
+n _{1,AB} \\
+n _{1,BB} \\
+n _{1,CB} \\
+n _{1,AC} \\
+n _{1,BC} \\
+n _{1,CC} \\
+n _{1,AP} \\
+n _{1,BP} \\
+n _{1,CP}
+\end{array}\right]  
+\end{equation}
+  
+Note that matrix 9 above can be reduced by two rows and two columns, since transitions from the newborn prior stage (P) can only be to the newborn stage (A).
+  
+  <p style="text-indent: 20px">Package `lefko3` generally implements the **full prior stage dependence model** approach, particularly in the development of raw matrices. However, in principle, function-based matrices developed with `lefko3` can be seen as falling within the **prior condition model** approach where prior condition is determined in the same way as current stage. We also implement both the @ehrlen_dynamics_2000 format and the @de_vries_demography_2018 format, and use the former as the default. We leave it to the user to decide which approach to use.</p>
+  
+  <p style="text-indent: 20px">@de_vries_demography_2018 also suggest that hMPMs can be organized differently to yield more intuitive models. In particular, matrices may be as organized as block matrices where the component blocks are essentially matrices showing the transitions from all stages in occasion *t* to stages in occasion *t*+1 conditioned on individuals having been in the same stage in occasion *t*-1. We refer to these block component matrices as **conditional matrices**, since they show transitions from occasion *t* to occasion *t*+1 conditional on the same previous stage in occasion *t*-1. We have developed function `cond_hmpm()` to take full hMPMs and decompose them into their associated conditional matrices.</p>
+  
+### Leslie (age-classified) MPMs  
+  
+  <p style="text-indent: 20px">Some population biologists working with `lefko3` may wish to produce Leslie matrices, which classify an organism only by age. A Leslie matrix has the following general form</p>
+  
+\begin{equation}
+\tag{10}
+\tiny
+\left[\begin{array}
+{rrrrrrr}
+n _{2, 0} \\
+n _{2, 1} \\
+n _{2, 2} \\
+n _{2, 3} \\
+\vdots \\
+n _{2, a-1} \\
+n _{2, a}
+\end{array}\right] = \left[\begin{array}
+{rrrrrrr}
+0 & F _1 & F _2 & F _3 & \cdots & F _{a-1} & F _a \\
+S _{1,0} & 0 & 0 & 0 & \cdots & 0 & 0 \\
+0 & S _{2,1} & 0 & 0 & \cdots & 0 & 0 \\
+0 & 0 & S _{3,2} & 0 & \cdots & 0 & 0 \\
+\vdots &  &  &  &  &  & \vdots \\
+0 & 0 & 0 & 0 & \cdots & 0 & S _{5+B,4C} \\
+0 & 0 & 0 & 0 & \cdots & S _{a,a-1} & S _{>a,a} \\
+\end{array}\right] \left[\begin{array}
+{rrrrrrr}
+n _{1, 0} \\
+n _{1, 1} \\
+n _{1, 2} \\
+n _{1, 3} \\
+\vdots \\
+n _{1, a-1} \\
+n _{1, a}
+\end{array}\right]  
+\end{equation}
+    
+Here, $n _{2, 0}$ refers to the number of newborn (age = 0) individuals in time 2, $a$ is the final age in the model, $S _{1, 0}$ is the survival probability of a newborn individual (age = 0) to the next age, $F _1$ is the fecundity of an individual in age 1, and $S _{>a, a}$ is the survival of individuals in the final modeled age to the next age (and later). Note that in Leslie models, survival transitions are always just below the diagonal or in the final lower-right element of the diagonal, and fecundity transitions are always in the top row. Note also that age-classified models are inherently ahistorical, and so no historical models are possible. Package `lefko3` estimates both raw and function-based forms of these.
+  
+### Age-by-stage MPMs   
+  
+  <p style="text-indent: 20px">Package `lefko3` can also handle the estimation and analysis of age-by-stage MPMs. These matrices incorporate both stages (whether size-classified or not), as well as the ages in which they occur. The standard approach uses a block matrix to repeat relevant stages by each age. For example, in a three stage life history with a single newborn stage and two adult stages, only one of which is reproductive (as in equations 1, 4, 8, and 9), and in which age impacts survival and fecundity only for the first 4 years, beyond which survival and fecundity transitions remain the same, we have the following ahistorical age-by-stage matrix.</p>
+  
+\begin{equation}
+\tag{11}
+\tiny
+\left[\begin{array}
+{rrrrrrr}
+n _{2,1A} \\
+n _{2,2B} \\
+n _{2,2C} \\
+n _{2,3B} \\
+n _{2,3C} \\
+n _{2,4B} \\
+n _{2,4C}
+\end{array}\right] = \left[\begin{array}
+{rrrrrrr}
+0 & 0 & F _{1A,2C} & 0 & F _{1A,3C} & 0 & F _{1A,4+C} \\
+S _{2B,1A} & 0 & 0 & 0 & 0 & 0 & 0 \\
+S _{2C,1A} & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & S _{3B,2B} & S _{3B,2C} & 0 & 0 & 0 & 0 \\
+0 & S _{3C,2B} & S _{3C,2C} & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & S _{4B,3B} & S _{4B,3C} & S _{5+B,4B} & S _{5+B,4C} \\
+0 & 0 & 0 & S _{4C,3B} & S _{4C,3C} & S _{5+C,4B} & S _{5+C,4C} \\
+\end{array}\right] \left[\begin{array}
+{rrrrrrr}
+n _{1,1A} \\
+n _{1,2B} \\
+n _{1,2C} \\
+n _{1,3B} \\
+n _{1,3C} \\
+n _{1,4B} \\
+n _{1,4C}
+\end{array}\right]  
+\end{equation}
+  
+  <p style="text-indent: 20px">The above matrix is ahistorical. Package `lefko3` does not currently support historical age-by-stage matrices, although they are certainly possible.</p>
+  
+  <p style="text-indent: 20px">Package `lefko3` also supports the construction of age-hybrid MPMs, which are simple age-by-stage MPMs in which a single non-age-classified stage is added to what is otherwise a Leslie MPM. Situations in which such an approach is useful include an age-classified plant model with a dormant seed stage, among others.</p>
+  
+## WORKFLOW   
+  
+### Step 1: Life history model development    
+  
+  <p style="text-indent: 20px">The basic workflow to analysis with package `lefko3` starts with the development of a life history model that encapsulates all of the appropriate life stages relevant to population dynamics. We do not present a complete discussion on this step, instead focusing on a sketch of the process focused on the life cycle graph and noting key issues related to this package. We encourage users to explore the literature on this subject, but particularly note chapters 3 and 4 in @caswell_matrix_2001 for a good treatment useful for beginners. Stages need to be defined carefully, and should strongly account for variability in vital rates. Statistical approaches such as *Jenks natural breaks optimization* can help determine ideal "natural" breaks in the distribution of size data to act as borders between size-classified stages in raw MPMs [@jenks_data_1967]. In contrast, stages within function-based MPMs are more straightforward to define, with regular breaks across the size spectrum. We also note @kendall_persistent_2019 as a good reference detailing common problems in MPM construction and how to avoid them through proper development and operationalization of life history models. @beissinger_use_1998, @wardle_graph_1998, and @salguero-gomez_keeping_2010 provide good discussions of the proper application of life history models to understand population dynamics through the MPM approach.</p>
+  
+  <p style="text-indent: 20px">Here we utilize a **life cycle graph** approach to build a life history model. A life cycle graph shows the life history of an organism as a series of nodes and arrows. The nodes represent unique stages that the individual may go through during development, and individuals are noted as occurring in these stages during monitoring sessions conducted over a roughly or strictly regular frequency, such as at the start of the growing season every year, or over specific dates each year. Arrows represent transitions between stages across consecutive occasions. These may be interpreted either as probabilities of survival when reflecting the individual's stage across time, or as rates when reflecting the production of offspring. A good life cycle graph, and in general a good life history model, must explicitly include representations of all stages possible for the organism to enter, and all biologically plausible transitions between these transitions. Figure 1a shows an example of a life cycle graph.</p>
+  
+  <p style="text-indent: 20px">The construction of a good life history model is not as easy as it might appear, particularly because it can be influenced by factors seemingly external to the life history of the organism. Some of the most important considerations outside of the species' biology include the size of the dataset, and the decision of whether to create a raw MPM or a function-based MPM. All else being equal, a larger dataset and a function-based MPM will allow more stages to be used in the life history. Assuming a dataset of fixed size, raw MPMs will include more and more zeros as the number of stages in the life history model increases. This happens because the chance of having any individuals actually move through a specific transition decreases as the number of possible transitions increases. These functional zeros that become increasingly common with increasing stages can cause problems in analysis, because they suggest that some transitions are impossible when, in fact, individuals moving through them were missing just by chance. Even a transition with extremely high probability may be missing in some years just by chance. One impact of this would be the reduction of the mean transition within an element-wise mean matrix to an unrealistic level, causing the predicted population growth rate to be artificially low.</p>
+  
+  <p style="text-indent: 20px">Function-based MPMs are better able to handle large numbers of matrix elements because the risk of overparameterization is reduced by parsimonious model selection when vital rate models are determined. However, the size of the dataset influences the statistical power of these vital rate models, with smaller datasets yielding larger error associated with matrix elements and hence a loss of variability with potentially important factors. Loss of statistical power in vital rate models can lead to the loss of important process variance, and can make the population appear more static than it really is. Further, developing function-based MPMs for life history models that include stages rarely or never actually observed can yield problematic inferences, such as matrices suggesting that some stages have survival probabilities greater than 1.0. Chapter 6 in @morris_quantitative_2002 provides a good description of techniques that may be used to define stages and to determine the exact number to use given the context imposed by a given dataset of a given size. @ellner_integral_2006 and @doak_critical_2021 provide some discussion of this issue within the context of integral projection model development.</p>
+  
+  <p style="text-indent: 20px">Once a life history model is developed, we need to characterize the main life stages in a way that is relevant to the dataset. We do this with the `sf_create()` function, which creates a **stageframe** object. This term is a combination of the terms *life history stage* and *data frame*, and the object itself is a data frame that describes all of the life history stages. This object is created in a way that shows how stage relates to size, reproductive status, observation status, propagule status, maturity status, entry status (i.e. a stage's ability to serve as the first stage of an individual's life), and presence in the dataset, and in which the description of each life stage is unique. A good stageframe describes stages in ways that matrix-estimating functions utilize to compute elements accurately, and also allows the user to stipulate extra descriptive information on each stage as text. If the user wishes to create an IPM or a function-based MPM with many stages, then this function also allows stage definition to be automated.</p>
+  
+### Step 2a: Dataset organization
+  
+  <p style="text-indent: 20px">Once the stageframe has been created, the demographic data needs to be organized into a format that `lefko3` can use. The proper format is one that we term **historically-formatted vertical format**, or **hfv** format for short. We have developed two functions for this purpose, depending on the original format of the data. If the data is arranged *horizontally*, meaning that individual life histories are recorded in a spreadsheet in which each unique individual's data is organized within a single row, where columns correspond to descriptor variables and to condition at different times, then the `verticalize3()` function can standardize this dataset into the proper format. If the dataset is in *vertical, ahistorical format*, in which an individual's condition across time is recorded across rows in a spreadsheet, with a single row corresponding to either a single observation or to a pair of consecutive observations, then the `historicalize3()` function can standardize the dataset properly. These functions both can also add some new variables that might be of use. For example, both functions can estimate radial density if Cartesian coordinates for each datum and a radius are provided. Both functions are powered by binaries built in C++ using single control loops to propagate each data frame properly and efficiently, and so run very quickly (typically under 1s on a 2019 MacBook Pro). The case studies included in `lefko3` illustrate the usage of these functions on real data. The function `summary_hfv()` can be used to provide quick details about the resulting standardized datasets.</p>
+  
+### Step 2b: Provide supplemental information for matrix estimation
+  
+  <p style="text-indent: 20px">MPMs are often estimated only partially from available demographic datasets. Some transitions are parameterized using information gathered from other studies, whether through direct input in the matrix or through the development of kernels contingent on external information. Other transitions might also be estimated via proxy transitions elsewhere in the matrix. At other times, users may wish to manipulate specific transitions either through addition or multiplication by specific amounts. In `lefko3`, this information can be provided through the **supplement table**, which can be developed using the `supplemental()` function. This function allows users to create a data frame detailing:</p>
+  
+  1) specific transitions to set as the main fecundity transitions;
+  2) specific transitions to set as constants, with values entered by the user;
+  3) specific transitions to alter additively, with values entered by the user;
+  4) specific transitions to estimate via proxy transitions;
+  5) specific multipliers for fecundity in cases in which fecundity estimates resulting from linear modeling must be modified to characterize the full transition, or for transitions estimated via proxy; and
+  6) specific multipliers for survival in cases where survival is incorporated by proxy and must be set at a reduced or elevated level relative to the original, directly estimated transition.
+  
+  <p style="text-indent: 20px">Examples might illustrate where this approach is useful. If we lack data on subterranean juvenile stages in a plant species, but we have estimates of survival for those stages from other studies, then we might use those estimates as constants in the MPM. We can also set some transitions explicitly to 0 if we believe that there is a biological need for such an override. Further, if we lack demographic data on the development of germinated seeds to the seedling or earliest adult stage, but have reason to believe that the survival probabilities should be similar to survival within an observed stage of seedlings or small adults, then we can use the latter survival-transitions as proxies and even decrease them via an offset or multiplier. Finally, if fecundity is a function of seed production, survival to the next year, and germination probability, then germination probability might be estimated via a separate field germination study. We might wish to incorporate this germination probability both as a constant transition, and as a multiplier on estimated fecundity. Supplement tables provide the means to include all of this information.</p>
+  
+### Step 3: Assess whether historical MPM is justified, and develop models of demographic parameters
+  
+  <p style="text-indent: 20px">Historical MPMs are not necessarily justified in all cases. We urge the reader to use the principle of parsimony in deciding this. For example, users may analyze whether lagged effects of previous stage appear to influence vital rates. Package `lefko3` includes one method to do this based on linear modeling. A number of other methods exist, mostly focused on what are known as *memory models* [@brownie_capture-recapture_1993; @pradel_proposal_2003; @cole_does_2014]. Here, we focus only on the main `lefko3` method, and leave it to the reader to explore other options.</p>
+  
+  <p style="text-indent: 20px">In `lefko3`, function `modelsearch()` allows users to explore whether history influences component vital rates, and to develop linear models of these vital rates. The results can be used to decide not only whether a historical MPM is justified, but also to develop function-based hMPMs and ahMPMs themselves. Package `lefko3` can estimate linear models to estimate up to fourteen different vital rates:</p>
+  
+  1. **Survival probability** - This is the probability of surviving from occasion *t* to occasion *t*+1, given that the individual is in stage $j$ in occasion *t* (and, if historical, in stage $l$ in occasion *t*-1). In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity. This parameter is required in all function-based matrices.
+  
+  2. **Observation probability** - This is an optional parameter denoting the probability of observation in occasion *t*+1 of an individual in stage $k$ given survival from occasion *t* to occasion *t*+1. This parameter is only used when at least one stage is not observable. For example, some plants are capable of vegetative dormancy, in which case they are alive but do not necessarily sprout in all years in which they are in this stage. In these cases, the probability of sprouting may be estimated as the observation probability, and its complement is the probability of becoming dormant assuming survival. Note that this probability does not refer to observer effort, and so should only be used to differentiate completely unobservable stages where the observation status refers to an important biological phenomenon, such as when individuals may be alive but have a size of 0. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  3. **Primary size transition probability** - This is the probability of becoming size $k$ in occasion *t*+1 assuming survival from occasion *t* to occasion *t*+1 and observation in that time. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  4. **Secondary size transition probability** - This is the probability of becoming size $k$ in occasion *t*+1 assuming survival from occasion *t* to occasion *t*+1 and observation in that time, within a second size metric used for classification in addition to the primary metric. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  5. **Tertiary size transition probability** - This is the probability of becoming size $k$ in occasion *t*+1 assuming survival from occasion *t* to occasion *t*+1 and observation in that time, within a third size metric used for classification in addition to the primary and secondary metrics. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  6. **Reproduction probability** - This is an optional parameter denoting the probability of reproducing in occasion *t*+1 given survival from occasion *t* to occasion *t*+1, and observation in that time. Note that this should be used only if the researcher wishes to separate breeding from non-breeding mature stages. If all adult stages are potentially reproductive and no separation of reproducing from non-reproducing adults is desired, then this parameter should not be estimated. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  7. **Fecundity rate** - Under the default setting, this is the rate of successful production of offspring in occasion *t* by individuals alive, observable, and reproductive in that time, and, if desired and sufficient information is provided in the dataset, the survival of those offspring into occasion *t*+1 in whatever juvenile class is possible. Thus, the fecundity rate of seed-producing plants might be split into seedlings, which are plants that germinated within a year of seed production, and dormant seeds. Alternatively, it may be given only as produced fruits or seeds, with the survival and germination of seeds provided elsewhere in the MPM development process, such as within a supplement table. An additional setting allows fecundity rate to be estimated using data provided for occasion *t*+1 instead of occasion *t*. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, reproductive status, patch, year, age, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+
+  8. **Juvenile survival probability** - This is an optional parameter that is used to model the probability of surviving from juvenile stage $j$ in occasion *t* to occasion *t*+1. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  9. **Juvenile observation probability** - This is an optional parameter denoting the probability of observation in occasion *t*+1 of an individual in mature stage $k$ given survival from a juvenile stage in occasion *t* to occasion *t*+1. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity, and all other caveats noted in (2) above apply.
+  
+  10. **Juvenile primary size transition probability** - This is an optional parameter denoting the probability of becoming mature size $k$ in occasion *t*+1 assuming survival from juvenile stage $j$ in occasion *t* to occasion *t*+1 and observation in that time. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  11. **Juvenile secondary size transition probability** - This is an optional parameter denoting the probability of becoming mature size $k$ in occasion *t*+1 assuming survival from juvenile stage $j$ in occasion *t* to occasion *t*+1 and observation in that time, in a secondary size metric in addition to the primary size metric. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  11. **Juvenile tertiary size transition probability** - This is an optional parameter denoting the probability of becoming mature size $k$ in occasion *t*+1 assuming survival from juvenile stage $j$ in occasion *t* to occasion *t*+1 and observation in that time, in a tertiary size metric in addition to the primary and secondary size metrics. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity.
+  
+  13. **Juvenile reproduction probability** - This is an optional parameter denoting the probability of reproducing in mature stage $k$ in occasion *t*+1 given survival from juvenile stage *j* in occasion *t* to occasion *t*+1, and observation in that time. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity, and all other caveats in (4) apply.
+  
+  14. **Juvenile maturity probability** - This is an optional parameter denoting the probability of becoming mature in occasion *t*+1 given survival from juvenile stage *j* in occasion *t* to occasion *t*+1. This is a different parameter than (13) above and is particularly used to weight transition probabilities to juvenile vs. mature stages properly in matrices with defined juvenile stages. It is used only when the user wishes to model juvenile vital rates separately from adults, assuming different relationships with explanatory variables than those used to classify adults. In `lefko3`, this parameter may be modeled as a function of up to three size metrics, patch, year, and a number of individual or environmental covariates in occasions *t* and *t*-1, and individual identity, and all other caveats in (1) apply.
+  
+  <p style="text-indent: 20px">Of these fourteen vital rates, most users will estimate at least parameters (1) survival probability, (3) size transition probability, and (7) fecundity. These three are the default set for function `modelsearch()`. Parameters (2) observation probability and (6) reproduction probability may be used when some stages are included that are completely unobservable (and so do not have any size), or that are mature but non-reproductive, respectively. Parameters (8) through (14) should only be added if the dataset contains juvenile individuals transitioning to maturity, and these juveniles live essentially as a single stage before transitioning to maturity, or before transitioning to a stage that is size-classified in the same manner as adult stages are.</p>
+  
+  <p style="text-indent: 20px">Function `modelsearch()` handles the entire modeling process using an exhaustive model building process combined with information theoretical model selection using model AICc and the number of estimated parameters in each model. It handles the development of global models, exhaustive model building, and the selection of best-fit models. Users should provide this function with information about the following:</p>
+  
+  1. **Individual history** - Are the matrices to be built historical or ahistorical? If the former, then the state of the individual in occasion *t*-1 will be included in modeling.
+  
+  2. **Modeling approach** - Should the models be estimated as generalized linear models (GLMs) or mixed linear models? While most function-based matrix models are estimated as the former, the latter approach can account for repeated observations of the same individual by including individual identity as a random factor. Mixed models also allow time and patch to be treated as random variables, which allows for broader and more theoretically sound inference.
+  
+  3. **Suite of factors** - Should both size and reproductive status be tested as causal factors? Should two-way interactions be included? Alternatively, should models be estimated as constants?
+  
+  4. **Suite of vital rates** - Which adult demographic parameters should be estimated? The defaults are (1) survival, (3) primary size, and (7) fecundity. Should (2) observation status, (6) reproductive status, or (4) secondary size or (5) tertiary size also be modeled?
+  
+  5. **Juvenile vital rate estimation** - Should juvenile parameters (8) through (14) also be modeled separately from adult parameters?
+  
+  6. **Best-fit criterion** - If a model with fewer parameters exists within 2.0 AICc units of the model with the lowest AICc, then should this model be used as the best-fit model (the default), or should the model with the lowest AICc always be chosen?
+  
+  7. **Size distribution** - Should size be modeled as a continuous variable under a Gaussian or Gamma distribution, or as a count variable under either a Poisson or negative binomial distribution? If a count variable, then should the distribution be zero-inflated to account for excess zeros, zero-truncated to account for a lack of zeros, or left unaltered?
+  
+  8. **Fecundity distribution** - Should fecundity be modeled as a continuous variable under a Gaussian or Gamma distribution, or as a count variable under either a Poisson or negative binomial distribution? If a count variable, then should the distribution be zero-inflated to account for excess zeros, zero-truncated to account for a lack of zeros, or left unaltered?
+  
+  9. **Continuous distribution estimation method** - If using a Gaussian or Gamma distribution for size, then should the probability of transition be estimated via the cumulative density function (CDF) method (the default), or the midpoint method? See @doak_critical_2021 for a discussion of the relative merits of both.
+  
+  10. **Timing of fecundity** - Function `modelsearch()` assumes that linear models of fecundity use a metric counted or measured in occasion *t* as the response. This applies well with most herbaceous plant datasets, where flowers or seeds produced in one year might be the fecundity response measured. However, users not wishing to follow this default behavior can use the `fectime` option to stipulate a fecundity metric measured in occasion *t*+1. 
+  
+  11. **Age** - Is an age or age x stage MPM the main goal? Currently only age MPMs and ahistorical age x stage MPMs are offered in `lefko3`.
+  
+  12. **Individual and annual covariates** - Should individual or annual covariates be tested as causal factors on vital rates? If so, then should they be included as fixed, quantitative terms or as random, categorical terms?
+  
+  13. **Stage groups** - If stage groups are noted in the stageframe, then should they also be used as fixed, independent categorical predictors in modeling?
+  
+  14. **Missing values for occasions and patches** - Should occasions or patches with coefficients that drop to 0 in modeling be estimated as random draws from the corresponding distributions of occasion or patch coefficients?
+  
+  15. **Censoring** - Should data points marked as questionable be used or eliminated?
+  
+  16. **Variable names** - The names of all relevant variables in the dataset need to be specified. Note that the default behavior assumes variable names output via the `historicalize3()` or `verticalize3()` functions, which produce standardized historically-formatted vertical (*hfv* format) datasets.
+
+  <p style="text-indent: 20px">Once all decisions are made and associated input terms are provided, `modelsearch()` goes to work. The result is a `lefkoMod` object, which is a list in which the first 14 elements are the best-fit models developed for each vital rate. These are followed by an equivalent number of elements showing the full model tables developed and tested, followed by a table detailing the names and definitions of terms used in modeling, an element detailing the best-fit criterion used, and ending on quality control data showing the number of individuals and the number of unique transitions used in the estimation of each model, as well as the overall accuracy of the models. Depending on user choices, linear modeling is handled through the `lm()` and `glm()` functions in the `stats` package, the `glm.nb()` function in the `MASS` package, the `lmer()` and `glmer()` functions in `lme4` [@bates_fitting_2015], the `glmmTMB()` function in `glmmTMB` [@brooks_glmmtmb_2017], the `glm.nb()` function in package `MASS`, the `vglm()` function in package `VGAM` [@yee_vector_1996; @yee_vector_2015], or the `zeroinfl()` function in package `pscl` [@zeileis_regression_2008]. Exhaustive model building proceeds through the `dredge()` function in package `MuMIn` [@barton_mumin_2014]. Model selection is handled through assessment of AICc and the number of parameters estimated per model (see 6. **Best-fit criterion** above).</p>
+  
+  <p style="text-indent: 20px">If `modelsearch()` is set for historical analysis (`historical = TRUE`, the default), then the decision of whether to develop a historical MPM can be made on the basis of whether any best-fit vital rate model includes size or reproductive status in occasion *t*-1. If at least one vital rate does, then a historical MPM is justified. Otherwise, it is not. Regardless, the output can be used to create a function-based MPM in the next step.</p>
+  
+  <p style="text-indent: 20px">Advanced users of `lefko3` may wish to create their own models without the package's automated model selection function. In that case, `lefko3`'s matrix functions can accommodate single models developed using the functions and packages mentioned before.</p>
+  
+### Step 4: Estimate matrices   
+  
+  <p style="text-indent: 20px">MPM creation can be accomplished with nine different functions: `rlefko2()` for raw ahistorical stage-classified MPMs, `rlefko3()` for raw historical stage-classified MPMs, `arlefko2()` for raw ahistorical age-by-stage MPMs, `rleslie()` for raw age-classified MPMs, `flefko2()` for function-based ahistorical MPMs and IPMs, `flefko3()` for function-based historical MPMs and IPMs, `aflefko2()` for function-based ahistorical age-by-stage MPMs, `fleslie()` for function-based age-classified MPMs, and `mpm_create()` as a general, all-purpose MPM and IPM creation function. These functions incorporate binary kernels developed to handle the estimation of matrix elements quickly and efficiently. A single run of `flefko3()`, for example, should be able to yield all annual matrices for all patches for the *Cypripedium candidum* dataset provided with `lefko3` in under a half-minute on most machines (14s or so on RPS' 2019 MacBook Pro with 2.3 GHz 8-Core Intel Core i9). Parallel computing should not be necessary even with the slowest of current machines, provided that the machine is current enough to handle at least R 3.6.3.</p>
+  
+  <p style="text-indent: 20px">The output for each of these functions is a `lefkoMat` object, which is an S3 object (i.e. a list with pre-defined elements). These lists include elements `A`, `U`, and `F`, which are themselves lists of complete projection matrices, survival-transition matrices, and fecundity matrices, respectively. For example, code such as `matobject$A[[1]]` would access the first complete projection matrix in a `lefkoMat` object named `matobject`. They are followed by elements referred to as `ahstages`, `hstages`, and `agestages`, which provide data frames describing the stages (technically showing the stageframe, though edited by the function for consistency), the historical stage-pairs, and the age-stage pairs shown in the order in which they occur within the matrices. The `labels` element is a data frame giving a description of each matrix in the order in which it occurs within the `A`, `U`, and `F` elements, including the population, patch, and monitoring time designations. The final elements are quality control outputs that vary in content depending on whether the output matrices are raw or function-based, but nonetheless always include at least the numbers of individuals and individual-transitions used for estimation.</p>
+  
+  <p style="text-indent: 20px">Users wishing to check the output MPMs for errors or simply understand more about them may utilize functions `summary()` and `cond_hmpm()`. Function `summary()` summarizes each `lefkoMat` object used as input, and also checks the survival of stages, stage-pairs, or age-stages by assessing the column sums for each `U` matrix and providing warnings if any survival probabilities fall below 0 or are greater than 1. Function `cond_hmpm()` decomposes hMPMs into MPMs showing transitions from occasion *t* to occasion *t*+1, but conditioned on the same stage at occasion *t*-1. Thus, a single hMPM with five stages and 25 stage pairs would be broken down into five conditional MPMs, one for each stage at occasion *t*-1, with five columns and five rows denoting stage at occasions *t* and *t*+1, respectively. These can be examined individually, and the survival of stages from occasion *t* to occasion *t*+1 can be assessed as a function of stage in occasion *t*-1 by taking the associated column sums of these conditional matrices.</p>
+  
+### Step 4a. Importing matrices and IPMs   
+  
+  <p style="text-indent: 20px">Some population ecologists will wish to utilize the power and functionality of `lefko3` on already existing matrices. Although many analytical functions work with simple lists of matrices, users may import sets of matrices as `lefkoMat` objects in order to utilize the most powerful analyses. The `create_lM()` function allows users to take a list of square matrices of equal dimensions, and import them into a `lefkoMat` object. Users wishing to do this will also need to develop a stageframe, and to input the order of populations, patches, and years associated with the order of matrices in the input list. Function `create_lM()` runs several quality checks on the input data, and assuming that there are no obvious inconsistencies, yields the final `lefkoMat` object for further use in analysis.</p>
+  
+  <p style="text-indent: 20px">Users may also import IPMs. If the characteristics of the kernels propagating an IPM are properly described in a publication, and the kernel is composed of generalized linear models or generalized linear mixed models, then  function `vrm_import()` allows this information to be input into `lefko3` and used to recreate the IPMs in discretized form. Please see **lefko3: a gentle introduction** for more information, or see the function example.</p>
+  
+### Step 4b. Edit matrices    
+  
+  <p style="text-indent: 20px">Once the MPM is created, users may wish to make modifications to some or all of the matrices. While the `supplemental()` function was used to fix certain transition values and transition multipliers across all matrices within the MPM creation function, the `edit_lM()` function can be used to make similar sorts of changes and updates to individual matrices or groups of matrices. The methodology is similar to that used in function `supplemental()` (see **Step 2b: Provide supplemental information for matrix estimation**), but with a few extra options thrown in for greater ability to customize matrices themselves.</p>
+  
+### Step 5. MPM analyses    
+  
+  <p style="text-indent: 20px">Package `lefko3` includes a number of functions to aid analysis once matrices are created. These may be of greater utility in some circumstances than established functions such as `eigen()`, because our functions are made to handle even extremely large, sparse matrices. Currently, we include functions to estimate element-wise arithmetic mean matrices, discrete and stochastic population growth rate, stable and long-run stage structure, reproductive value, deterministic and stochastic sensitivity and elasticity, and deterministic and stochastic life table response experiments (LTRE and sLTRE). We also include a basic projection function that can work under deterministic, stochastic, and density dependent assumptions. Plans are in the works for further analysis functions in the future.</p>
+  
+#### Deterministic vs. stochastic analysis    
+  
+  <p style="text-indent: 20px">Population ecologists most typically run deterministic projection analyses. These analyses take single matrices, and project them a theoretically infinite numbers of times. In most cases, such an infinite projection yields a set of asymptotic properties that are measurable using eigen analysis. For example, the long-run population growth rate should asymptotically approach the largest real part of the dominant eigenvalue.</p>
+  
+  <p style="text-indent: 20px">Ecologists wishing to assess the influence of environmental variability may instead wish to assume temporal environmental stochasticity. Under this assumption, the population is projected into the future by randomly shuffling with resampling all matrices associated with that specific population. Several theorems predict that such a long-run projection will typically yield roughly stable characteristics, including the long-run mean population growth rate and the long-run average stage structure, and that these characteristics may differ strongly from those predicted under deterministic analysis.</p>
+  
+  <p style="text-indent: 20px">Package `lefko3` contains functions that quickly assess deterministic and stochastic properties. In addition, users may use the `projection3()` function to conduct user-defined projections of various sorts, including even cyclical and unequally weighted stochastic projections.</p>
+  
+#### Density independent vs. density dependent analysis    
+  
+  <p style="text-indent: 20px">Package `lefko3` also provides the ability to conduct density dependent projections. Readers of the density dependence literature will know that there are many forms of density dependent functions that can be applied to matrix projection. The oldest forms typically applied a function such as the logistic function to all matrix elements, generally by multiplying each matrix element by some function of density [e.g., @leslie_properties_1959]. More recent forms incorporate complex approaches, often separating density dependent functions by vital rate [e.g., @jensen_simple_1995].</p>
+  
+  <p style="text-indent: 20px">To provide the greatest flexibility, `lefko3` currently implements density dependence in three different ways. First, density dependence may be set on matrix elements themselves using the `density_input()` function in conjunction with the two projection functions, `projection3()` and `f_projection3()`. This function allows users to list all matrix elements that should be subject to density dependence with a time lag, and to stipulate the characteristics of the density dependence. Shorthand abbreviations can be used in function `density_input()` to describe where density, such as `all` for all stages, `rep` for reproductive stages, `nrep` for mature but non-reproductive stages, etc. A default time delay of 1 time step is applied, and this can be set to any positive integer.Most users will be interested in this form.</p>
+  
+  <p style="text-indent: 20px">The second form of density dependence is vital rate density dependence, assuming a time lag. This form modifies vital rates developed for function-based MPMs by density, and so is less general than the previous approach. This can be operationalized using the `density_vr()` function in conjunction with function `f_projection3()`.</p>
+  
+  <p style="text-indent: 20px">The third form is spatial density dependence in vital rate models. This form of density dependence models spatial density rather population size, and is incorporated into vital rate model development in function-based MPMs.</p>
+  
+  <p style="text-indent: 20px">Currently, `lefko3` includes four density dependence functions that can be chosen, with projections capable of including multiple functions and time delays. The first is the Ricker function, which is given as</p>
+  
+\begin{equation}
+\tag{12}
+\phi_{t+1} = \phi_t \times \alpha e^{-\beta n_t}
+\end{equation}
+  
+\noindent
+where $\alpha$ and $\beta$ are the density dependence parameters, and $\beta$ in particular gives the strength of density dependence. This equation is among the most interesting in the density dependence literature, because it is capable of producing oscillations, even multi-period oscillations, and chaos.
+  
+  <p style="text-indent: 20px">The second density dependence function applied in `lefko3` is the Beverton-Holt equation, which is given as</p>
+  
+\begin{equation}
+\tag{13}
+\phi_{t+1} = \phi_t \times \frac{\alpha}{1 + \beta n_t}
+\end{equation}
+  
+\noindent
+where $\alpha$ and $\beta$ are, once again, the density dependence parameters, and $\beta$ in particular gives the strength of density dependence. This function generally asymptotes at an equilibrium density, and so is not capable of producing the complex patterns that the Ricker model is capable of.
+  
+  <p style="text-indent: 20px">The third function implemented in `lefko3` is the Usher function, given as</p>
+  
+\begin{equation}
+\tag{14}
+\phi_{t+1} = \phi_t \times \frac{1}{1 + e^{\alpha n_t + \beta}}
+\end{equation}
+  
+\noindent
+where both $\alpha$ and $\beta$ give the strength of density dependence, though the former via an interaction with density and the latter via an addition to the exponential effect.
+  
+  <p style="text-indent: 20px">Finally, `lefko3` also implements a form of the logistic equation, given as</p>
+  
+\begin{equation}
+\tag{15}
+\phi_{t+1} = \phi_t \times (1 - \frac{n_t}{K})
+\end{equation}
+  
+where only one parameter, $K$, is needed.
+  
+  <p style="text-indent: 20px">Package `lefko3` currently implements these analyses via the `projection3()` and `f_projection3()` functions. Settings for this function also allow the user to stipulate whether the projection should force matrices to remain substochastic. Two forms of substochasticity are allowed: 1) a simple form in which survival-transition probabilities can be prevented from moving outside of the interval [0, 1] and fecundity can be prevented from becoming negative, and 2) a more complicated form that keeps the column sums in survival-transitions matrices (equivalent to the survival probabilities of stages, stage-pairs, or age-stages) within the interval [0, 1] and prevents fecundity from becoming negative. We are currently developing functions to analyze density-dependent projection results, including sensitivity and elasticity analyses.</p>
+  
+#### Population growth rate   
+  
+  <p style="text-indent: 20px">Package `lefko3` allows the estimation of both the deterministic and stochastic population growth rates. The deterministic population growth rate is estimated with function `lambda3()`, and estimates the population growth rate ($\lambda$) as the dominant eigenvalue of each matrix provided (technically, the largest real part of the estimated eigenvalues). Where matrices are large and sparse, as in most historical or age-by-stage cases, `lambda3()` first converts matrices to sparse format in order to speed up estimation.</p>
+  
+  <p style="text-indent: 20px">The function `slambda3()` estimates the log stochastic population growth rate in its instantaneous form ($a = \text{log} \lambda _{S}$). This is estimated as the mean log discrete population growth rate across a user-specified number of random draws of the supplied annual matrices:</p>
+  
+\begin{equation}
+\tag{16}
+a = \text{log} \lambda _{S} = \frac{1}{T} \sum _{t=1}^{T} \text{log} \frac{N _{t}}{N _{t-1}}
+\end{equation}
+  
+where $N _t$ is the population size in occasion $t$, and $T$ is the number of occasions projected forward, set to 10,000 by default. Function `slambda3()` does not shuffle across patches or populations, instead shuffling within patches, or shuffling annual matrices calculated as element-wise means of patch matrices within the same population and the same time. The methodology is based on @morris_quantitative_2002, though accounts for spatial averaging of patches and can easily handle large and sparse matrices.
+  
+#### Stable stage distribution and reproductive value   
+  
+  <p style="text-indent: 20px">In ahistorical analysis, the stable stage distribution and the reproductive value of stages are estimated as the standardized right and left eigenvectors, respectively, associated with the dominant eigenvalue of the matrix. Standardization of the stable stage distribution is handled by dividing each respective element of the right eigenvector by the sum of the elements in that eigenvector. Standardization of the reproductive value vector is handled by dividing each element in the left eigenvector by the value of the first non-zero element in that eigenvector.</p>
+  
+  <p style="text-indent: 20px">The methods mentioned above apply to historical matrices as well. However, as described, they only provide the stable stage distribution and reproductive values of stage pairs. We provide two functions, `stablestage3()` and `repvalue3()`, to allow the estimation of these vectors for both ahistorical and historical MPMs. When provided with a historical MPM, these functions also estimate **historically-corrected** stable stage distributions and reproductive value vectors, which correspond to the original stages in the associated life history model rather than the stage pairs, and so are comparable against the ahistorical stable stage distributions and reproductive value vectors. The historically-corrected stable stage proportion for stage $j$ is estimated as the sum of all stable stage proportions for stage $j$ in occasion *t* across all stages in occasion *t*-1, as in:</p>
+  
+\begin{equation}
+\tag{17}
+SS _j = \sum _{l=1}^{m} w _{jl}
+\end{equation}
+  
+where $l$ is stage in occasion *t*-1, $m$ is the number of stages, $SS_j$ is the stable stage proportion of stage $j$, and $w _{jl}$ is the stable stage proportion of stage pair $jl$ given as the standardized right eigenvector corresponding to the dominant eigenvalue of the hMPM. The historically-corrected reproductive value of stage $j$ is calculated as the sum of all reproductive values for stage $j$ in occasion *t* across all stages in occasion *t*-1, weighted by the stable stage proportion of the respective stage pair divided by the stable stage proportion of stage $j$ at occasion *t* [@ehrlen_dynamics_2000], as in:
+  
+\begin{equation}
+\tag{18}
+RV _j = \sum _{l=1}^{m} v _{jl} (w _{jl} /  SS _{j})
+\end{equation}
+  
+where $RV _j$ refers to reproductive value of stage $j$, and $v _{jl}$ refers to the reproductive value of the stage pair as given by the standardized left eigenvector of the dominant eigenvalue of the historical MPM. The influence of history can make these numbers differ quite dramatically from those produced by ahistorical matrices.</p>
+  
+  <p style="text-indent: 20px">Package `lefko3` also handles the estimation of stochastic stable stage distribution and reproductive value vectors. It handles this through projection of shuffled temporal matrices, typically 10,000 occasions forward though the exact number can be set as needed. According to the stochastic strong and weak ergodic theorems, this random shuffling should eventually yield a roughly stationary distribution of stage proportions and stage reproductive values. Thus, the stochastic stable structure is estimated as the arithmetic mean vector of the final set of typically one or two thousand predicted stage proportion vectors in such a projection.</p>
+  
+  <p style="text-indent: 20px">The stochastic reproductive value is more complicated. Imagine a vector, $\mathbf{x}(t)$, which includes the expected number of offspring produced by each stage in occasion *t*+1. This is referred to as the *undiscounted reproductive value vector* because it is not standardized, and so is likely to eventually move to an extreme value such as infinity. It turns out that $\mathbf{x}(t)$ is related to other occasions in this projection via:</p>
+  
+\begin{equation}
+\tag{19}
+\mathbf{x}^\top(t) = \mathbf{x}^\top(t+1)\mathbf{A}_t
+\end{equation}
+  
+Standardizing leads to the *discounted reproductive value vector*, as below:
+  
+\begin{equation}
+\tag{20}
+\mathbf{v}(t) = \frac{\mathbf{x}(t)}{\lVert \mathbf{x}(t) \rVert}
+\end{equation}
+  
+The reproductive value vector can then be projected as well, as in
+  
+\begin{equation}
+\tag{21}
+\mathbf{v}(t) = \frac{\mathbf{v}^\top(t+1)\mathbf{A}_t}{\lVert \mathbf{v}^\top(t+1)\mathbf{A}_t \rVert}
+\end{equation}
+  
+The reproductive value is projected backwards in time, and package `lefko3` takes its average in the final one or two thousand portions of the backward projection.
+  
+#### Sensitivity and elasticity   
+  
+  <p style="text-indent: 20px">Package `lefko3` contains functions allowing users to conduct deterministic and stochastic sensitivity and elasticity analyses. Sensitivity and elasticity analysis are forms of perturbation analysis, and we urge readers to consult @caswell_matrix_2001 and @caswell_sensitivity_2019 to become fully acquainted with the topic. Here, we discuss just the most important aspects to understand these analyses as conducted using `lefko3`.</p>
+  
+  <p style="text-indent: 20px">The sensitivity of $\lambda$, the deterministic population growth rate, to a specific element in a projection matrix can be calculated using eigen analysis as</p>
+  
+\begin{equation}
+\tag{22}
+\frac{\partial \lambda}{\partial a _{kj}} = \frac{\bar{v} _{k} w _{j}}{<\mathbf{w}, \mathbf{v}>}
+\end{equation}
+  
+Here, $\mathbf{w}$ is the stable stage distribution vector calculated as the right eigenvector of the dominant eigenvalue of the matrix (standardized to sum to 1), $\mathbf{v}$ is the reproductive value vector calculated as the associated left eigenvector (standardized by dividing by the value of the first non-zero value), and $\bar{v} _{k}$ is the complex conjugate of element $k$ of $\mathbf{v}$. $k$ is the stage in occasion *t*+1 and in the ahMPM refers to the corresponding row, while $j$ refers to stage in occasion *t* and in an ahMPM refers to the corresponding column. The term $<\mathbf{w}, \mathbf{v}>$ refers to the scalar product of these vectors.
+  
+  <p style="text-indent: 20px">In the hMPM case, the basic method is essentially the same as in equation 22, although the equation itself changes somewhat, with the sensitivity of $\lambda$ to each matrix element given as</p>
+  
+\begin{equation}
+\tag{23}
+\frac{\partial \lambda}{\partial a _{kjl}} = \frac{\bar{v} _{kj} w _{jl}}{<\mathbf{w}, \mathbf{v}>}
+\end{equation}
+  
+Here, $k$ is stage in occasion *t*+1, $j$ is stage in occasion *t*, $l$ is stage in occasion *t*-1, $kj$ refers both to the stage pair in occasions *t*+1 and *t* as well as the corresponding row in the historical matrix, and $jl$ refers both to the stage pair in occasions *t* and *t*-1 as well as the corresponding column in the historical matrix. Historically-corrected sensitivities may also be estimated for the basic stages of the life history model using the historically-corrected stable stage distributions and reproductive values given in equations 17 and 18 as input in equation 22. 
+  
+  <p style="text-indent: 20px">Sensitivities show how much a small, additive change in a matrix element can alter $\lambda$, but do so by estimating the local slope of $\lambda$ given in terms of the matrix element [@caswell_matrix_2001]. Sensitivities are also typically non-zero even for impossible transitions represented by zeros in the matrix. Elasticities, in contrast, show the influence of small, proportional changes in matrix elements on $\lambda$, essentially given as local slopes of $log \lambda$ given in terms of the logarithms of matrix elements. This results in impossible transitions yielding elasticities equal to 0. In the ahistorical case, the elasticity, $e _{kj}$, of $\lambda$ to change in a matrix element $a _{kj}$ is given as</p>
+  
+\begin{equation}
+\tag{24}
+e _{kj} = \frac{a _{kj}}{\lambda} \frac{\partial \lambda}{\partial a _{kj}}
+\end{equation}
+  
+The historical case is just an extension of the above.
+  
+\begin{equation}
+\tag{25}
+e _{kjl} = \frac{a _{kjl}}{\lambda} \frac{\partial \lambda}{\partial a _{kjl}}
+\end{equation}
+  
+Here, we use row and column definitions equivalent to those used in the historical sensitivity case. This makes the elasticity a function of the sensitivity of $\lambda$ to the matrix element, as well as of the value of the matrix element itself. Thus, structural zeros in the hMPM must have elasticity equal to 0, although it is entirely possible that they have non-zero sensitivities.
+  
+  <p style="text-indent: 20px">Elasticities calculated for hMPMs can be compared to those calculated in ahMPMs easily because elasticities may be added by stage or transition type, with all elasticities corresponding to a specific matrix necessarily summing to 1.0. Thus, we can calculate the stage pair elasticities resulting from a historical MPM analysis as</p>
+  
+\begin{equation}
+\tag{26}
+e _{kj} = \sum_{i=1}^{m} e _{kji}
+\end{equation}
+  
+with all symbol definitions as before. We have provided a `summary()` function for elasticity output in `lefko3` that automatically groups the resulting elasticities by the kind of ahistorical or historical transition.
+  
+  <p style="text-indent: 20px">Stochastic sensitivity and elasticity analysis are also available. Per @caswell_matrix_2001, the sensitivity of $a = \text{log} \lambda _{S}$ to changes in a specific element is given as:</p>
+  
+\begin{equation}
+\tag{27}
+\frac{\partial \text{log} \lambda _S}{\partial a _{kj}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1} \frac{\mathbf{v}(t+1) \mathbf{w}^\top(t)}{\mathbf{v}^\top(t+1) \mathbf{w}(t+1)}
+\end{equation}
+  
+where $t$ refers to a specific monitoring occasion and $T$ refers to the number of occasions projected forward. Similarly, the stochastic elasticity of $a = \text{log} \lambda _{S}$ to changes in a specific element is given as:
+  
+\begin{equation}
+\tag{28}
+\frac{\partial \text{log} \lambda _S}{\partial \text{log} a _{kj}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1} \frac{\bigl(\mathbf{v}(t+1) \mathbf{w}^\top(t) \bigr) \circ \mathbf{A_t}}{\mathbf{v}^\top(t+1) \mathbf{w}(t+1)}
+\end{equation}
+  
+where $\mathbf{A_t}$ refers to the A matrix corresponding to occasion *t*. Stochastic sensitivities for hMPMs may be converted to historically-corrected format as in the deterministic case, and stochastic elasticities may be summed as before.
+  
+  <p style="text-indent: 20px">Users working with elasticities, whether deterministic or stochastic, may find the `summary.lefkoElas()` function useful. If an elasticity analysis is conducted on a `lefkoMat` object, then the information in that object can be used to summarize summed elasticity according to different sorts of transitions. In the ahistorical case, elasticities are sorted by growth, stasis, shrinkage, and fecundity. In the historical case, they are sorted by transition pairs across three consecutive occasions (e.g. stasis followed growth vs. shrinkage followed by stasis vs. growth followed by reproduction).</p>
+  
+#### Life table response experiments (LTREs)    
+  
+  <p style="text-indent: 20px">MPMs are very useful tools to describe and explore population dynamics. However, sometimes we may wish to know how specific factors or treatments impact the population growth rate, and through what elements and vital rates those impacts are achieved. Life table response experiments (LTREs) provide the means to evaluate these impacts via methodologies that compare matrices for their impacts on the growth rate of some reference matrix or set of matrices.</p>
+  
+  <p style="text-indent: 20px">Several forms of LTRE exist. The simplest and earliest developed is the fixed, one-way LTRE, which evaluates the impact of a single factor on the asymptotic population growth rate $\lambda$. Imagine two matrices, the first a matrix derived from some treatment such as a particular management regime, $\mathbf{A^{(m)}}$, and a reference matrix from a control regime, $\mathbf{A^{(R)}}$. Per @caswell_matrix_2001, if we estimate a matrix $\mathbf{A^{(m+R)/2}}$ that is the element-wise arithmetic mean matrix of $\mathbf{A^{(m)}}$ and $\mathbf{A^{(R)}}$, then:</p>
+  
+\begin{equation}
+\tag{29}
+\Delta \lambda = \lambda^{(m)} - \lambda^{(R)} \approx \sum_{j,i} ((a_{ji}^{(m)} - a_{ji}^{(R)}) (\frac{\partial \lambda}{\partial a_{ji}})) | _\mathbf{A^{(m+R)/2}}
+\end{equation}
+  
+  <p style="text-indent: 20px">Since 2010, several stochastic life table response experiment (sLTREs) methodologies have also been developed. sLTREs measure the impact of one or more treatments on the log stochastic growth rate, $a = \text{log} \lambda _{S}$. However, the treatment and reference here are not single matrices, but sets of matrices that vary randomly across time. Here, we assume that $log\lambda^{(m)}$ and $log\lambda^{(R)}$ are the log stochastic growth rates of the treatment MPM and the reference MPM, respectively.</p>
+  
+  <p style="text-indent: 20px">Package `lefko3` currently implements two kinds of sLTRE. The first, which we refer to in the documentation as 'sLTRE', is the simulated sLTRE described in @davison_demographic_2010, where:</p>
+  
+\begin{equation}
+\tag{30}
+\Delta \text{log} \lambda _{S} = log\lambda^{(m)} - log\lambda^{(R)} \approx \sum_{j,i} [log \mu_{ji}^{(m)} - log \mu_{ji}^{(R)}] E_{ji}^{\mu} + [log \sigma_{ji}^{(m)} - log \sigma_{ji}^{(R)}] E_{ji}^{\sigma}
+\end{equation}
+  
+In the above equation, $E_{ji}^{\mu}$ and $E_{ji}^{\sigma}$ are the stochastic elasticities of the log stochastic growth rate to changes in the mean and standard deviation, respectively, of the element at row $j$ and column $i$ in the reference matrix set. Function `ltre3()` handles all of these calculations.
+  
+  <p style="text-indent: 20px">@davison_contributions_2013 presented an analytical solution to the sLTRE refered to as the **small-noise approximation LTRE**, or 'SNA-LTRE'. Package `lefko3` also implements this form. Here, the difference in the stochastic growth rate $\text{log}\lambda_S$ between the treatment group and the reference group is decomposed into contributions from differences in mean elements, in element elasticities, in element coefficients of variation, and in element correlations. This analysis will likely appeal most to those seeking to conduct stochastic LTREs, and we urge users to read @davison_contributions_2013 and the LTRE chapter in *lefko3: a gentle introduction* for a better understanding of this analysis.</p>
+  
+#### Custom projections
+  
+  <p style="text-indent: 20px">Regardless of approach, users may take matrices, or the vital rate functions used to make them, and conduct custom projections. Such projections may be for any number of time steps, and may be replicated, if desired. Two general projection functions allow for any sort of custom projection to be run, and analysis functions allow these projections to be analyzed. Please see our free technical manual, **lefko3: a gentle introduction**, on the <a href = "http://www.sheffersonlab.com/projects.html">projects page</a> of the <a href = "http://www.sheffersonlab.com/">Shefferson lab website</a> for details.</p>
+  
+#### Further analyses   
+  
+  <p style="text-indent: 20px">Users can take the MPMs produced by MPM creation functions in package `lefko3` and plug them into MPM or matrix analysis functions in other packages. Matrices produced by `lefko3` are stored within `lefkoMat` objects, and users wishing to work with analysis functions in other packages need only extract the matrices from them. This allows the use of all functions that work with matrices, including functions in base R such as `eigen()`, as well as in packages such as `popbio` [@stubben_estimating_2007] and `popdemo` [@stott_popdemo_2012]. We encourage users to explore whether the packages and functions they wish to use can handle sparse matrices, as well as large matrices - some were not designed to and can fail or yield unpredictable behavior when applied particularly to historical matrices produced by `lefko3`.</p>
+  
+## Acknowledgements   
+  
+  <p style="text-indent: 20px">We are grateful to two anonymous reviewers whose scrutiny improved the quality of this vignette. The project resulting in this package and this tutorial was funded by Grant-In-Aid 19H03298 from the Japan Society for the Promotion of Science.</p>
+
+
+## Literature cited
+
+<div id="refs"></div>
+

@@ -1,0 +1,19 @@
+bibentry(bibtype="Article",
+         title = "lefko3: analyzing individual history through size-classified matrix population models",
+         author      = c(person(given = "Richard P.", family = "Shefferson"),
+                         person(given = "Shun", family = "Kurokawa"),
+                         person(given = "Johan", family = "Ehrlen")),
+         journal     = "Methods in Ecology and Evolution",
+         address     = "Cambridge, United Kingdom",
+         year        = "2021",
+         volume      = "12",
+         number      = "2",
+         pages       = "378-382",
+         doi         = "10.1111/2041-210X.13526",
+         url         = "https://doi.org/10.1111/2041-210X.13526",
+	
+         header      = "To cite lefko3 in publications, please use:",
+         textVersion = paste("Richard P. Shefferson, Shun Kurokawa, Johan Ehrlen, and Raziel Davison (2021).",
+                             "lefko3: Historical and Ahistorical Population Projection Matrix Analysis. ",
+                             "Methods in Ecology and Evolution 12(2): 378-382.")
+)

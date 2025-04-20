@@ -1,0 +1,400 @@
+---
+title: "LTREs, sLTREs, and MPM import with Anthyllis vulneraria"
+author: Richard P. Shefferson and Raziel Davison
+output: rmarkdown::html_vignette
+bibliography: Lefko3Tutorial.bib
+vignette: >
+  %\VignetteIndexEntry{LTREs, sLTREs, and MPM import with Anthyllis vulneraria}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+  <p style="text-indent: 20px">In this vignette, we will import a MPM created elsewhere into `lefko3` and analyze it via LTRE and sLTRE analysis. These are inherently ahistorical MPMs, and so we do not include historical analyses in this vignette. To reduce output size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls. Please run these statements without hashtags to see the output. This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called *lefko3: a gentle introduction*, available on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website.</p>
+  
+### ORGANISM AND POPULATIONS  
+  
+  <p style="text-indent: 20px">@davison_demographic_2010 reported stochastic contributions made by differences in vital rate means and variances among nine natural populations of the perennial herb *Anthyllis vulneraria*, also known as kidney vetch, occurring in calcareous grasslands in the Viroin Valley of southwestern Belgium. *A. vulneraria* is a grassland specialist and the unique host plant of the Red-listed blue butterfly (*Cupido minimus*). It is a short-lived, rosette-forming legume with a complex life cycle including stasis and retrogression between four stages but no seedbank (seedlings, juveniles, small adults and large adults; Figure 9.1).</p>
+  
+<img src = "anthlhg.png" width = "700"></img> 
+Figure 9.1. Life history model of *Anthyllis vulneraria*. Solid arrows indicate survival transitions while dashed arrows indicate fecundity transitions. 
+  
+  <p style="text-indent: 20px">Nine populations (N = 27-50,000) growing in distinct grassland fragments were surveyed between 2003 and 2006, yielding three (4x4) annual transition matrices for each population. The populations occurred within grassland fragments, and were mostly managed as nature reserves through rotational sheep grazing. These surveys coincided with a summer heat wave (2003), followed by a spring drought (2005) and an even more extreme heat wave (2006). These populations have been subject to detailed study for aspects of their genetics and demography, and further details on the sites can be obtained through the resulting publications [@krauss_landscape_2004; @honnay_low_2006; @piessens_synergistic_2009].</p>
+  
+### BASIC WORKFLOW  
+  
+  <p style="text-indent: 20px">Our goal in this exercise will be to import the published MPMs available for these nine populations of *Anthyllis vulneraria*, and to analyze the demographic differences between populations using deterministic and stochastic life table response experiments (LTRE and sLTRE). We will use the matrices analyzed in @davison_demographic_2010, and attempt to reproduce their results.</p>
+  
+#### Step 1. Life history model development 
+  
+  <p style="text-indent: 20px">We will first describe the life history characterizing the dataset with a `stageframe`. Since we do not have the original demographic dataset that produced the published matrices, we do not need to know the exact sizes of plants and so will use proxy values. These proxy values need to be unique and non-negative, and they need non-overlapping bins usable as size classes defining each stage. However, since we are not analyzing size itself, they do not need any further basis in reality. Other characteristics must be exact and realistic to make sure that the analyses work properly, including all other stage descriptions such as reproductive status, propagule status, and observation status. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5. However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead.</p>
+
+``` r
+sizevector <- c(1, 1, 2, 3) # These sizes are not from the original paper
+stagevector <- c("Sdl", "Veg", "SmFlo", "LFlo")
+repvector <- c(0, 0, 1, 1)
+obsvector <- c(1, 1, 1, 1)
+matvector <- c(0, 1, 1, 1)
+immvector <- c(1, 0, 0, 0)
+propvector <- c(0, 0, 0, 0)
+indataset <- c(1, 1, 1, 1)
+binvec <- c(0.5, 0.5, 0.5, 0.5)
+comments <- c("Seedling", "Vegetative adult", "Small flowering",
+  "Large flowering")
+
+anthframe <- sf_create(sizes = sizevector, stagenames = stagevector,
+  repstatus = repvector, obsstatus = obsvector, matstatus = matvector,
+  immstatus = immvector, indataset = indataset, binhalfwidth = binvec,
+  propstatus = propvector, comments = comments)
+#anthframe
+```
+  
+#### Step 2. Data organization  
+  
+  <p style="text-indent: 20px">Next we will enter the data for this vignette. Our data is in the form of matrices published in @davison_demographic_2010. We will enter these matrices as standard R `matrix` class objects. All matrices are square with 4 columns, and we fill them by row. As an example, let's load the first matrix.</p>
+
+``` r
+XC3 <- matrix(c(0, 0, 1.74, 1.74,     # POPN C 2003-2004
+  0.208333333, 0, 0, 0.057142857,
+  0.041666667, 0.076923077, 0, 0,
+  0.083333333, 0.076923077, 0.066666667, 0.028571429), 4, 4, byrow = TRUE)
+XC3
+#>            [,1]       [,2]       [,3]       [,4]
+#> [1,] 0.00000000 0.00000000 1.74000000 1.74000000
+#> [2,] 0.20833333 0.00000000 0.00000000 0.05714286
+#> [3,] 0.04166667 0.07692308 0.00000000 0.00000000
+#> [4,] 0.08333333 0.07692308 0.06666667 0.02857143
+```
+  
+  <p style="text-indent: 20px">These are `A` matrices, meaning that they include all survival-transitions and fecundity for the population as a whole. The corresponding `U` and `F` matrices were not provided in that paper, although it is most likely that the elements valued at `1.74` in the top-right corner are fecundity elements while the rest of the matrix is composed only of survival transitions. The order of rows and columns corresponds to the order of stages in the stageframe `anthframe`. Let's now input the remaining matrices.</p>
+
+``` r
+XC4 <- matrix(c(0, 0, 0.3, 0.6,     # POPN C 2004-2005
+  0.32183908, 0.142857143, 0, 0,
+  0.16091954, 0.285714286, 0, 0,
+  0.252873563, 0.285714286, 0.5, 0.6), 4, 4, byrow = TRUE)
+XC5 <- matrix(c(0, 0, 0.50625, 0.675,     # POPN C 2005-2006
+  0, 0, 0, 0.035714286,
+  0.1, 0.068965517, 0.0625, 0.107142857,
+  0.3, 0.137931034, 0, 0.071428571), 4, 4, byrow = TRUE)
+
+XE3 <- matrix(c(0, 0, 2.44, 6.569230769,     # POPN E 2003-2004
+  0.196428571, 0, 0, 0,
+  0.125, 0.5, 0, 0,
+  0.160714286, 0.5, 0.133333333, 0.076923077), 4, 4, byrow = TRUE)
+XE4 <- matrix(c(0, 0, 0.45, 0.646153846,     # POPN E 2004-2005
+  0.06557377, 0.090909091, 0.125, 0,
+  0.032786885, 0, 0.125, 0.076923077,
+  0.049180328, 0, 0.125, 0.230769231), 4, 4, byrow = TRUE)
+XE5 <- matrix(c(0, 0, 2.85, 3.99,     # POPN E 2005-2006
+  0.083333333, 0, 0, 0,
+  0, 0, 0, 0,
+  0.416666667, 0.1, 0, 0.1), 4, 4, byrow = TRUE)
+
+XF3 <- matrix(c(0, 0, 1.815, 7.058333333,     # POPN F 2003-2004
+  0.075949367, 0, 0.05, 0.083333333,
+  0.139240506, 0, 0, 0.25,
+  0.075949367, 0, 0, 0.083333333), 4, 4, byrow = TRUE)
+XF4 <- matrix(c(0, 0, 1.233333333, 7.4,     # POPN F 2004-2005
+  0.223880597, 0, 0.111111111, 0.142857143,
+  0.134328358, 0.272727273, 0.166666667, 0.142857143,
+  0.119402985, 0.363636364, 0.055555556, 0.142857143), 4, 4, byrow = TRUE)
+XF5 <- matrix(c(0, 0, 1.06, 3.372727273,     # POPN F 2005-2006
+  0.073170732, 0.025, 0.033333333, 0,
+  0.036585366, 0.15, 0.1, 0.136363636,
+  0.06097561, 0.225, 0.166666667, 0.272727273), 4, 4, byrow = TRUE)
+
+XG3 <- matrix(c(0, 0, 0.245454545, 2.1,     # POPN G 2003-2004
+  0, 0, 0.045454545, 0,
+  0.125, 0, 0.090909091, 0,
+  0.125, 0, 0.090909091, 0.333333333), 4, 4, byrow = TRUE)
+XG4 <- matrix(c(0, 0, 1.1, 1.54,     # POPN G 2004-2005
+  0.111111111, 0, 0, 0,
+  0, 0, 0, 0,
+  0.111111111, 0, 0, 0), 4, 4, byrow = TRUE)
+XG5 <- matrix(c(0, 0, 0, 1.5,     # POPN G 2005-2006
+  0, 0, 0, 0,
+  0.090909091, 0, 0, 0,
+  0.545454545, 0.5, 0, 0.5), 4, 4, byrow = TRUE)
+
+XL3 <- matrix(c(0, 0, 1.785365854, 1.856521739,     # POPN L 2003-2004
+  0.128571429, 0, 0, 0.010869565,
+  0.028571429, 0, 0, 0,
+  0.014285714, 0, 0, 0.02173913), 4, 4, byrow = TRUE)
+XL4 <- matrix(c(0, 0, 14.25, 16.625,     # POPN L 2004-2005
+  0.131443299, 0.057142857, 0, 0.25,
+  0.144329897, 0, 0, 0,
+  0.092783505, 0.2, 0, 0.25), 4, 4, byrow = TRUE)
+XL5 <- matrix(c(0, 0, 0.594642857, 1.765909091,     # POPN L 2005-2006
+  0, 0, 0.017857143, 0,
+  0.021052632, 0.018518519, 0.035714286, 0.045454545,
+  0.021052632, 0.018518519, 0.035714286, 0.068181818), 4, 4, byrow = TRUE)
+
+XO3 <- matrix(c(0, 0, 11.5, 2.775862069,     # POPN O 2003-2004
+  0.6, 0.285714286, 0.333333333, 0.24137931,
+  0.04, 0.142857143, 0, 0,
+  0.16, 0.285714286, 0, 0.172413793), 4, 4, byrow = TRUE)
+XO4 <- matrix(c(0, 0, 3.78, 1.225,     # POPN O 2004-2005
+  0.28358209, 0.171052632, 0, 0.166666667,
+  0.084577114, 0.026315789, 0, 0.055555556,
+  0.139303483, 0.447368421, 0, 0.305555556), 4, 4, byrow = TRUE)
+XO5 <- matrix(c(0, 0, 1.542857143, 1.035616438,     # POPN O 2005-2006
+  0.126984127, 0.105263158, 0.047619048, 0.054794521,
+  0.095238095, 0.157894737, 0.19047619, 0.082191781,
+  0.111111111, 0.223684211, 0, 0.356164384), 4, 4, byrow = TRUE)
+
+XQ3 <- matrix(c(0, 0, 0.15, 0.175,     # POPN Q 2003-2004
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  1, 0, 0, 0), 4, 4, byrow = TRUE)
+XQ4 <- matrix(c(0, 0, 0, 0.25,     # POPN Q 2004-2005
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  1, 0.666666667, 0, 1), 4, 4, byrow = TRUE)
+XQ5 <- matrix(c(0, 0, 0, 1.428571429,     # POPN Q 2005-2006
+  0, 0, 0, 0.142857143,
+  0.25, 0, 0, 0,
+  0.25, 0, 0, 0.571428571), 4, 4, byrow = TRUE)
+
+XR3 <- matrix(c(0, 0, 0.7, 0.6125,     # POPN R 2003-2004
+  0.25, 0, 0, 0.125,
+  0, 0, 0, 0,
+  0.25, 0.166666667, 0, 0.25), 4, 4, byrow = TRUE)
+XR4 <- matrix(c(0, 0, 0, 0.6,     # POPN R 2004-2005
+  0.285714286, 0, 0, 0,
+  0.285714286, 0.333333333, 0, 0,
+  0.285714286, 0.333333333, 0, 1), 4, 4, byrow = TRUE)
+XR5 <- matrix(c(0, 0, 0.7, 0.6125,     # POPN R 2005-2006
+  0, 0, 0, 0,
+  0, 0, 0, 0,
+  0.333333333, 0, 0.333333333, 0.625), 4, 4, byrow = TRUE)
+
+XS3 <- matrix(c(0, 0, 2.1, 0.816666667,     # POPN S 2003-2004
+  0.166666667, 0, 0, 0,
+  0, 0, 0, 0,
+  0, 0, 0, 0.166666667), 4, 4, byrow = TRUE)
+XS4 <- matrix(c(0, 0, 0, 7,     # POPN S 2004-2005
+  0.333333333, 0.5, 0, 0,
+  0, 0, 0, 0,
+  0.333333333, 0, 0, 1), 4, 4, byrow = TRUE)
+XS5 <- matrix(c(0, 0, 0, 1.4,     # POPN S 2005-2006
+  0, 0, 0, 0,
+  0, 0, 0, 0.2,
+  0.111111111, 0.75, 0, 0.2), 4, 4, byrow = TRUE)
+```
+  
+  <p style="text-indent: 20px">We will incorporate all of these matrices into a `lefkoMat` object. To do so, we will first organize the matrices in the proper order within a list. Then, we will create the `lefkoMat` object to hold these matrices by calling function `create_lM()` with the list object we created. We will also include metadata describing the order of populations (here treated as patches), and the order of monitoring occasions.</p>
+
+``` r
+mats_list <- list(XC3, XC4, XC5, XE3, XE4, XE5, XF3, XF4, XF5, XG3, XG4, XG5,
+  XL3, XL4, XL5, XO3, XO4, XO5, XQ3, XQ4, XQ5, XR3, XR4, XR5, XS3, XS4, XS5)
+
+anth_lefkoMat <- create_lM(mats_list, anthframe, hstages = NA,
+  historical = FALSE, poporder = 1,
+  patchorder = c(1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7,
+    8, 8, 8, 9, 9, 9),
+  yearorder = c(2003, 2004, 2005, 2003, 2004, 2005, 2003, 2004, 2005, 2003,
+    2004, 2005, 2003, 2004, 2005, 2003, 2004, 2005, 2003, 2004, 2005, 2003,
+    2004, 2005, 2003, 2004, 2005))
+#> Warning: No supplement provided. Assuming fecundity yields all propagule and immature stages.
+#anth_lefkoMat
+```
+  
+  <p style="text-indent: 20px">The resulting object has all of the elements of a standard `lefkoMat` object except for those elements related to quality control in the demographic dataset and linear modeling. The option `UFdecomp` was left at its default (`UFdecomp = TRUE`), so `create_lM()` used the stageframe to infer where fecundity values should be located and created `U` and `F` matrices accordingly. The default option for `historical` is set to `FALSE`, yielding an `NA` in place of the `hstages` element, which would typically list the order of historical stage pairs.</p>
+
+``` r
+#summary(anth_lefkoMat)
+```
+  
+  <p style="text-indent: 20px">The summary of this new `lefkoMat` object shows us that we have 27 matrices with 4 rows and columns each. The estimated numbers of transitions corresponds to the non-zero entries in each matrix. We see that we are covering 1 population, 9 patches, and 3 time steps. All of the survival probabilities observed fell within the bounds of 0 to 1, so everything seems alright.</p>
+  
+#### Step 3. MPM analysis 
+  
+  <p style="text-indent: 20px">Let's develop arithmetic mean matrices and assess the deterministic and stochastic population growth rates, $\lambda$ and $a$.</p>
+
+``` r
+anth_lmean <- lmean(anth_lefkoMat)
+
+lambda2 <- lambda3(anth_lefkoMat)
+lambda2m <- lambda3(anth_lmean)
+set.seed(42)
+sl2 <- slambda3(anth_lefkoMat) #Stochastic growth rate
+sl2$expa <- exp(sl2$a)
+
+plot(lambda ~ year2, data = subset(lambda2, patch == 1), ylim = c(0, 2.5),xlab = "Year",
+  ylab = expression(lambda), type = "l", col = "gray", lty= 2, lwd = 2, bty = "n")
+lines(lambda ~ year2, data = subset(lambda2, patch == 2), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 3), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 4), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 5), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 6), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 7), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 8), col = "gray", lty= 2, lwd = 2)
+lines(lambda ~ year2, data = subset(lambda2, patch == 9), col = "gray", lty= 2, lwd = 2)
+abline(a = lambda2m$lambda[1], b = 0, lty = 1, lwd = 4, col = "orangered")
+abline(a = sl2$expa[1], b = 0, lty = 1, lwd = 4, col = "darkred")
+legend("topleft", c("det annual", "det mean", "stochastic"), lty = c(2, 1, 1),
+  col = c("gray", "orangered", "darkred"), lwd = c(2, 4, 4), bty = "n")
+```
+
+![Figure 9.2. Deterministic vs. stochastic lambda](Ch9.6-1.png)
+  
+  <p style="text-indent: 20px">These populations exhibit highly variable growth across the short field study during which they were monitored. They also appear to be declining, as shown by $\lambda$ for the overall mean matrix, and $e$ to the power of the stochastic growth rate $a = \text{log} \lambda$.</p>
+  
+  <p style="text-indent: 20px">Let's conduct a life table response experiment (LTRE) next. This will be a deterministic LTRE, meaning that we will assess the impacts of differences in matrix elements between the core matrices input via the `lefkoMat` object `anth_lefkoMat` and the overall arithmetic grand mean matrix on differences in the deterministic growth rate, $\lambda$. We could use a different reference matrix if we wished, but the default is to use the arithmetic grand mean. Here, because we cannot analyze temporal shifts using a deterministic LTRE, we will utilize the mean matrix set instead.</p>
+
+``` r
+trialltre_det <- ltre3(anth_lmean, sparse = "auto")
+#> Warning: Matrices input as mats will also be used in reference matrix calculation.
+#> Using all refmats matrices in reference matrix calculation.
+#trialltre_det
+```
+  
+  <p style="text-indent: 20px">The resulting `lefkoLTRE` object gives the LTRE contributions for each matrix relative to the arithmetic grand mean matrix. While the differences in LTRE contributions across space are of interest, we cannot infer differences across time this way because matrices are not related additively across time. To assess the contributions across space while accounting for temporal shifts, we should conduct a stochastic LTRE (sLTRE) or small-noise approximation LTRE (SNA-LTRE) on the original annual matrices. Here, conduct a sLTRE.</p>
+
+``` r
+trialltre_sto <- ltre3(anth_lefkoMat, stochastic = TRUE, times = 10000,
+  tweights = NA, sparse = "auto", seed = 42)
+#> Warning: Matrices input as mats will also be used in reference matrix calculation.
+#> Using all refmats matrices in reference matrix calculation.
+#trialltre_sto
+```
+  
+  <p style="text-indent: 20px">The sLTRE produces output that is a bit different from the deterministic LTRE output. In the output, we see two lists of matrices prior to the MPM metadata. The first, `cont_mean`, is a list of matrices showing the contributions of differences in mean elements between the patch-level temporal mean matrices and the reference temporal mean matrix. The second, `cont_sd`, is a list of matrices showing the contributions of differences in the temporal standard deviation of each element between the patch-level and reference matrix sets. In other words, while a standard LTRE shows the impact of changes in matrix elements on $\lambda$, the sLTRE shows the impacts of changes in the temporal mean and variability of matrix elements on $\text{log} \lambda$. The `labels` element shows the order of matrices with reference to the populations or patches (remember that here, the populations are referred to as patches).</p>
+  
+  <p style="text-indent: 20px">The output objects are large and can take a great deal of effort to look over and understand. Therefore, we will show three approaches to assessing these objects, using an approach similar to that used to assess elasticities. These methods can be used to assess patterns in all 9 populations, but for brevity we will focus only on the first population here. First, we will identify the elements most strongly impacting the population growth rate in each case.</p>
+
+``` r
+# Highest (i.e most positive) deterministic LTRE contribution:
+max(trialltre_det$cont_mean[[1]])
+#> [1] 0.02099388
+# Highest deterministic LTRE contribution is associated with element:
+which(trialltre_det$cont_mean[[1]] == max(trialltre_det$cont_mean[[1]]))
+#> [1] 3
+# Lowest (i.e. most negative) deterministic LTRE contribution:
+min(trialltre_det$cont_mean[[1]])
+#> [1] -0.2786045
+# Lowest deterministic LTRE contribution is associated with element:
+which(trialltre_det$cont_mean[[1]] == min(trialltre_det$cont_mean[[1]]))
+#> [1] 13
+
+# Highest stochastic mean LTRE contribution:
+max(trialltre_sto$cont_mean[[1]])
+#> [1] 0.01788772
+# Highest stochastic mean LTRE contribution is associated with element:
+which(trialltre_sto$cont_mean[[1]] == max(trialltre_sto$cont_mean[[1]]))
+#> [1] 3
+# Lowest stochastic mean LTRE contribution:
+min(trialltre_sto$cont_mean[[1]])
+#> [1] -0.3700463
+# Lowest stochastic mean LTRE contribution is associated with element:
+which(trialltre_sto$cont_mean[[1]] == min(trialltre_sto$cont_mean[[1]]))
+#> [1] 13
+
+# Highest stochastic SD LTRE contribution:
+max(trialltre_sto$cont_sd[[1]])
+#> [1] 0.00952507
+# Highest stochastic SD LTRE contribution is associated with element:
+which(trialltre_sto$cont_sd[[1]] == max(trialltre_sto$cont_sd[[1]]))
+#> [1] 13
+# Lowest stochastic SD LTRE contribution:
+min(trialltre_sto$cont_sd[[1]])
+#> [1] -0.01135741
+# Lowest stochastic SD LTRE contribution is associated with element:
+which(trialltre_sto$cont_sd[[1]] == min(trialltre_sto$cont_sd[[1]]))
+#> [1] 16
+
+# Total positive deterministic LTRE contributions:
+sum(trialltre_det$cont_mean[[1]][which(trialltre_det$cont_mean[[1]] > 0)])
+#> [1] 0.06338566
+# Total negative deterministic LTRE contributions:
+sum(trialltre_det$cont_mean[[1]][which(trialltre_det$cont_mean[[1]] < 0)])
+#> [1] -0.4079573
+# Total positive stochastic mean LTRE contributions:
+sum(trialltre_sto$cont_mean[[1]][which(trialltre_sto$cont_mean[[1]] > 0)])
+#> [1] 0.04459663
+# Total negative stochastic mean LTRE contributions:
+sum(trialltre_sto$cont_mean[[1]][which(trialltre_sto$cont_mean[[1]] < 0)])
+#> [1] -0.5085542
+# Total positive stochastic SD LTRE contributions:
+sum(trialltre_sto$cont_sd[[1]][which(trialltre_sto$cont_sd[[1]] > 0)])
+#> [1] 0.01026457
+# Total negative stochastic SD LTRE contributions:
+sum(trialltre_sto$cont_sd[[1]][which(trialltre_sto$cont_sd[[1]] < 0)])
+#> [1] -0.02232758
+```
+  
+The output for the deterministic LTRE shows that element 13, which is the fecundity transition from large flowering adult to seedling (column 4, row 1), has the strongest influence. This contribution is negative, so it reduces $\lambda$. The most positive contribution to $\lambda$ is from element 3, which is the growth transition from seedling to small flowering adult (column 1, row 3). We also see the sLTRE produced the same results in contributions of shifts in the mean as the deterministic LTRE. Variability in elements also contributes to shifts in $\text{log} \lambda$, though less so than shifts in mean elements. The strongest positive contribution is from variation in the fecundity transition from large flowering adult to seedling (element 13, column 4, row 1), while the most negative contribution is from stasis as a large flowering adult (element 16, row and column 4). A comparison of summed LTRE elements shows that negative contributions of mean elements were most influential in the stochastic case, while variability of elements had little overall influence.
+  
+  <p style="text-indent: 20px">Second, we will identify which stages exerted the strongest impact on the population growth rate.</p>
+
+``` r
+ltre_pos <- trialltre_det$cont_mean[[1]]
+ltre_neg <- trialltre_det$cont_mean[[1]]
+ltre_pos[which(ltre_pos < 0)] <- 0
+ltre_neg[which(ltre_neg > 0)] <- 0
+
+sltre_meanpos <- trialltre_sto$cont_mean[[1]]
+sltre_meanneg <- trialltre_sto$cont_mean[[1]]
+sltre_meanpos[which(sltre_meanpos < 0)] <- 0
+sltre_meanneg[which(sltre_meanneg > 0)] <- 0
+
+sltre_sdpos <- trialltre_sto$cont_sd[[1]]
+sltre_sdneg <- trialltre_sto$cont_sd[[1]]
+sltre_sdpos[which(sltre_sdpos < 0)] <- 0
+sltre_sdneg[which(sltre_sdneg > 0)] <- 0
+
+ltresums_pos <- cbind(colSums(ltre_pos), colSums(sltre_meanpos), colSums(sltre_sdpos))
+ltresums_neg <- cbind(colSums(ltre_neg), colSums(sltre_meanneg), colSums(sltre_sdneg))
+
+ltre_as_names <- trialltre_det$ahstages$stage
+
+barplot(t(ltresums_pos), beside = T, col = c("black", "grey", "red"),
+  ylim = c(-0.50, 0.10))
+barplot(t(ltresums_neg), beside = T, col = c("black", "grey", "red"), add = TRUE)
+abline(0, 0, lty= 3)
+text(cex=1, y = -0.57, x = seq(from = 2, to = 3.98*length(ltre_as_names),
+    by = 4), ltre_as_names, xpd=TRUE, srt=45)
+legend("bottomleft", c("deterministic", "stochastic mean", "stochastic SD"),
+  col = c("black", "grey", "red"), pch = 15, bty = "n")
+```
+
+![Figure 9.3. LTRE contributions by stage](Ch9.10-1.png)
+  
+The plot shows that large flowering adults exerted the strongest influence on both $\lambda$ and $\text{log} \lambda$, with the latter influence being through the impact of shifts in the mean. This impact is overwhelmingly negative. The next largest impact comes from small flowering adults, in both cases the influence being negative on the whole.
+  
+  <p style="text-indent: 20px">Finally, we will assess what transition types exert the greatest impact on population growth rate.</p>
+
+``` r
+det_ltre_summary <- summary(trialltre_det)
+sto_ltre_summary <- summary(trialltre_sto)
+
+ltresums_tpos <- cbind(det_ltre_summary$ahist_mean$matrix1_pos,
+  sto_ltre_summary$ahist_mean$matrix1_pos,
+  sto_ltre_summary$ahist_sd$matrix1_pos)
+ltresums_tneg <- cbind(det_ltre_summary$ahist_mean$matrix1_neg,
+  sto_ltre_summary$ahist_mean$matrix1_neg,
+  sto_ltre_summary$ahist_sd$matrix1_neg)
+
+barplot(t(ltresums_tpos), beside = T, col = c("black", "grey", "red"),
+  ylim = c(-0.55, 0.10))
+barplot(t(ltresums_tneg), beside = T, col = c("black", "grey", "red"),
+  add = TRUE)
+abline(0, 0, lty = 3)
+text(cex=0.85, y = -0.64, x = seq(from = 2,
+    to = 3.98*length(det_ltre_summary$ahist_mean$category), by = 4),
+    det_ltre_summary$ahist_mean$category, xpd=TRUE, srt=45)
+legend("bottomleft", c("deterministic", "stochastic mean", "stochastic SD"),
+  col = c("black", "grey", "red"), pch = 15, bty = "n")
+```
+
+![Figure 9.4. LTRE contributions by transition type](Ch9.11-1.png)
+  
+The overall greatest impact on the population growth rate is from fecundity, and these contributions are overwhelmingly negative. Clearly temporal variation has strong effects here that deserve to be assessed properly.
+  
+  <p style="text-indent: 20px">LTREs and sLTREs are powerful tools, and more complex versions of both analyses exist. Please consult @caswell_matrix_2001 and @davison_contributions_2013 for more information. Also see @davison_contributions_2013 for information on the small noise approximation LTRE, which is also possible in `lefko3`. Package `lefko3` also includes functions to conduct complex analyses, including two general projection functions that can be used for analyses such as quasi-extinction analysis as well as for density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called ***lefko3: a gentle introduction*** and other vignettes, including long-format and video vignettes, on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website.
+
+## Literature cited
+
+<div id="refs"></div>
