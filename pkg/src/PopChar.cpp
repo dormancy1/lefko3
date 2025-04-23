@@ -7082,11 +7082,11 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
     }
   }
   
-  LefkoUtils::numeric_vectorizer(givenrate_, givenrate, "givenrate",
+  LefkoInputs::numeric_vectorizer(givenrate_, givenrate, "givenrate",
     stage2_length, age2_length, false, 0.);
-  LefkoUtils::numeric_vectorizer(offset_, offset, "offset", stage2_length,
+  LefkoInputs::numeric_vectorizer(offset_, offset, "offset", stage2_length,
     age2_length, false, 0.);
-  LefkoUtils::numeric_vectorizer(multiplier_, multiplier, "multiplier",
+  LefkoInputs::numeric_vectorizer(multiplier_, multiplier, "multiplier",
     stage2_length, age2_length, true, 1.);
   
   IntegerVector type_int_limits = {1, 2, 3};
@@ -7094,9 +7094,9 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
   IntegerVector type12_int_limits = {1, 2};
   CharacterVector type12_char_limits = {"S", "F"};
   
-  LefkoUtils::integer_char_vectorizer (type_, type, "type", stage2_length, age2_length,
+  LefkoInputs::integer_char_vectorizer (type_, type, "type", stage2_length, age2_length,
     type_int_limits, type_char_limits, true, 1);
-  LefkoUtils::integer_char_vectorizer (type_t12_, type_t12, "type_t12", stage2_length,
+  LefkoInputs::integer_char_vectorizer (type_t12_, type_t12, "type_t12", stage2_length,
     age2_length, type12_int_limits, type12_char_limits, true, 1);
   
   if (wtf < 3 && type_length != 0  && type_length != stage2_length) { 

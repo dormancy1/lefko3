@@ -4398,7 +4398,7 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
   bool sparse_bool = false;
   
   if (sparse.isNotNull()) {
-    yesnoauto_to_logic(as<RObject>(sparse), "sparse", sparse_bool, sparse_auto);
+    LefkoInputs::yesnoauto_to_logic(as<RObject>(sparse), "sparse", sparse_bool, sparse_auto);
     if (sparse_bool) sparse_switch = 1;
   }
   
@@ -15174,7 +15174,7 @@ Rcpp::List projection3(const List& mpm, int nreps = 1, int times = 10000,
   arma::mat projection;
   
   if (sparse.isNotNull()) {
-    yesnoauto_to_logic(as<RObject>(sparse), "sparse", sparse_bool, sparse_auto);
+    LefkoInputs::yesnoauto_to_logic(as<RObject>(sparse), "sparse", sparse_bool, sparse_auto);
     if (sparse_bool) sparse_switch = 1;
   }
   
@@ -16287,7 +16287,7 @@ DataFrame slambda3(const List& mpm, int times = 10000, bool historical = false,
   if (theclairvoyant < 1) pop_error("times", "a positive integer", "", 1);
   
   if (force_sparse.isNotNull()) {
-    yesnoauto_to_logic(as<RObject>(force_sparse), "force_sparse", sparse_bool,
+    LefkoInputs::yesnoauto_to_logic(as<RObject>(force_sparse), "force_sparse", sparse_bool,
       sparse_auto);
     if (sparse_bool) sparse_switch = 1;
   }

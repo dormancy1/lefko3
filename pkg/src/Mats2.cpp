@@ -2378,7 +2378,7 @@ List cycle_check(RObject mpm, Nullable<RObject> quiet = R_NilValue) {
   
   if (quiet.isNotNull()) {
     if (is<RObject>(quiet)) {
-      quiet_bool = yesno_to_logic(as<RObject>(quiet), "quiet");
+      quiet_bool = LefkoInputs::yesno_to_logic(as<RObject>(quiet), "quiet");
     }
   }
   

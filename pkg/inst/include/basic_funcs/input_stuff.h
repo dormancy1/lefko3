@@ -8,9 +8,14 @@ using namespace arma;
 
 
 // Function index:
-// 1. bool stringcompare_simple  Compares Two Strings, Assessing Inclusion
+// 1. bool stringcompare_input  Compares Two Strings, Assessing Inclusion
 // 2. void RObj_TF_input_check  Take Generic RObject and Determine Value of 2 Boolean Variables With It
 // 3. void RObj_DFr_input_check  Take Generic RObject and Extract a Data Frame, with Boolean Response
+// 4. bool yesno_to_logic  Take Yes / No and Other Input to Yield a Boolean Value
+// 5. void yesnoauto_to_logic  Take Yes / No and Other Input to Yield a Boolean Value
+// 6. void integer_vectorizer  Create Standardized IntegerVectors Based on Non-Standard Input
+// 7. void numeric_vectorizer  Create Standardized NumericVectors Based on Non-Standard Input
+// 8. void integer_char_vectorizer  Create Standardized IntegerVectors Based on Non-Standard Integer and String Input
 
 
 
@@ -305,5 +310,602 @@ namespace LefkoInputs {
     }
   }
   
+  //' Take Yes / No and Other Input to Yield a Boolean Value
+  //' 
+  //' Function \code{yesno_to_logic()} takes a variety of inputs and interprets
+  //' them, creating a Boolean response.
+  //' 
+  //' @name yesno_to_logic
+  //' 
+  //' @param input RObject to be interpreted.
+  //' @param arg_name Name of argument that is being tested.
+  //' 
+  //' @return Returns a simple Boolean value, or produces an error for
+  //' unintelligible input.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline bool yesno_to_logic (RObject input, String arg_name) {
+    bool final_result = false;
+    
+    if (is<StringVector>(input)) {
+      StringVector yesbits = {"y", "yes", "yea", "yeah", "t", "true", "ja", "tak"};
+      StringVector nobits = {"n", "no", "non", "nah", "f", "false", "nein", "nie"};
+      
+      StringVector input_check_vec = as<StringVector>(input);
+      String input_check = String(input_check_vec(0));
+      
+      int yes_check {0};
+      int no_check {0};
+      
+      for (int i = 0; i < 8; i++) {
+        if (stringcompare_input(input_check, String(yesbits(i)), true)) yes_check++;
+        if (stringcompare_input(input_check, String(nobits(i)), true)) no_check++;
+      }
+      
+      if (yes_check > 0) {
+        final_result = true;
+      } else if (no_check > 0) {
+        final_result = false;
+      } else {
+        String err_out = "Argument ";
+        err_out += arg_name;
+        err_out += " is invalid.";
+        
+        throw Rcpp::exception(err_out.get_cstring(), false);
+      }
+    } else if (is<LogicalVector>(input)) {
+        LogicalVector input_check_vec = as<LogicalVector>(input);
+        final_result = static_cast<bool>(input_check_vec(0));
+    } else if (is<NumericVector>(input)) {
+        IntegerVector input_check_vec = as<IntegerVector>(input);
+        int input_first = static_cast<int>(input_check_vec(0));
+        
+        if (input_first == 1) final_result = true;
+    } else {
+      String err_out = "Argument ";
+      err_out += arg_name;
+      err_out += " is invalid.";
+      
+      throw Rcpp::exception(err_out.get_cstring(), false);
+    }
+    
+    return final_result;
+  }
+  
+  //' Take Yes / No and Other Input to Yield a Boolean Value
+  //' 
+  //' Function \code{yesnoauto_to_logic()} takes a variety of inputs and
+  //' interprets them, altering two Boolean responses that are input as
+  //' arguments.
+  //' 
+  //' @name yesnoauto_to_logic
+  //' 
+  //' @param input RObject to be interpreted.
+  //' @param arg_name Name of the function argument being tested.
+  //' @param yesno_only A Boolean variable holding the yes / no value.
+  //' @param auto_only A Boolean variable holding whether "auto" was chosen.
+  //' 
+  //' @return Alters two Boolean variables on memory based on the input.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline void yesnoauto_to_logic (RObject input, String arg_name,
+    bool &yesno_only, bool &auto_only) {
+    
+    bool yesno_result = false;
+    bool auto_result = false;
+    
+    if (is<StringVector>(input)) {
+      StringVector yesbits = {"y", "yes", "yea", "yeah", "t", "true", "ja", "tak"};
+      StringVector nobits = {"n", "no", "non", "nah", "f", "false", "nein", "nie"};
+      StringVector autobits = {"au", "aut", "auto", "both", "jidou"};
+      
+      StringVector input_check_vec = as<StringVector>(input);
+      String input_check = String(input_check_vec(0));
+      
+      int auto_check {0};
+      int yes_check {0};
+      int no_check {0};
+      
+      for (int i = 0; i < 8; i++) {
+        if (i < 5) {
+          if (stringcompare_input(input_check, String(autobits(i)), true)) auto_check++;
+        }
+        if (stringcompare_input(input_check, String(yesbits(i)), true)) yes_check++;
+        if (stringcompare_input(input_check, String(nobits(i)), true)) no_check++;
+      }
+      
+      if (auto_check > 0) { 
+        auto_result = true;
+      } else if (yes_check > 0) {
+        yesno_result = true;
+      } else if (no_check > 0) {
+        yesno_result = false;
+      } else {
+        String err_out = "Argument ";
+        err_out += arg_name;
+        err_out += " is invalid.";
+        
+        throw Rcpp::exception(err_out.get_cstring(), false);
+      }
+    } else if (is<LogicalVector>(input)) {
+        LogicalVector input_check_vec = as<LogicalVector>(input);
+        yesno_result = static_cast<bool>(input_check_vec(0));
+    } else if (is<NumericVector>(input)) {
+        IntegerVector input_check_vec = as<IntegerVector>(input);
+        int input_first = static_cast<int>(input_check_vec(0));
+        
+        if (input_first == 1) yesno_result = true;
+    } else {
+      String err_out = "Argument ";
+      err_out += arg_name;
+      err_out += " is invalid.";
+      
+      throw Rcpp::exception(err_out.get_cstring(), false);
+    }
+    
+    yesno_only = yesno_result;
+    auto_only = auto_result;
+  }
+  
+  //' Create Standardized IntegerVectors Based on Non-Standard Input
+  //' 
+  //' @name integer_vectorizer
+  //' 
+  //' @param output The output reference, passed by reference.
+  //' @param input The input vector, treated as an \code{RObject}.
+  //' @param argument_name The name of the argument used as \code{input}, given as
+  //' a String.
+  //' @param stage_length An integer giving the length of the \code{stage2}
+  //' vector.
+  //' @param age_length An integer giving the length of the \code{age2} vector.
+  //' @param min_limit The smallest integer to allow, if using limits.
+  //' @param max_limit The largest integer to allow, if using limits.
+  //' @param use_limits A Boolean variable indicating whether to limit allowable
+  //' values.
+  //' @param NAasOther A Boolean value indicating whether to treat \code{NA}
+  //' values as the value specified in \code{change_value}.
+  //' @param change_value The integer to set \code{NA} values to if
+  //' \code{NAasOther = TRUE}.
+  //' 
+  //' @return This function modifies an input vector by reference, given as
+  //' argument \code{output}. No real output is returned.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline void integer_vectorizer (IntegerVector& output, Nullable<RObject> input,
+    String argument_name, int stage_length, int age_length, int min_limit,
+    int max_limit, bool use_limits = false, bool NAasOther = false,
+    int change_value = 0) {
+    
+    IntegerVector input_;
+    int input_length {0};
+    
+    if (input.isNotNull()) {
+      if (is<IntegerVector>(input)) {
+        input_ = as<IntegerVector>(input);
+        
+        input_length = static_cast<int>(input_.length());
+        
+        if (NAasOther) {
+          unsigned int na_count {0};
+          for (int i = 0; i < input_length; i++) { 
+            if (IntegerVector::is_na(input_(i))) {
+              input_(i) = change_value;
+              na_count++;
+            }
+            if (na_count == 1) {
+              String eat_my_shorts = "NA values in argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " will be treated as ";
+              eat_my_shorts += change_value;
+              eat_my_shorts += " values.";
+              
+              Rf_warningcall(R_NilValue, "%s", eat_my_shorts.get_cstring());
+            }
+          }
+        }
+        
+        if (use_limits) {
+          for (int i = 0; i < input_length; i++) { 
+            if (!IntegerVector::is_na(input_(i))) {
+              if (input_(i) < min_limit || input_(i) > max_limit) {
+                String eat_my_shorts = "Argument ";
+                eat_my_shorts += argument_name;
+                eat_my_shorts += " must be an integer between ";
+                eat_my_shorts += min_limit;
+                eat_my_shorts += " and ";
+                eat_my_shorts += max_limit;
+                eat_my_shorts += ".";
+                
+                throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+              }
+            }
+          }
+        }
+        
+        if (input_length != stage_length && input_length != age_length) {
+          String eat_my_shorts = "Argument ";
+          eat_my_shorts += argument_name;
+          eat_my_shorts += " must be the same length as vector stage2 or age2.";
+          
+          throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+        }
+      } else if (is<NumericVector>(input)) {
+        input_ = as<IntegerVector>(input);
+        
+        input_length = static_cast<int>(input_.length());
+        
+        if (NAasOther) {
+          unsigned int na_count {0};
+          for (int i = 0; i < input_length; i++) { 
+            if (NumericVector::is_na(input_(i)) || IntegerVector::is_na(input_(i))) {
+              input_(i) = change_value;
+              na_count++;
+            }
+            if (na_count == 1) {
+              String eat_my_shorts = "NA values in argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " will be treated as ";
+              eat_my_shorts += change_value;
+              eat_my_shorts += " values.";
+              
+              Rf_warningcall(R_NilValue, "%s", eat_my_shorts.get_cstring());
+            }
+          }
+        }
+        
+        if (use_limits) {
+          for (int i = 0; i < input_length; i++) { 
+            if (!IntegerVector::is_na(input_(i)) && !NumericVector::is_na(input_(i))) {
+              if (input_(i) < min_limit || input_(i) > max_limit) {
+                String eat_my_shorts = "Argument ";
+                eat_my_shorts += argument_name;
+                eat_my_shorts += " must be an integer between ";
+                eat_my_shorts += min_limit;
+                eat_my_shorts += " and ";
+                eat_my_shorts += max_limit;
+                eat_my_shorts += ".";
+                
+                throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+              }
+            }
+          }
+        }
+        
+        if (input_length != stage_length && input_length != age_length) {
+          String eat_my_shorts = "Argument ";
+          eat_my_shorts += argument_name;
+          eat_my_shorts += " must be the same length as vector stage2 or age2.";
+          
+          throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+        }
+      } else if (is<LogicalVector>(input)) {
+          if (age_length != 0) {
+            if (NAasOther) {
+              IntegerVector input_temp (age_length, change_value);
+              input_ = input_temp;
+            } else {
+              IntegerVector input_temp (age_length, NA_INTEGER);
+              input_ = input_temp;
+            }
+          } else if (stage_length != 0) {
+            if (NAasOther) {
+              IntegerVector input_temp (stage_length, change_value);
+              input_ = input_temp;
+            } else {
+              IntegerVector input_temp (stage_length, NA_INTEGER);
+              input_ = input_temp;
+            }
+          }
+      } else {
+        String eat_my_shorts = "Please enter argument ";
+        eat_my_shorts += argument_name;
+        eat_my_shorts += " in integer format.";
+        
+        throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+      }
+    } else {
+      if (NAasOther) {
+        if (age_length != 0) {
+          IntegerVector input_temp (age_length, change_value);
+          input_ = input_temp;
+        } else if (stage_length != 0) {
+          IntegerVector input_temp (stage_length, change_value);
+          input_ = input_temp;
+        }
+      } else {
+        if (age_length != 0) {
+          IntegerVector input_temp (age_length, NA_INTEGER);
+          input_ = input_temp;
+        } else if (stage_length != 0) {
+          IntegerVector input_temp (stage_length, NA_INTEGER);
+          input_ = input_temp;
+        }
+      }
+    }
+    output = input_;
+  }
+  
+  //' Create Standardized NumericVectors Based on Non-Standard Input
+  //' 
+  //' @name numeric_vectorizer
+  //' 
+  //' @param output The output reference, passed by reference.
+  //' @param input The input vector, treated as an \code{RObject}.
+  //' @param argument_name The name of the argument used as \code{input}, given as
+  //' a String.
+  //' @param stage_length An integer giving the length of the \code{stage2}
+  //' vector.
+  //' @param age_length An integer giving the length of the \code{age2} vector.
+  //' @param NAasOther A Boolean value indicating whether to treat \code{NA}
+  //' values as value given in \code{change_value}.
+  //' @param change_value The numeric value to change \code{NA}s to, if
+  //' \code{NAasOther = TRUE}.
+  //' 
+  //' @return This function modifies an input vector by reference, given as
+  //' argument \code{output}. No real output is returned.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline void numeric_vectorizer (NumericVector& output, Nullable<RObject> input,
+    String argument_name, int stage_length, int age_length,
+    bool NAasOther = false, double change_value = 0) {
+    
+    NumericVector input_;
+    int input_length {0};
+    
+    if (input.isNotNull()) {
+      if (is<NumericVector>(input)) {
+        input_ = as<NumericVector>(input);
+        
+        input_length = static_cast<int>(input_.length());
+        
+        if (NAasOther) {
+          unsigned int na_count {0};
+          for (int i = 0; i < input_length; i++) { 
+            if (NumericVector::is_na(input_(i))) {
+              input_(i) = change_value;
+              na_count++;
+            }
+            if (na_count == 1) {
+              String eat_my_shorts = "NA values in argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " will be treated as ";
+              eat_my_shorts += change_value;
+              eat_my_shorts += " values.";
+              
+              Rf_warningcall(R_NilValue, "%s", eat_my_shorts.get_cstring());
+            }
+          }
+        }
+        
+        if (input_length != stage_length && input_length != age_length) {
+          String eat_my_shorts = "Argument ";
+          eat_my_shorts += argument_name;
+          eat_my_shorts += " must be the same length as vector stage2 or age2.";
+          
+          throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+        }
+      } else if (is<LogicalVector>(input)) {
+          if (age_length != 0) {
+            if (NAasOther) {
+              NumericVector input_temp (age_length, change_value);
+              input_ = input_temp;
+            } else {
+              NumericVector input_temp (age_length, NA_REAL);
+              input_ = input_temp;
+            }
+          } else if (stage_length != 0) {
+            if (NAasOther) {
+              NumericVector input_temp (stage_length, change_value);
+              input_ = input_temp;
+            } else {
+              NumericVector input_temp (stage_length, NA_REAL);
+              input_ = input_temp;
+            }
+          }
+      } else {
+        String eat_my_shorts = "Please enter argument ";
+        eat_my_shorts += argument_name;
+        eat_my_shorts += " in numeric format.";
+        
+        throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+      }
+    } else {
+      if (NAasOther) {
+        if (age_length != 0) {
+          NumericVector input_temp (age_length, change_value);
+          input_ = input_temp;
+        } else if (stage_length != 0) {
+          NumericVector input_temp (stage_length, change_value);
+          input_ = input_temp;
+        }
+      } else {
+        if (age_length != 0) {
+          NumericVector input_temp (age_length, NA_REAL);
+          input_ = input_temp;
+        } else if (stage_length != 0) {
+          NumericVector input_temp (stage_length, NA_REAL);
+          input_ = input_temp;
+        }
+      }
+    }
+    output = input_;
+  }
+  
+  //' Create Standardized IntegerVectors Based on Non-Standard Integer and String Input
+  //' 
+  //' @name integer_char_vectorizer
+  //' 
+  //' @param output The output reference, passed by reference.
+  //' @param input The input vector, treated as an \code{RObject}.
+  //' @param argument_name The name of the argument used as \code{input}, given as
+  //' a String.
+  //' @param stage_length An integer giving the length of the \code{stage2}
+  //' vector.
+  //' @param age_length An integer giving the length of the \code{age2} vector.
+  //' @param min_limit The smallest integer to allow, if using limits.
+  //' @param max_limit The largest integer to allow, if using limits.
+  //' @param use_limits A Boolean variable indicating whether to limit allowable
+  //' values.
+  //' @param NAasOther A Boolean value indicating whether to treat \code{NA}
+  //' values as the value specified in \code{change_value}.
+  //' @param change_value The integer to set \code{NA} values to if
+  //' \code{NAasOther = TRUE}.
+  //' 
+  //' @return This function modifies an input vector by reference, given as
+  //' argument \code{output}. No real output is returned.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline void integer_char_vectorizer (IntegerVector& output, Nullable<RObject> input,
+    String argument_name, int stage_length, int age_length,
+    IntegerVector int_limits, CharacterVector char_limits,
+    bool NAasOther = false, int change_value = 0) {
+    
+    IntegerVector input_;
+    int input_length {0};
+    
+    int allowable = static_cast<int>(int_limits.length());
+    
+    if (input.isNotNull()) {
+      if (is<IntegerVector>(input) || is<NumericVector>(input)) {
+        input_ = as<IntegerVector>(input);
+        
+        input_length = static_cast<int>(input_.length());
+        
+        if (NAasOther) {
+          unsigned int na_count {0};
+          for (int i = 0; i < input_length; i++) { 
+            if (NumericVector::is_na(input_(i)) || IntegerVector::is_na(input_(i))) {
+              input_(i) = change_value;
+              na_count++;
+            }
+            if (na_count == 1) {
+              String eat_my_shorts = "NA values in argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " will be treated as ";
+              eat_my_shorts += change_value;
+              eat_my_shorts += " values.";
+              
+              Rf_warningcall(R_NilValue, "%s", eat_my_shorts.get_cstring());
+            }
+          }
+        }
+        
+        for (int i = 0; i < input_length; i++) { 
+          if (!IntegerVector::is_na(input_(i)) && !NumericVector::is_na(input_(i))) {
+            bool found_value {false};
+            
+            for (int j = 0; j < allowable; j++) {
+              if (input_(i) == int_limits(j)) found_value = true;
+            }
+            if (!found_value) {
+              String eat_my_shorts = "Argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " must be an integer between ";
+              eat_my_shorts += int_limits(0);
+              eat_my_shorts += " and ";
+              eat_my_shorts += int_limits(allowable - 1);
+              eat_my_shorts += ".";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+          }
+        }
+        
+        if (input_length != stage_length && input_length != age_length) {
+          String eat_my_shorts = "Argument ";
+          eat_my_shorts += argument_name;
+          eat_my_shorts += " must be the same length as vector stage2 or age2.";
+          
+          throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+        }
+      } else if (is<CharacterVector>(input)) {
+        CharacterVector CharInputVec = as<CharacterVector>(input);
+        int input_length = static_cast<int>(CharInputVec.length());
+        input_ = IntegerVector (input_length);
+        
+        if (NAasOther) {
+          unsigned int na_count {0};
+          for (int i = 0; i < input_length; i++) { 
+            if (CharacterVector::is_na(CharInputVec(i))) {
+              input_(i) = change_value;
+              na_count++;
+            }
+            if (na_count == 1) {
+              String eat_my_shorts = "NA values in argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " will be treated as ";
+              eat_my_shorts += change_value;
+              eat_my_shorts += " values.";
+              
+              Rf_warningcall(R_NilValue, "%s", eat_my_shorts.get_cstring());
+            }
+          }
+        }
+        
+        for (int i = 0; i < input_length; i++) { 
+          if (!CharacterVector::is_na(CharInputVec(i))) {
+            bool found_value {false};
+            
+            for (int j = 0; j < allowable; j++) {
+              if (CharInputVec(i) == char_limits(j)) {
+                input_(i) = int_limits(j);
+                found_value = true;
+              }
+            }
+            
+            if (!found_value) {
+              String eat_my_shorts = "Argument ";
+              eat_my_shorts += argument_name;
+              eat_my_shorts += " must be an integer between ";
+              eat_my_shorts += int_limits(0);
+              eat_my_shorts += " and ";
+              eat_my_shorts += int_limits(allowable - 1);
+              eat_my_shorts += ".";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+          }
+        }
+        
+        if (input_length != stage_length && input_length != age_length) {
+          String eat_my_shorts = "Argument ";
+          eat_my_shorts += argument_name;
+          eat_my_shorts += " must be the same length as vector stage2 or age2.";
+          
+          throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+        }
+      } else {
+        String eat_my_shorts = "Please enter argument ";
+        eat_my_shorts += argument_name;
+        eat_my_shorts += " in integer format.";
+        
+        throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+      }
+    } else {
+      if (NAasOther) {
+        if (age_length != 0) {
+          IntegerVector input_temp (age_length, change_value);
+          input_ = input_temp;
+        } else if (stage_length != 0) {
+          IntegerVector input_temp (stage_length, change_value);
+          input_ = input_temp;
+        }
+      } else {
+        if (age_length != 0) {
+          IntegerVector input_temp (age_length, NA_INTEGER);
+          input_ = input_temp;
+        } else if (stage_length != 0) {
+          IntegerVector input_temp (stage_length, NA_INTEGER);
+          input_ = input_temp;
+        }
+      }
+    }
+    output = input_;
+  }
 }
 #endif
