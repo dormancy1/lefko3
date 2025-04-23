@@ -18,10 +18,11 @@ Description: Complete analytical environment for the construction and analysis
              Leslie matrices.
 Encoding: UTF-8
 License: GPL (>= 2)
-URL: http://revolutionarydemography.com/projects.html
+URL: https://github.com/dormancy1/lefko3
 Imports: Rcpp (>= 1.0.5), glmmTMB, lme4, MASS, Matrix, methods, MuMIn, pscl, rlang, stats, VGAM, grDevices
 LinkingTo: Rcpp, RcppArmadillo, BH
 LazyData: true
+BugReports: https://github.com/dormancy1/lefko3/issues
 RoxygenNote: 7.3.2
 Suggests: knitr, popbio, rmarkdown, Rcompadre
 VignetteBuilder: knitr
