@@ -1885,7 +1885,7 @@ NULL
 #' the duration of calculations. Defaults to \code{FALSE}.
 #' @param integeronly A logical value indicating whether to round the number of
 #' individuals projected in each stage at each occasion to the nearest
-#' integer. Defaults to \code{FALSE}.
+#' integer. Defaults to \code{TRUE}.
 #' @param substoch An integer value indicating whether to force survival-
 #' transition matrices to be substochastic in density dependent and density
 #' independent simulations. Defaults to \code{0}, which does not enforce
@@ -2141,9 +2141,14 @@ NULL
 #' Second, the \code{repvalue} option should be set to \code{FALSE} unless
 #' reproductive values are genuinely needed, since this step requires
 #' concurrent backward projection and so in some cases may double total run
-#' time. Finally, if the only needed data is the total population size and
+#' time. Next, if the only needed data is the total population size and
 #' age/stage structure at each time step, then setting \code{growthonly = TRUE}
-#' will yield the quickest possible run time.
+#' will yield the quickest possible run time. Finally, the default behavior of
+#' the function is to round down fractional values of individuals, and to stop
+#' running projections (replicates) when the population drops to 0. Setting
+#' \code{integeronly = FALSE} will have the impact of increasing runtime,
+#' potentially dramatically, since the population can reach a point in which
+#' the population size is extremely small but not equal to 0.
 #' 
 #' Projections with large matrices may take a long time to run. To assess the
 #' likely running time, try using a low number of iterations on a single
@@ -2322,12 +2327,11 @@ NULL
 #'   jobs_model = jobs_model, jsize_model = jsiz_model,
 #'   jrepst_model = jrepst_model, jmatst_model = jmatst_model,
 #'   times = 100, stochastic = TRUE, standardize = FALSE, growthonly = TRUE,
-#'   integeronly = FALSE, substoch = 0, sp_density = 0, start_frame = e3m_sv,
-#'   density_vr = e3d_vr)
+#'   substoch = 0, sp_density = 0, start_frame = e3m_sv, density_vr = e3d_vr)
 #' }
 #' 
 #' @export f_projection3
-f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, last_age = NA_integer_, fecage_min = NA_integer_, fecage_max = NA_integer_, cont = TRUE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, repvalue = FALSE, integeronly = FALSE, substoch = 0L, ipm_cdf = TRUE, nreps = 1L, times = 10000L, repmod = 1.0, exp_tol = 700.0, theta_tol = 1e8, random_inda = FALSE, random_indb = FALSE, random_indc = FALSE, err_check = FALSE, quiet = FALSE, data = NULL, stageframe = NULL, supplement = NULL, repmatrix = NULL, overwrite = NULL, modelsuite = NULL, paramnames = NULL, year = NULL, patch = NULL, sp_density = NULL, ind_terms = NULL, ann_terms = NULL, dev_terms = NULL, surv_model = NULL, obs_model = NULL, size_model = NULL, sizeb_model = NULL, sizec_model = NULL, repst_model = NULL, fec_model = NULL, jsurv_model = NULL, jobs_model = NULL, jsize_model = NULL, jsizeb_model = NULL, jsizec_model = NULL, jrepst_model = NULL, jmatst_model = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, density_vr = NULL, sparse = NULL) {
+f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, last_age = NA_integer_, fecage_min = NA_integer_, fecage_max = NA_integer_, cont = TRUE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, repvalue = FALSE, integeronly = TRUE, substoch = 0L, ipm_cdf = TRUE, nreps = 1L, times = 10000L, repmod = 1.0, exp_tol = 700.0, theta_tol = 1e8, random_inda = FALSE, random_indb = FALSE, random_indc = FALSE, err_check = FALSE, quiet = FALSE, data = NULL, stageframe = NULL, supplement = NULL, repmatrix = NULL, overwrite = NULL, modelsuite = NULL, paramnames = NULL, year = NULL, patch = NULL, sp_density = NULL, ind_terms = NULL, ann_terms = NULL, dev_terms = NULL, surv_model = NULL, obs_model = NULL, size_model = NULL, sizeb_model = NULL, sizec_model = NULL, repst_model = NULL, fec_model = NULL, jsurv_model = NULL, jobs_model = NULL, jsize_model = NULL, jsizeb_model = NULL, jsizec_model = NULL, jrepst_model = NULL, jmatst_model = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, density_vr = NULL, sparse = NULL) {
     .Call('_lefko3_f_projection3', PACKAGE = 'lefko3', format, prebreeding, start_age, last_age, fecage_min, fecage_max, cont, stochastic, standardize, growthonly, repvalue, integeronly, substoch, ipm_cdf, nreps, times, repmod, exp_tol, theta_tol, random_inda, random_indb, random_indc, err_check, quiet, data, stageframe, supplement, repmatrix, overwrite, modelsuite, paramnames, year, patch, sp_density, ind_terms, ann_terms, dev_terms, surv_model, obs_model, size_model, sizeb_model, sizec_model, repst_model, fec_model, jsurv_model, jobs_model, jsize_model, jsizeb_model, jsizec_model, jrepst_model, jmatst_model, start_vec, start_frame, tweights, density, density_vr, sparse)
 }
 
@@ -3204,7 +3208,7 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' population size at each occasion. Defaults to \code{TRUE}.
 #' @param integeronly A logical value indicating whether to round the number of
 #' individuals projected in each stage at each occasion to the nearest
-#' integer. Defaults to \code{FALSE}.
+#' integer. Defaults to \code{TRUE}.
 #' @param substoch An integer value indicating whether to force survival-
 #' transition matrices to be substochastic in density dependent simulations.
 #' Defaults to \code{0}, which does not force substochasticity. Alternatively,
@@ -3349,7 +3353,12 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' determination to forced dense or sparse matrix projection. This will most
 #' likely occur when matrices have between 30 and 300 rows and columns.
 #' Defaults work best when matrices are very small and dense, or very large and
-#' sparse.
+#' sparse. Speed can also be maximized by keeping the default setting,
+#' \code{integeronly = TRUE}, since the default behavior is to run each
+#' projection (replicate) until either the end, or the population size drops
+#' to 0. Setting \code{integeronly = FALSE} may increase runtime dramatically,
+#' since the population size can reach extremely small levels without dropping
+#' to 0.
 #' 
 #' @seealso \code{\link{start_input}()}
 #' @seealso \code{\link{density_input}()}
@@ -3453,7 +3462,7 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' cypstoch <- projection3(cypmatrix3r, nreps = 5, stochastic = TRUE)
 #' 
 #' @export projection3
-projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, integeronly = FALSE, substoch = 0L, exp_tol = 700.0, sub_warnings = TRUE, quiet = FALSE, year = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, sparse = NULL) {
+projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, integeronly = TRUE, substoch = 0L, exp_tol = 700.0, sub_warnings = TRUE, quiet = FALSE, year = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, sparse = NULL) {
     .Call('_lefko3_projection3', PACKAGE = 'lefko3', mpm, nreps, times, historical, stochastic, standardize, growthonly, integeronly, substoch, exp_tol, sub_warnings, quiet, year, start_vec, start_frame, tweights, density, sparse)
 }
 

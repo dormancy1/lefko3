@@ -7099,6 +7099,8 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
   LefkoInputs::integer_char_vectorizer (type_t12_, type_t12, "type_t12", stage2_length,
     age2_length, type12_int_limits, type12_char_limits, true, 1);
   
+  type_t12_length = static_cast<int>(type_t12_.length());
+  
   if (wtf < 3 && type_length != 0  && type_length != stage2_length) { 
     throw Rcpp::exception("All input vectors must be of the same length.", false);
   }

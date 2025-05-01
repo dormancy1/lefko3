@@ -12,7 +12,7 @@ projection3(
   stochastic = FALSE,
   standardize = FALSE,
   growthonly = TRUE,
-  integeronly = FALSE,
+  integeronly = TRUE,
   substoch = 0L,
   exp_tol = 700,
   sub_warnings = TRUE,
@@ -52,7 +52,7 @@ population size at each occasion. Defaults to \code{TRUE}.}
 
 \item{integeronly}{A logical value indicating whether to round the number of
 individuals projected in each stage at each occasion to the nearest
-integer. Defaults to \code{FALSE}.}
+integer. Defaults to \code{TRUE}.}
 
 \item{substoch}{An integer value indicating whether to force survival-
 transition matrices to be substochastic in density dependent simulations.
@@ -220,7 +220,12 @@ Speed can sometimes be increased by shifting from automatic sparse matrix
 determination to forced dense or sparse matrix projection. This will most
 likely occur when matrices have between 30 and 300 rows and columns.
 Defaults work best when matrices are very small and dense, or very large and
-sparse.
+sparse. Speed can also be maximized by keeping the default setting,
+\code{integeronly = TRUE}, since the default behavior is to run each
+projection (replicate) until either the end, or the population size drops
+to 0. Setting \code{integeronly = FALSE} may increase runtime dramatically,
+since the population size can reach extremely small levels without dropping
+to 0.
 }
 
 \examples{

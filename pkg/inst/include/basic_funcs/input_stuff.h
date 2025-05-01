@@ -746,8 +746,8 @@ namespace LefkoInputs {
   //' @param stage_length An integer giving the length of the \code{stage2}
   //' vector.
   //' @param age_length An integer giving the length of the \code{age2} vector.
-  //' @param min_limit The smallest integer to allow, if using limits.
-  //' @param max_limit The largest integer to allow, if using limits.
+  //' @param int_limits An integer vector giving the possible integer values.
+  //' @param char_limits A character vector giving the possible range of values.
   //' @param use_limits A Boolean variable indicating whether to limit allowable
   //' values.
   //' @param NAasOther A Boolean value indicating whether to treat \code{NA}
@@ -824,6 +824,9 @@ namespace LefkoInputs {
           throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
         }
       } else if (is<CharacterVector>(input)) {
+        IntegerVector new_int_limits = clone(int_limits);
+        CharacterVector char_int_limits = as<CharacterVector>(new_int_limits);
+        
         CharacterVector CharInputVec = as<CharacterVector>(input);
         int input_length = static_cast<int>(CharInputVec.length());
         input_ = IntegerVector (input_length);
@@ -853,6 +856,9 @@ namespace LefkoInputs {
             
             for (int j = 0; j < allowable; j++) {
               if (CharInputVec(i) == char_limits(j)) {
+                input_(i) = int_limits(j);
+                found_value = true;
+              } else if (CharInputVec(i) == char_int_limits(j)) {
                 input_(i) = int_limits(j);
                 found_value = true;
               }

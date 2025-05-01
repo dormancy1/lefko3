@@ -3902,7 +3902,7 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 //' the duration of calculations. Defaults to \code{FALSE}.
 //' @param integeronly A logical value indicating whether to round the number of
 //' individuals projected in each stage at each occasion to the nearest
-//' integer. Defaults to \code{FALSE}.
+//' integer. Defaults to \code{TRUE}.
 //' @param substoch An integer value indicating whether to force survival-
 //' transition matrices to be substochastic in density dependent and density
 //' independent simulations. Defaults to \code{0}, which does not enforce
@@ -4158,9 +4158,14 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 //' Second, the \code{repvalue} option should be set to \code{FALSE} unless
 //' reproductive values are genuinely needed, since this step requires
 //' concurrent backward projection and so in some cases may double total run
-//' time. Finally, if the only needed data is the total population size and
+//' time. Next, if the only needed data is the total population size and
 //' age/stage structure at each time step, then setting \code{growthonly = TRUE}
-//' will yield the quickest possible run time.
+//' will yield the quickest possible run time. Finally, the default behavior of
+//' the function is to round down fractional values of individuals, and to stop
+//' running projections (replicates) when the population drops to 0. Setting
+//' \code{integeronly = FALSE} will have the impact of increasing runtime,
+//' potentially dramatically, since the population can reach a point in which
+//' the population size is extremely small but not equal to 0.
 //' 
 //' Projections with large matrices may take a long time to run. To assess the
 //' likely running time, try using a low number of iterations on a single
@@ -4339,8 +4344,7 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 //'   jobs_model = jobs_model, jsize_model = jsiz_model,
 //'   jrepst_model = jrepst_model, jmatst_model = jmatst_model,
 //'   times = 100, stochastic = TRUE, standardize = FALSE, growthonly = TRUE,
-//'   integeronly = FALSE, substoch = 0, sp_density = 0, start_frame = e3m_sv,
-//'   density_vr = e3d_vr)
+//'   substoch = 0, sp_density = 0, start_frame = e3m_sv, density_vr = e3d_vr)
 //' }
 //' 
 //' @export f_projection3
@@ -4348,7 +4352,7 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA_INTEGER,
   int last_age = NA_INTEGER, int fecage_min = NA_INTEGER, int fecage_max = NA_INTEGER,
   bool cont = true, bool stochastic = false, bool standardize = false,
-  bool growthonly = true, bool repvalue = false, bool integeronly = false,
+  bool growthonly = true, bool repvalue = false, bool integeronly = true,
   int substoch = 0, bool ipm_cdf = true, int nreps = 1, int times = 10000,
   double repmod = 1.0, double exp_tol = 700.0, double theta_tol = 1e8,
   bool random_inda = false, bool random_indb = false, bool random_indc = false,
@@ -7339,12 +7343,6 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
   arma::mat Rvecmat(1, (times + 1), fill::zeros);
   arma::mat thesecondprophecy;
   
-  popproj.col(0) = startvec;
-  Rvecmat(0) = sum(startvec);
-  if (!growthonly) {
-    wpopproj.col(0) = startvec / sum(startvec);
-  }
-  
   List all_projections (nreps);
   List all_stagedist (nreps);
   List all_repvalues (nreps);
@@ -7355,6 +7353,16 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
   
   if (sparse_switch == 0 || format == 5) {
     for (int rep = 0; rep < nreps; rep++) {
+      Rvecmat.zeros();
+      popproj.zeros();
+      wpopproj.zeros();
+      vpopproj.zeros();
+      
+      popproj.col(0) = startvec;
+      Rvecmat(0) = sum(startvec);
+      if (!growthonly) {
+        wpopproj.col(0) = startvec / sum(startvec);
+      }
       
       theseventhson = startvec;
       arma::rowvec theseventhgrandson = startvec.as_row();
@@ -7511,6 +7519,8 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
         popproj.col(i+1) = theseventhson;
         Rvecmat(i+1) = sum(theseventhson);
         
+        if (Rvecmat(i+1) <= 0.0) break;
+        
         if (standardize) {
           theseventhson = theseventhson / sum(theseventhson);
         }
@@ -7592,6 +7602,17 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
     arma::sp_mat theseventhgrandson_sp(theseventhgrandson);
     
     for (int rep = 0; rep < nreps; rep++) {
+      Rvecmat.zeros();
+      popproj.zeros();
+      wpopproj.zeros();
+      vpopproj.zeros();
+      
+      popproj.col(0) = startvec;
+      Rvecmat(0) = sum(startvec);
+      if (!growthonly) {
+        wpopproj.col(0) = startvec / sum(startvec);
+      }
+      
       for (int i = 0; i < times; i++) {
         if (i % 25 == 0) Rcpp::checkUserInterrupt();
         
@@ -7729,6 +7750,8 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
         }
         popproj.col(i+1) = arma::vec(theseventhson_sp);
         Rvecmat(i+1) = sum(popproj.col(i+1));
+        
+        if (Rvecmat(i+1) <= 0.0) break;
         
         if (standardize) {
           theseventhson_sp = theseventhson_sp / Rvecmat(i+1);
@@ -14324,6 +14347,8 @@ arma::mat proj3(const arma::vec& start_vec, const List& core_list,
       popproj.col(i+1) = theseventhson;
       Rvecmat(i+1) = sum(theseventhson);
       
+      if (Rvecmat(i+1) <= 0.0) break;
+      
       if (standardize) {
         theseventhson = theseventhson / sum(theseventhson);
       }
@@ -14367,6 +14392,8 @@ arma::mat proj3(const arma::vec& start_vec, const List& core_list,
       }
       popproj.col(i+1) = arma::vec(arma::mat(sparse_seventhson));
       Rvecmat(i+1) = sum(popproj.col(i+1));
+      
+      if (Rvecmat(i+1) <= 0.0) break;
       
       if (standardize) {
         sparse_seventhson = sparse_seventhson / sum(popproj.col(i+1));
@@ -14474,6 +14501,8 @@ arma::mat proj3sp(const arma::vec& start_vec, const List& core_list,
     }
     popproj.col(i+1) = arma::vec(arma::mat(sparse_seventhson));
     Rvecmat(i+1) = sum(popproj.col(i+1));
+    
+    if (Rvecmat(i+1) <= 0.0) break;
     
     if (standardize) {
       sparse_seventhson = sparse_seventhson / sum(popproj.col(i+1));
@@ -14706,6 +14735,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
       popproj.col(i+1) = theseventhson;
       Rvecmat(i+1) = sum(theseventhson);
       
+      if (Rvecmat(i+1) <= 0.0) break;
+      
       if (!growthonly) {
         wpopproj.col(i+1) = popproj.col(i+1) / Rvecmat(i+1);
         thesecondprophecy = as<arma::mat>(core_list[(mat_order(theclairvoyant - (i+1)))]);
@@ -14829,6 +14860,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
       popproj.col(i+1) = arma::vec(arma::mat(sparse_seventhson));
       Rvecmat(i+1) = sum(popproj.col(i+1));
       
+      if (Rvecmat(i+1) <= 0.0) break;
+      
       if (!growthonly) {
         wpopproj.col(i+1) = popproj.col(i+1) / Rvecmat(i+1);
         sparse_secondprophecy = as<arma::sp_mat>(sparse_list[(mat_order(theclairvoyant - (i+1)))]);
@@ -14885,7 +14918,7 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
 //' population size at each occasion. Defaults to \code{TRUE}.
 //' @param integeronly A logical value indicating whether to round the number of
 //' individuals projected in each stage at each occasion to the nearest
-//' integer. Defaults to \code{FALSE}.
+//' integer. Defaults to \code{TRUE}.
 //' @param substoch An integer value indicating whether to force survival-
 //' transition matrices to be substochastic in density dependent simulations.
 //' Defaults to \code{0}, which does not force substochasticity. Alternatively,
@@ -15030,7 +15063,12 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
 //' determination to forced dense or sparse matrix projection. This will most
 //' likely occur when matrices have between 30 and 300 rows and columns.
 //' Defaults work best when matrices are very small and dense, or very large and
-//' sparse.
+//' sparse. Speed can also be maximized by keeping the default setting,
+//' \code{integeronly = TRUE}, since the default behavior is to run each
+//' projection (replicate) until either the end, or the population size drops
+//' to 0. Setting \code{integeronly = FALSE} may increase runtime dramatically,
+//' since the population size can reach extremely small levels without dropping
+//' to 0.
 //' 
 //' @seealso \code{\link{start_input}()}
 //' @seealso \code{\link{density_input}()}
@@ -15137,7 +15175,7 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
 // [[Rcpp::export(projection3)]]
 Rcpp::List projection3(const List& mpm, int nreps = 1, int times = 10000,
   bool historical = false, bool stochastic = false, bool standardize = false,
-  bool growthonly = true, bool integeronly = false, int substoch = 0,
+  bool growthonly = true, bool integeronly = true, int substoch = 0,
   double exp_tol = 700.0, bool sub_warnings = true, bool quiet = false,
   Nullable<IntegerVector> year = R_NilValue,
   Nullable<NumericVector> start_vec = R_NilValue,

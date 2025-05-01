@@ -16,7 +16,7 @@ f_projection3(
   standardize = FALSE,
   growthonly = TRUE,
   repvalue = FALSE,
-  integeronly = FALSE,
+  integeronly = TRUE,
   substoch = 0L,
   ipm_cdf = TRUE,
   nreps = 1L,
@@ -113,7 +113,7 @@ the duration of calculations. Defaults to \code{FALSE}.}
 
 \item{integeronly}{A logical value indicating whether to round the number of
 individuals projected in each stage at each occasion to the nearest
-integer. Defaults to \code{FALSE}.}
+integer. Defaults to \code{TRUE}.}
 
 \item{substoch}{An integer value indicating whether to force survival-
 transition matrices to be substochastic in density dependent and density
@@ -428,9 +428,14 @@ down but also potentially crash the memory if matrices are large enough.
 Second, the \code{repvalue} option should be set to \code{FALSE} unless
 reproductive values are genuinely needed, since this step requires
 concurrent backward projection and so in some cases may double total run
-time. Finally, if the only needed data is the total population size and
+time. Next, if the only needed data is the total population size and
 age/stage structure at each time step, then setting \code{growthonly = TRUE}
-will yield the quickest possible run time.
+will yield the quickest possible run time. Finally, the default behavior of
+the function is to round down fractional values of individuals, and to stop
+running projections (replicates) when the population drops to 0. Setting
+\code{integeronly = FALSE} will have the impact of increasing runtime,
+potentially dramatically, since the population can reach a point in which
+the population size is extremely small but not equal to 0.
 
 Projections with large matrices may take a long time to run. To assess the
 likely running time, try using a low number of iterations on a single
@@ -598,8 +603,7 @@ trial7_dvr_1 <- f_projection3(format = 1, data = lathvertln, supplement = lathsu
   jobs_model = jobs_model, jsize_model = jsiz_model,
   jrepst_model = jrepst_model, jmatst_model = jmatst_model,
   times = 100, stochastic = TRUE, standardize = FALSE, growthonly = TRUE,
-  integeronly = FALSE, substoch = 0, sp_density = 0, start_frame = e3m_sv,
-  density_vr = e3d_vr)
+  substoch = 0, sp_density = 0, start_frame = e3m_sv, density_vr = e3d_vr)
 }
 
 }

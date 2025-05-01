@@ -1,4 +1,13 @@
-# lefko3 6.4.X (2025-XX-XX)
+# lefko3 6.5.0 (2025-05-02)
+
+## USER VISIBLE CHANGES
+
+* Functions projection3() and f_projection3() now operate more quickly, and use
+  integeronly = TRUE by default.
+
+* Main development site moved to GitHub, with links updated.
+
+* Vignettes updated, including links, function output, and text errors.
 
 ## BUG FIXES
 

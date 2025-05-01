@@ -11,7 +11,11 @@ vignette: >
 
 
 
-  <p style="text-indent: 20px">In this vignette, we use the `lathyrus` dataset to illustrate the estimation of **age-by-stage function-based MPMs**. To reduce output size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls. Remove the hashtags to run these calls. This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called *lefko3: a gentle introduction*, available on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website. </p>
+  <p style="text-indent: 20px">In this vignette, we use the `lathyrus` dataset to illustrate the estimation of **age-by-stage function-based MPMs**.</p>
+  
+  <p style="text-indent: 20px">To reduce vignette size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls. In these cases, we include hashtagged versions of these calls, and we encourage the user to run these statements without hashtags to examine the output.</p>
+  
+  <p style="text-indent: 20px">This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ### ORGANISM AND POPULATION 
   
@@ -156,8 +160,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable alive3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 931
-#>   year2: 3
+#>   indiv id: 931   (singleton categories: 181)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Observation status:
 #> 
@@ -167,8 +171,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable obsstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 858
-#>   year2: 3
+#>   indiv id: 858   (singleton categories: 143)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Primary size:
 #> 
@@ -185,8 +189,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable sizea3 is fully positive, lacking even 0s.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 845
-#>   year2: 3
+#>   indiv id: 845   (singleton categories: 185)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Reproductive status:
 #> 
@@ -196,8 +200,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable repstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 845
-#>   year2: 3
+#>   indiv id: 845   (singleton categories: 185)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Fecundity:
 #> 
@@ -224,8 +228,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>     Variable feca2 is significantly zero-inflated.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 335
-#>   year2: 3
+#>   indiv id: 335   (singleton categories: 142)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile survival:
 #> 
@@ -235,8 +239,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable alive3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 281
-#>   year2: 3
+#>   indiv id: 281   (singleton categories: 281)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile observation status:
 #> 
@@ -246,8 +250,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable obsstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 210
-#>   year2: 3
+#>   indiv id: 210   (singleton categories: 210)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile primary size:
 #> 
@@ -264,8 +268,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable sizea3 is fully positive, lacking even 0s.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 193
-#>   year2: 3
+#>   indiv id: 193   (singleton categories: 193)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile reproductive status:
 #> 
@@ -275,8 +279,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable repstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 193
-#>   year2: 3
+#>   indiv id: 193   (singleton categories: 193)
+#>   year2: 3   (singleton categories: NA)
 #> 
 #> Juvenile maturity status:
 #> 
@@ -286,8 +290,8 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
 #>   Variable matstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 210
-#>   year2: 3
+#>   indiv id: 210   (singleton categories: 210)
+#>   year2: 3   (singleton categories: 0)
 ```
   
   <p style="text-indent: 20px">All of the probability variables look like binomials, so we have no problem there. Size and juvenile size appear to be continuous variables that differ significantly from the assumptions of the Gaussian distribution. However, we will still use a Gaussian distribution in this case, for instructional purposes. Fecundity is a count variable with significant overdispersion and significantly more zeros than expected, so we should use a zero-inflated negative binomial distribution.</p>
@@ -308,6 +312,7 @@ lathsupp2 <- supplemental(stage3 = c("Sd", "Sdl", "Sd", "Sdl"),
   stage2 = c("Sd", "Sd", "rep", "rep"), givenrate = c(0.345, 0.054, NA, NA),
   multiplier = c(NA, NA, 0.345, 0.054), type = c(1, 1, 3, 3),
   stageframe = lathframeln, historical = FALSE, agebased = TRUE)
+#> Warning: NA values in argument multiplier will be treated as 1 values.
 #lathsupp2
 ```
   
@@ -357,8 +362,9 @@ lathmodelsln2 <- modelsearch(lathvertln, historical = FALSE,
 #> 
 #> Developing global model of juvenile primary size...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
 #> 
-#> Developing global model of juvenile primary size...
+#> Redeveloping global model of juvenile primary size...
 #> 
 #> Global model of juvenile primary size developed. Proceeding with model dredge...
 #> Warning: Juvenile reproductive status in time t+1 appears to be constant, and so will be set to constant.
@@ -403,8 +409,9 @@ lathmodelsln2p <- modelsearch(lathvertln, historical = FALSE,
 #> 
 #> Developing global model of juvenile primary size...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
 #> 
-#> Developing global model of juvenile primary size...
+#> Redeveloping global model of juvenile primary size...
 #> 
 #> Global model of juvenile primary size developed. Proceeding with model dredge...
 #> Warning: Juvenile reproductive status in time t+1 appears to be constant, and so will be set to constant.
@@ -728,7 +735,9 @@ legend("topleft", c("deterministic", "stochastic mean", "stochastic SD"),
   
   <p style="text-indent: 20px">The overall greatest impact on the population growth rate appears to come from growth and shrinkage transitions, with growth transitions having strongly negative influences and shrinkage transitions having strongly positive influences, in general.</p>
   
-  <p style="text-indent: 20px">LTREs and sLTREs are powerful tools, and more complex versions of both analyses exist. Particularly view our other online resources for the SNA-LTRE, and please consult @caswell_matrix_2001 and @davison_contributions_2013 for more information. Users wishing to conduct these analyses should see our free e-manual called ***lefko3: a gentle introduction*** and other vignettes on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website.</p>
+  <p style="text-indent: 20px">LTREs and sLTREs are powerful tools, and more complex versions of both analyses exist. Particularly view our other online resources for the SNA-LTRE, and please consult @caswell_matrix_2001 and @davison_contributions_2013 for more information.</p>
+  
+  <p style="text-indent: 20px">Package `lefko3` also includes functions to conduct many other analyses, including deterministic and stochastic life table response experiments, and general projection including quasi-extinction analysis and density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
 
 ## Acknowledgements
 

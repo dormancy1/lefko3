@@ -11,7 +11,11 @@ vignette: >
 
 
 
-  <p style="text-indent: 20px">In this vignette, we will use the `lathyrus` dataset to illustrate the estimation of **integral projection models (IPMs)**. To reduce file size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls - to run these statements, eliminate the leading hashtags and then run them. We have also written this vignette using the default Ehrlén format for all historical MPMs. All examples can be run in deVries format as well. This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called *lefko3: a gentle introduction*, available on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website.</p>
+  <p style="text-indent: 20px">In this vignette, we will use the `lathyrus` dataset to illustrate the estimation of **integral projection models (IPMs)**.</p>
+  
+  <p style="text-indent: 20px">To reduce vignette size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls. In these cases, we include hashtagged versions of these calls, and we encourage the user to run these statements without hashtags to examine the output.</p>
+  
+  <p style="text-indent: 20px">This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ### ORGANISM AND POPULATION
   
@@ -38,7 +42,7 @@ dim(lathyrus)
   
 Figure 6.1. Life history model of *Lathyrus vernus*. Not all adult classes are shown. Survival transitions are indicated with solid arrows, while fecundity transitions are indicated with dashed arrows.
   
-  <p style="text-indent: 20px">In the stageframe code below, we show that we want an IPM by choosing two stages that serve as the size limits for IPM size classification. These two size classes should have exactly the same characteristics in the stageframe **other than size**. By choosing these two size limits, we can skip adding and describing the many size classes that will fall between these limits - function `sf_create()` will create all of these for us. We mark these limits in the vector that we load into the `stagenames` option using the string `ipm`. Package `lefko3` will then create and name all IPM size classes according to its own conventions. The default number of size classes is 100 bins, which can be changed using the `ipmbins` option.</p>
+  <p style="text-indent: 20px">In the stageframe code below, we show that we want an IPM by choosing two stages that serve as the size limits for IPM size classification. These two size classes should have exactly the same characteristics in the stageframe **other than size**. By choosing these two size limits, we can skip adding and describing the many size classes that will fall between these limits - function `sf_create()` will create all of these for us. We mark these limits in the vector that we load into the `stagenames` option using the lower-case string `ipm`. Package `lefko3` will then create and name all IPM size classes according to its own conventions. The default number of size classes is 100 bins, which can be changed using the `ipmbins` option.</p>
 
 ``` r
 sizevector <- c(0, 100, 0, 1, 7100)
@@ -55,6 +59,7 @@ lathframeipm <- sf_create(sizes = sizevector, stagenames = stagevector,
   repstatus = repvector, obsstatus = obsvector, propstatus = propvector,
   immstatus = immvector, matstatus = matvector, comments = comments,
   indataset = indataset, binhalfwidth = binvec, ipmbins = 100, roundsize = 3)
+#> Warning: Values supplied in vectors sizemin, sizemax, and binhalfwidth will be overwritten for ipm bins.
 #lathframeipm
 ```
   
@@ -62,7 +67,7 @@ lathframeipm <- sf_create(sizes = sizevector, stagenames = stagevector,
   
 #### Step 2a. Dataset standardization  
   
-  <p style="text-indent: 20px">To work with this dataset, we first need to format the data into *vertical format*, in which each row corresponds to the state of a single individual in two (if ahistorical) or three (if historical) consecutive time intervals. In the input to `verticalize3()` below, we utilize a repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and no gaps or shuffles appear in the dataset. The data management functions in `lefko3` do not require such repeating patterns, but they do make the required input in the function shorter and more succinct. Because this is an IPM, we will need to estimate linear models of vital rates. This will require us to avoid NAs in size and fecundity (fortunately, in this dataset, NA is equivalent to 0), so we will set `NAas0 = TRUE` to inform R to treat NAs as zeroes. We will also set `NRasRep = TRUE` because we will assume that all adult stages other than dormancy are reproductive, and there are mature individuals in the dataset that do not reproduce but need to be included in reproductive stages.</p>
+  <p style="text-indent: 20px">To work with this dataset, we first need to format the data into *vertical format*, in which each row corresponds to the state of a single individual in two (if ahistorical) or three (if historical) consecutive time intervals. In the input to `verticalize3()` below, we utilize a repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and the columns have no gaps or shuffles. The data management functions in `lefko3` do not require such repeating patterns, but they do make the required input in the function shorter and more succinct. Because this is an IPM, we will need to estimate linear models of vital rates. This will require us to avoid NAs in size and fecundity (fortunately, in this dataset, NA is equivalent to 0), so we will set `NAas0 = TRUE` to inform R to treat NAs as zeroes. We will also set `NRasRep = TRUE` because we will assume that all adult stages other than dormancy are reproductive, and there are mature individuals in the dataset that do not reproduce but need to be included in reproductive stages.</p>
   
   <p style="text-indent: 20px">Note that prior to standardizing the dataset, we will create a new variable to code individual identity, since different plants in different subpopulations use the same identifiers. To see a more detailed summary of the standardized dataset, please remove `full = FALSE` from the `summary_hfv()` call.</p>
 
@@ -115,8 +120,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable alive3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 931
-#>   year2: 3
+#>   indiv id: 931   (singleton categories: 181)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Observation status:
 #> 
@@ -126,8 +131,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable obsstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 858
-#>   year2: 3
+#>   indiv id: 858   (singleton categories: 143)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Primary size:
 #> 
@@ -144,8 +149,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable sizea3 is fully positive, lacking even 0s.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 845
-#>   year2: 3
+#>   indiv id: 845   (singleton categories: 185)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Fecundity:
 #> 
@@ -172,8 +177,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>     Variable feca2 is significantly zero-inflated.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 931
-#>   year2: 3
+#>   indiv id: 931   (singleton categories: 181)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile survival:
 #> 
@@ -183,8 +188,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable alive3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 281
-#>   year2: 3
+#>   indiv id: 281   (singleton categories: 281)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile observation status:
 #> 
@@ -194,8 +199,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable obsstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 210
-#>   year2: 3
+#>   indiv id: 210   (singleton categories: 210)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile primary size:
 #> 
@@ -212,8 +217,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable sizea3 is fully positive, lacking even 0s.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 193
-#>   year2: 3
+#>   indiv id: 193   (singleton categories: 193)
+#>   year2: 3   (singleton categories: 0)
 #> 
 #> Juvenile maturity status:
 #> 
@@ -223,8 +228,8 @@ hfv_qc(data = lathvertipm, vitalrates = c("surv", "obs", "size", "fec"),
 #>   Variable matstatus3 is a binomial variable.
 #> 
 #>   Numbers of categories in data subset in possible random variables:
-#>   indiv id: 210
-#>   year2: 3
+#>   indiv id: 210   (singleton categories: 210)
+#>   year2: 3   (singleton categories: 0)
 ```
   
   <p style="text-indent: 20px">All of the probability variables look like binomials, so we have no problem there. Size and juvenile size appear to be continuous variables that differ significantly from the assumptions of the Gaussian distribution. However, we will still use a Gaussian distribution in this case, for instructional purposes. Fecundity is a count variable with significant overdispersion and significantly more zeros than expected, so we will use a zero-inflated negative binomial distribution. Note that there might be some problems in modeling in the juvenile cases, where we see that individual identity has as many levels as data points.</p>
@@ -239,6 +244,7 @@ lathsupp2 <- supplemental(stage3 = c("Sd", "Sdl", "Sd", "Sdl"),
   givenrate = c(0.345, 0.054, NA, NA),
   multiplier = c(NA, NA, 0.345, 0.054),
   type = c(1, 1, 3, 3), stageframe = lathframeipm, historical = FALSE)
+#> Warning: NA values in argument multiplier will be treated as 1 values.
 
 lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "npr", "Sd", "Sdl"), 
   stage2 = c("Sd", "Sd", "Sd", "Sd", "Sdl", "rep", "rep"),
@@ -250,6 +256,7 @@ lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "npr", "Sd", "Sdl
   multiplier = c(NA, NA, NA, NA, NA, 0.345, 0.054),
   type = c(1, 1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
   stageframe = lathframeipm, historical = TRUE)
+#> Warning: NA values in argument multiplier will be treated as 1 values.
 
 #lathsupp2
 #lathsupp3
@@ -295,8 +302,9 @@ lathmodels3ipm <- modelsearch(lathvertipm, historical = TRUE, approach = "mixed"
 #> 
 #> Developing global model of juvenile primary size...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
 #> 
-#> Developing global model of juvenile primary size...
+#> Redeveloping global model of juvenile primary size...
 #> 
 #> Global model of juvenile primary size developed. Proceeding with model dredge...
 #> 
@@ -304,7 +312,7 @@ lathmodels3ipm <- modelsearch(lathvertipm, historical = TRUE, approach = "mixed"
 #summary(lathmodels3ipm)
 ```
   
-  <p style="text-indent: 20px">We see here, as before, that status in occasion *t*-1 exerts an influence on some vital rates, particularly survival to occasion *t*+1, size in occasion *t*+1, reproductive status in occasion *t*+1, and the conditional portion of fecundity. So, the historical IPM is the correct choice here. Accuracy is also quite high for adult survival and juvenile and adult observation, but quite poor for primary size and fecundity.</p>
+  <p style="text-indent: 20px">We see here, as before, that status in occasion *t*-1 exerts an influence on some vital rates, particularly survival to occasion *t*+1, size in occasion *t*+1, and the conditional portion of fecundity. So, the historical IPM is the correct choice here. Accuracy is also quite high for adult survival and juvenile and adult observation, but quite poor for primary size and fecundity.</p>
   
   <p style="text-indent: 20px">We will also create an ahistorical IPM for comparison. For that purpose, we will create the ahistorical linear model set.</p>
 
@@ -343,8 +351,9 @@ lathmodels2ipm <- modelsearch(lathvertipm, historical = FALSE,
 #> 
 #> Developing global model of juvenile primary size...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
 #> 
-#> Developing global model of juvenile primary size...
+#> Redeveloping global model of juvenile primary size...
 #> 
 #> Global model of juvenile primary size developed. Proceeding with model dredge...
 #> 
@@ -442,8 +451,8 @@ slambda3(lathmat2ipm)
 #> 1   1  <NA> -0.1252668 0.05120795 0.2262917 0.002262917
 set.seed(42)
 slambda3(lathmat3ipm, times = 1000)
-#>   pop patch           a       var        sd          se
-#> 1   1  <NA> -0.05142839 0.0427915 0.2068611 0.006541521
+#>   pop patch           a        var       sd         se
+#> 1   1  <NA> -0.05142838 0.04279148 0.206861 0.00654152
 ```
   
   <p style="text-indent: 20px">The historical growth rate is larger than the ahistorical in both deterministic and stochastic analyses, although all four numbers suggest a declining population. Now let's compare the stable stage distribution from both the ahistorical and historical mean MPMs.</p>
@@ -510,9 +519,9 @@ legend("topright", c("det ahist", "det hist", "sto ahist", "sto hist"),
 par(lty = lty.o)
 ```
   
-  <p style="text-indent: 20px">The plot of these distributions shows the strong importance of vegetative dormancy and small adults. Both environmental stochasticity and individual history increase the elasticity associated with larger, though still small, adults.</p>
+  <p style="text-indent: 20px">The plot of these distributions a strong influence of history, and also shows the strong importance of vegetative dormancy and small adults. Both environmental stochasticity and individual history increase the elasticity associated with larger, though still small, adults.</p>
   
-  <p style="text-indent: 20px">Package `lefko3` provides many other analytical capabilities. Please refer to the free e-manual called ***lefko3: a gentle introduction*** and other vignettes, all available on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website for more information.</p>
+  <p style="text-indent: 20px">Package `lefko3` also includes functions to conduct many other analyses, including deterministic and stochastic life table response experiments, and general projection including quasi-extinction analysis and density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ## Acknowledgements 
   

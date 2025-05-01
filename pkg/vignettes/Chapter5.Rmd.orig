@@ -17,11 +17,13 @@ knitr::opts_chunk$set(
 library(lefko3)
 ```
 
-  <p style="text-indent: 20px">In this vignette, we will use the `cypdata` dataset to illustrate the estimation of **function-based MPMs**. To reduce file size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls - to run these statements, eliminate the leading hashtags and then run them. We have also written this vignette using the default Ehrlén format for all historical MPMs. All examples can be run in deVries format as well. This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called *lefko3: a gentle introduction*, available on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website.</p>
+  <p style="text-indent: 20px">In this vignette, we will use the `cypdata` dataset to illustrate the estimation of **function-based MPMs**. To reduce file size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls - to run these statements, eliminate the leading hashtags and then run them. We have also written this vignette using the default Ehrlén format for all historical MPMs. All examples can be run in deVries format as well.</p>
+  
+  <p style="text-indent: 20px">This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ### ORGANISM AND POPULATION
   
-  <p style="text-indent: 20px">The white lady's slipper, *Cypripedium candidum*, is a rare and long-lived North American perennial in the orchid family. The study population is located within a state nature preserve located in northeastern Illinois, USA. The population was monitored annually from 2004 to 2009, with two monitoring sessions per year. Monitoring sessions included complete censuses of the population divided into sections referred to as patches. Each monitoring session consisted of searches for previously recorded individuals, which were located according to coordinates relative to fixed stakes at the site, followed by a search for new individuals. Data recorded per individual included: location, number of non-flowering sprouts (also refered to as non-flowering stems), number of flowering sprouts, number of flowers per sprout, and number of fruits per sprout. Location was used to infer individual identity. More information about this population and its characteristics is given in @shefferson_estimating_2001 and @shefferson_predicting_2017.</p>
+  <p style="text-indent: 20px">The white lady's slipper, *Cypripedium candidum*, is a rare, long-lived perennial in the orchid family. The study population is located within a state nature preserve located in northeastern Illinois, USA. The population was monitored annually from 2004 to 2009, with two monitoring sessions per year. Monitoring sessions included complete censuses of the population divided into sections referred to as patches. Each monitoring session consisted of searches for previously recorded individuals, followed by a search for new individuals. Data recorded per individual included: number of non-flowering sprouts (also refered to as non-flowering stems), number of flowering sprouts, number of flowers per sprout, and number of fruits per sprout. Location was used to infer individual identity. More information about this population and its characteristics is given in @shefferson_estimating_2001 and @shefferson_predicting_2017.</p>
   
 ### BASIC WORKFLOW
   
@@ -33,7 +35,7 @@ Figure 5.1. Life history model of *Cypripedium candidum*. Survival and fecundity
 
   <p style="text-indent: 20px">In this figure, the juvenile stages are limited to simple, progressive transitions. New recruits may enter the population directly from a seed produced the previous year, in which case they start in the protocorm 1 stage, or they may begin as dormant seed. Dormant seed may remain dormant, die, or germinate into the protocorm 1 stage. Protocorms exist for up to three years, yielding the protocorm 1, 2, and 3 stages. Protocorm 3 leads to the seedling stage, in which the plant may persist for many years before becoming mature. The first mature stage is usually either vegetative dormancy (`Dorm`), during which time the plant does not sprout, or a small, non-flowering adult (`1V`, which has a single stem). Once in this portion of the life history, the plant may transition among 49 mature stages, including vegetative dormancy, 1-24 stems without flowers, or 1-24 stems with at least one flower.</p>
   
-  <p style="text-indent: 20px">Let's load the dataset, which is called `cypdata`. The horizontal dataset `cypdata` and the ahistorical vertical dataset `cypvert` are the same data but are structured differently. Both include only data for the adult stages, and so later we will need to set juvenile transitions to constants from the literature.</p>
+  <p style="text-indent: 20px">Let's load the dataset, focusing on the the horizontal dataset `cypdata` (the ahistorical vertical dataset `cypvert` presents the same data, but is structured differently). This dataset includes only data for adult stages, so later we will need to set juvenile transitions to constants from the literature.</p>
 ```{r Ch5.0}
 data(cypdata)
 #summary(cypdata)
@@ -41,7 +43,7 @@ data(cypdata)
   
 #### Step 1. Life history model development 
   
-  <p style="text-indent: 20px">We will first describe the life history characterizing the population, matching it to our dataset with a *stageframe* for our *Cypripedium candidum* dataset. Since this analysis will be function-based and all sizes have reasonable representation, we will include all observed size classes here. Size is count-based, and refers to all numbers of stems that occurred, representing the life history diagram shown previously. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5 (since all size bins are using this default, we do not include a `binhalfwidth` vector option in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead.</p>
+  <p style="text-indent: 20px">We will first describe the life history characterizing the population, matching it to our dataset with a *stageframe* for our *Cypripedium candidum* dataset. Since this analysis will be function-based and all sizes have reasonable representation, we will include all observed size classes here. Size is count-based, and refers to all numbers of stems that occurred, representing the life history diagram shown previously. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5 (since all size bins are using this default, we do not include a `binhalfwidth` vector option in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to set the size bin minima and maxima instead.</p>
 ```{r Ch5.1}
 sizevector <- c(0, 0, 0, 0, 0, seq(from = 0, t = 24), seq(from = 1, to = 24))
 stagevector <- c("SD", "P1", "P2", "P3", "SL", "D", "V1", "V2", "V3", "V4",
@@ -80,7 +82,7 @@ cypframe <- sf_create(sizes = sizevector, stagenames = stagevector,
 #cypframe
 ```
   
-  <p style="text-indent: 20px">The resulting object, `cypframe`, shows a data frame that includes the following information in order for each stage: the stage's name; primary, secondary, and tertiary size; minimum and maximum ages associated with the stage; reproductive status; status as observable; status as a propagule; status as immature; status as mature; whether it occurs in the dataset; half-width, minimum, maximum, centroid, and full width of primary, secondary, and tertiary size class bins; stage group number; and a comments field. We used one size variable, so values for the secondary and tertiary sizes are set to `NA`. Stage names and combinations of characteristics occurring within the dataset must be unique to prevent estimation errors, and the comments field may be edited to include any information deemed pertinent.</p>
+  <p style="text-indent: 20px">The resulting object, `cypframe`, shows a data frame that includes the following information in order for each stage: the stage's name; primary, secondary, and tertiary size; minimum and maximum ages associated with the stage; reproductive status; status as observable; status as a propagule; status as immature; status as mature; presence in the dataset; half-width, minimum, maximum, centroid, and full width of primary, secondary, and tertiary size class bins; stage group number; and a comments field. We used one size variable, so values for the secondary and tertiary sizes are set to `NA`. Stage names and combinations of characteristics occurring within the dataset must be unique to prevent estimation errors, and the comments field may be edited to include any information deemed pertinent.</p>
   
 #### Step 2a. Data standardization 
   
@@ -145,12 +147,13 @@ summary_hfv(vertdata2, full = FALSE)
   
 #### Step 2c. Provide supplemental information for matrix estimation  
   
-  <p style="text-indent: 20px">The next steps involve adding some external data to parameterize the matrices properly. The `supplemental()` function provides a means of inputting four kinds of data into MPM construction:</p>
+  <p style="text-indent: 20px">The next steps involve adding some external data to parameterize the matrices properly. The `supplemental()` function provides a means of inputting five kinds of data into MPM construction:</p>
   
   1. fixed transition values derived from other studies and added as constants to matrices;
   2. proxy transition values when data for particular transitions do not exist and other, estimable transitions will be used as proxies;
-  3. reproductive multipliers to indicate which stages lead to the production of which stages, and at what level relative to estimated fecundity; and
-  4. survival multipliers, in cases in which proxy survival transitions are used but must be set at elevated or reduced levels relative to the original transition.
+  3. reproductive multipliers to indicate which stages lead to the production of which stages, and at what level relative to estimated fecundity;
+  4. survival multipliers, in cases in which proxy survival transitions are used but must be set at elevated or reduced levels relative to the original transition; and
+  5. additive offsets to survival or fecundity transitions.
   
   <p style="text-indent: 20px">We will create two supplement tables, the first covering the historical analysis, and the second covering the ahistorical analysis. Each row refers to a specific transition, and in the historical case there are codes for 23 given transitions (12 for the ahistorical case). The first nine of the historical transitions are set to specific probabilities (six for the ahistorical), and the next 12 are transitions that will be set to other, estimated transitions acting as proxies (four for the ahistorical; these are the non-NA transitions in `eststage` set below). The final two terms are fecundity multipliers. Based on the literature, the proxies for entry into the adult classes are transitions from dormancy, as below. Where necessary, we also use `rep` and `mat` as shorthand to code for all reproductive stages and all mature stages, respectively.</p>
 ```{r Ch5.7}
@@ -257,7 +260,7 @@ cypmodels3 <- modelsearch(vertdata, historical = TRUE, approach = "mixed",
   
   <p style="text-indent: 20px">As `modelsearch` searches, it produces text describing its current processes and any issues encountered. It is quite likely that many warning messages will appear, and these may be of use in understanding the dataset and how well it conforms to analytical assumptions. We have silenced most of this with the `quiet = "partial"` option, although some red text still indicates mileposts reached by the function and a few warnings that have slipped through from the core estimation functions. The warnings are not to be terribly concerned about. However, we encourage users to allow the function to run unsilenced in case of severe modeling problems (`quiet = FALSE`). Please read the documentation for functions `lm()` (`stats` package), `glm()` (`stats` package), `glm.nb()` (`MASS` package), `lmer()` (`lme4` package), `glmer()` (`lme4` package), `glmmTMB()` (`glmmTMB` package), `zeroinfl()` (`pscl` package), `vglm()` (`VGAM` package), and `dredge()` (`MuMIn` package) for further information on the sources of warnings.</p>
   
-  <p style="text-indent: 20px">In the output, we see historical terms determining primary size, suggesting that we cannot ignore history. As such, the models created above are actually only usable for the construction of historical models. We can also see that although the accuracy of our some vital rate models is very high, while it was only fair for others. For comparison, we may wish to estimate ahistorical models. In that case, we also need linear models in which the global models tested do not include state at occasion *t*-1, as below.</p>
+  <p style="text-indent: 20px">In the output, we do not see historical terms in any best-fit model, suggesting that we can ignore history. We can also see that although the accuracy of our some vital rate models is very high, while it was only fair for others. For comparison, we may wish to estimate ahistorical models. In that case, we also need linear models in which the global models tested do not include state at occasion *t*-1, as below. (NOTE: The size distribution utilized incorporates some randomization during the modeling process, which may result in the incorporation of a historical term in the best-fit model of size.)</p>
 ```{r Ch5.9}
 cypmodels2 <- modelsearch(vertdata, historical = FALSE, approach = "mixed", 
   vitalrates = c("surv", "obs", "size", "repst", "fec"), sizedist = "negbin", 
@@ -266,7 +269,7 @@ cypmodels2 <- modelsearch(vertdata, historical = FALSE, approach = "mixed",
 #summary(cypmodels2)
 ```
   
-  <p style="text-indent: 20px">Fewer models were estimated per dredge, since fewer parameters were tested in the global models (size and reproductive status in occasion *t*-1 were not included). Since historical terms were not tested, the best-fit model for primary size looks quite different. A thorough comparison shows that many of the best-fit models are similar between historical and ahistorical analysis, and that the only model different appears to be the primary size model.</p>
+  <p style="text-indent: 20px">Fewer models were estimated per dredge, since fewer parameters were tested in the global models (size and reproductive status in occasion *t*-1 were not included). Since historical terms were not tested, there should be no historical terms in the result (and there are not). A thorough comparison shows that the best-fit models are similar between historical and ahistorical analysis.</p>
   
 #### Step 4. MPM estimation 
   
@@ -338,7 +341,7 @@ cypann2s
 cypann3s
 ```
   
-  <p style="text-indent: 20px">These $\lambda$ values are similar to one another, as are estimates of $a = \text{log} \lambda _{S}$. Let's take a look at a plot of annual deterministic growth rates (stochastic growth rate is calculated as a single value across time, and so is not included). We find that annual $\lambda$ estimates differ only slightly between ahistorical and historical analyses.</p>
+  <p style="text-indent: 20px">These $\lambda$ values are the same, as are estimates of $a = \text{log} \lambda _{S}$. Let's take a look at a plot of annual deterministic growth rates (stochastic growth rate is calculated as a single value across time, and so is not included). We find that annual $\lambda$ estimates differ only slightly between ahistorical and historical analyses.</p>
 ```{r Ch5.18, fig.cap = "Figure 5.5. Ahistorical vs. historical annual population growth rate"}
 cypann3 <- lambda3(cypmatrix3)
 cypann2 <- lambda3(cypmatrix2)
@@ -550,7 +553,7 @@ plot(alttrial, ylim = c(0, 100))
   
   <p style="text-indent: 20px">Each plot shows 10 lines, one for each replicate. Both projections show decline, but the population appears to reach a higher high size early under the boosted fecundity scenario. So, while boosting fecundity does not prevent extinction, it does seem to boost the population and probably lowers the overall chances of extinction within a short time window.</p>
   
-  <p style="text-indent: 20px">We have also created other literature to help users familiarize themselves with population analyses in general and using the package. Users should see our free e-manual called ***lefko3: a gentle introduction***, as well as other vignettes including long-format and video vignettes, on <a href = "http://www.revolutionarydemography.com/projects.html">the projects page</a> of the Shefferson lab website.
+  <p style="text-indent: 20px">Package `lefko3` also includes functions to conduct many other analyses, including deterministic and stochastic life table response experiments, and general projection including quasi-extinction analysis and density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ## Acknowledgements 
   
