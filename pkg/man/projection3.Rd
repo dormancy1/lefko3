@@ -12,7 +12,7 @@ projection3(
   stochastic = FALSE,
   standardize = FALSE,
   growthonly = TRUE,
-  integeronly = TRUE,
+  integeronly = FALSE,
   substoch = 0L,
   exp_tol = 700,
   sub_warnings = TRUE,
@@ -52,7 +52,7 @@ population size at each occasion. Defaults to \code{TRUE}.}
 
 \item{integeronly}{A logical value indicating whether to round the number of
 individuals projected in each stage at each occasion to the nearest
-integer. Defaults to \code{TRUE}.}
+integer. Defaults to \code{FALSE}.}
 
 \item{substoch}{An integer value indicating whether to force survival-
 transition matrices to be substochastic in density dependent simulations.

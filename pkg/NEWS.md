@@ -1,3 +1,10 @@
+# lefko3 6.5.1 (2025-XX-XX)
+
+## USER VISIBLE CHANGES
+
+* Functions projection3() and f_projection3() now use integeronly = FALSE by
+  default.
+
 # lefko3 6.5.0 (2025-05-02)
 
 ## USER VISIBLE CHANGES

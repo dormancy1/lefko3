@@ -16,7 +16,7 @@ f_projection3(
   standardize = FALSE,
   growthonly = TRUE,
   repvalue = FALSE,
-  integeronly = TRUE,
+  integeronly = FALSE,
   substoch = 0L,
   ipm_cdf = TRUE,
   nreps = 1L,
@@ -113,7 +113,7 @@ the duration of calculations. Defaults to \code{FALSE}.}
 
 \item{integeronly}{A logical value indicating whether to round the number of
 individuals projected in each stage at each occasion to the nearest
-integer. Defaults to \code{TRUE}.}
+integer. Defaults to \code{FALSE}.}
 
 \item{substoch}{An integer value indicating whether to force survival-
 transition matrices to be substochastic in density dependent and density

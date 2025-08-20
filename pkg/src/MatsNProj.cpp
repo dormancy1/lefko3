@@ -3902,7 +3902,7 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 //' the duration of calculations. Defaults to \code{FALSE}.
 //' @param integeronly A logical value indicating whether to round the number of
 //' individuals projected in each stage at each occasion to the nearest
-//' integer. Defaults to \code{TRUE}.
+//' integer. Defaults to \code{FALSE}.
 //' @param substoch An integer value indicating whether to force survival-
 //' transition matrices to be substochastic in density dependent and density
 //' independent simulations. Defaults to \code{0}, which does not enforce
@@ -4352,7 +4352,7 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA_INTEGER,
   int last_age = NA_INTEGER, int fecage_min = NA_INTEGER, int fecage_max = NA_INTEGER,
   bool cont = true, bool stochastic = false, bool standardize = false,
-  bool growthonly = true, bool repvalue = false, bool integeronly = true,
+  bool growthonly = true, bool repvalue = false, bool integeronly = false,
   int substoch = 0, bool ipm_cdf = true, int nreps = 1, int times = 10000,
   double repmod = 1.0, double exp_tol = 700.0, double theta_tol = 1e8,
   bool random_inda = false, bool random_indb = false, bool random_indc = false,
@@ -9150,7 +9150,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
         _["3"] = as<StringVector>(melchett_ovtable_[10]));
       
       if (LefkoUtils::df_duplicates(mov_short)) {
-        Rf_warningcall(R_NilValue, "Supplement contains multiple entries for s0me transitions.");
+        Rf_warningcall(R_NilValue, "Supplement contains multiple entries for some transitions.");
       }
     } else {
       if (age) throw Rcpp::exception("Age-based MPMs cannot be historical.", false);
@@ -14918,7 +14918,7 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
 //' population size at each occasion. Defaults to \code{TRUE}.
 //' @param integeronly A logical value indicating whether to round the number of
 //' individuals projected in each stage at each occasion to the nearest
-//' integer. Defaults to \code{TRUE}.
+//' integer. Defaults to \code{FALSE}.
 //' @param substoch An integer value indicating whether to force survival-
 //' transition matrices to be substochastic in density dependent simulations.
 //' Defaults to \code{0}, which does not force substochasticity. Alternatively,
@@ -15175,7 +15175,7 @@ arma::mat proj3dens(const arma::vec& start_vec, const List& core_list,
 // [[Rcpp::export(projection3)]]
 Rcpp::List projection3(const List& mpm, int nreps = 1, int times = 10000,
   bool historical = false, bool stochastic = false, bool standardize = false,
-  bool growthonly = true, bool integeronly = true, int substoch = 0,
+  bool growthonly = true, bool integeronly = false, int substoch = 0,
   double exp_tol = 700.0, bool sub_warnings = true, bool quiet = false,
   Nullable<IntegerVector> year = R_NilValue,
   Nullable<NumericVector> start_vec = R_NilValue,
