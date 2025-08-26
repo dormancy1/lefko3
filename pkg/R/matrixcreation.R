@@ -281,23 +281,10 @@
 #' statistically independent).
 #' 
 #' The default behavior of this function is to estimate fecundity with regards
-#' to transitions specified via associated fecundity multipliers in either
-#' \code{supplement} or \code{repmatrix}. If both of these fields are left
-#' empty, then fecundity will be estimated at full for all transitions leading
-#' from reproductive stages to immature and propagule stages. However, if a
-#' \code{supplement} is provided and a \code{repmatrix} is not, or if
-#' \code{repmatrix} is set to \code{0}, then only fecundity transitions noted in
-#' the \code{supplement} will be set to non-zero values. To use the default
-#' behavior of setting all reproductive stages to reproduce at full fecundity
-#' into immature and propagule stages, but also incorporate given or proxy
-#' survival transitions, input those given and proxy transitions through the
-#' \code{overwrite} option.
-#' 
-#' If used, the reproduction matrix (field \code{repmatrix}) may be supplied as
-#' either historical or ahistorical. If provided as ahistorical, then
-#' \code{flefko3()} will assume that all historical transitions involving stages
-#' noted for occasions \emph{t} and \emph{t}+1 should be set to the respective
-#' fecundity multipliers noted.
+#' to transitions specified via associated fecundity multipliers in the
+#' \code{supplement}. If this field is left empty, then fecundity will be
+#' estimated at full for all transitions leading from reproductive stages to
+#' immature and propagule stages.
 #' 
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations, but without discriminating between those
@@ -915,21 +902,10 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' for ahistorical effects.
 #' 
 #' The default behavior of this function is to estimate fecundity with regards
-#' to transitions specified via associated fecundity multipliers in either
-#' \code{supplement} or \code{repmatrix}. If both of these fields are left
-#' empty, then fecundity will be estimated at full for all transitions leading
-#' from reproductive stages to immature and propagule stages. However, if a
-#' \code{supplement} is provided and a \code{repmatrix} is not, or if
-#' \code{repmatrix} is set to \code{0}, then only fecundity transitions noted in
-#' the \code{supplement} will be set to non-zero values. To use the default
-#' behavior of setting all reproductive stages to reproduce at full fecundity
-#' into immature and propagule stages, but also incorporate given or proxy
-#' survival transitions, input those given and proxy transitions through the
-#' \code{overwrite} option.
-#' 
-#' The reproduction matrix (field \code{repmatrix}) may only be supplied as
-#' ahistorical. If provided as historical, then \code{flefko2()} will fail and
-#' produce an error.
+#' to transitions specified via associated fecundity multipliers in the
+#' \code{supplement}. If this field is left empty, then fecundity will be
+#' estimated at full for all transitions leading from reproductive stages to
+#' immature and propagule stages.
 #' 
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations, but without discriminating between those
@@ -1527,21 +1503,10 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' for ahistorical effects.
 #' 
 #' The default behavior of this function is to estimate fecundity with regards
-#' to transitions specified via associated fecundity multipliers in either
-#' \code{supplement} or \code{repmatrix}. If both of these fields are left
-#' empty, then fecundity will be estimated at full for all transitions leading
-#' from reproductive stages to immature and propagule stages. However, if a
-#' \code{supplement} is provided and a \code{repmatrix} is not, or if
-#' \code{repmatrix} is set to 0, then only fecundity transitions noted in the
-#' supplement will be set to non-zero values. To use the default behavior of
-#' setting all reproductive stages to reproduce at full fecundity into immature
-#' and propagule stages but also incorporate given or proxy
-#' survival transitions, input those given and proxy transitions through the
-#' \code{overwrite} option.
-#' 
-#' The reproduction matrix (field \code{repmatrix}) may only be supplied as
-#' ahistorical. If provided as historical, then \code{aflefko2()} will fail and
-#' produce an error.
+#' to transitions specified via associated fecundity multipliers in the
+#' \code{supplement}. If this field is left empty, then fecundity will be
+#' estimated at full for all transitions leading from reproductive stages to
+#' immature and propagule stages.
 #' 
 #' Stageframes used in this function should include ages for minimum and maximum
 #' age for each stage. \code{NA}s are treated as \code{0}s in minimum age, and
@@ -2182,22 +2147,10 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #'
 #' @section Notes:
 #' The default behavior of this function is to estimate fecundity with regards
-#' to transitions specified via associated fecundity multipliers in either
-#' \code{supplement} or \code{repmatrix}. If both of these fields are left
-#' empty, then fecundity will be estimated at full for all transitions leading
-#' from reproductive stages to immature and propagule stages. However, if a
-#' \code{supplement} is provided and a \code{repmatrix} is not, or if
-#' \code{repmatrix} is set to 0, then only fecundity transitions noted in the
-#' supplement will be set to non-zero values. To use the default behavior of
-#' setting all reproductive stages to reproduce at full fecundity into immature
-#' and propagule stages but incorporate given or proxy survival transitions,
-#' input those given and proxy transitions through the \code{overwrite} option.
-#' 
-#' The reproduction matrix (field \code{repmatrix}) may be supplied as either
-#' historical or ahistorical. If provided as ahistorical, then \code{flefko3()}
-#' will assume that all historical transitions involving stages noted for
-#' occasions \emph{t} and \emph{t}+1 should be set to the respective fecundity
-#' multipliers noted.
+#' to transitions specified via associated fecundity multipliers in the
+#' \code{supplement}. If this field is left empty, then fecundity will be
+#' estimated at full for all transitions leading from reproductive stages to
+#' immature and propagule stages.
 #' 
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general
@@ -2493,21 +2446,10 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #'
 #' @section Notes:
 #' The default behavior of this function is to estimate fecundity with regards
-#' to transitions specified via associated fecundity multipliers in either
-#' \code{supplement} or \code{repmatrix}. If both of these fields are left
-#' empty, then fecundity will be estimated at full for all transitions leading
-#' from reproductive stages to immature and propagule stages. However, if a
-#' \code{supplement} is provided and a \code{repmatrix} is not, or if
-#' \code{repmatrix} is set to 0, then only fecundity transitions noted in the
-#' supplement will be set to non-zero values. To use the default behavior of
-#' setting all reproductive stages to reproduce at full fecundity into immature
-#' and propagule stages but also incorporate given or proxy survival
-#' transitions, input those given and proxy transitions through the
-#' \code{overwrite} options.
-#' 
-#' The reproduction matrix (field \code{repmatrix}) may only be supplied as
-#' ahistorical. If provided as historical, then \code{rlefko2()} will fail and
-#' produce an error.
+#' to transitions specified via associated fecundity multipliers in the
+#' \code{supplement}. If this field is left empty, then fecundity will be
+#' estimated at full for all transitions leading from reproductive stages to
+#' immature and propagule stages.
 #' 
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general
@@ -2800,21 +2742,10 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' 
 #' @section Notes:
 #' The default behavior of this function is to estimate fecundity with regards
-#' to transitions specified via associated fecundity multipliers in either
-#' \code{supplement} or \code{repmatrix}. If both of these fields are left
-#' empty, then fecundity will be estimated at full for all transitions leading
-#' from reproductive stages to immature and propagule stages. However, if a
-#' \code{supplement} is provided and a \code{repmatrix} is not, or if
-#' \code{repmatrix} is set to 0, then only fecundity transitions noted in the
-#' supplement will be set to non-zero values. To use the default behavior of
-#' setting all reproductive stages to reproduce at full fecundity into immature
-#' and propagule stages but also incorporate given or proxy survival
-#' transitions, input those given and proxy transitions through the
-#' \code{overwrite} options.
-#' 
-#' The reproduction matrix (field \code{repmatrix}) may only be supplied as
-#' ahistorical. If provided as historical, then \code{rlefko2()} will fail and
-#' produce an error.
+#' to transitions specified via associated fecundity multipliers in the
+#' \code{supplement}. If this field is left empty, then fecundity will be
+#' estimated at full for all transitions leading from reproductive stages to
+#' immature and propagule stages.
 #' 
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general

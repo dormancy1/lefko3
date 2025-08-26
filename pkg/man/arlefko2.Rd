@@ -234,21 +234,10 @@ corresponding to these matrices.
 \section{Notes}{
 
 The default behavior of this function is to estimate fecundity with regards
-to transitions specified via associated fecundity multipliers in either
-\code{supplement} or \code{repmatrix}. If both of these fields are left
-empty, then fecundity will be estimated at full for all transitions leading
-from reproductive stages to immature and propagule stages. However, if a
-\code{supplement} is provided and a \code{repmatrix} is not, or if
-\code{repmatrix} is set to 0, then only fecundity transitions noted in the
-supplement will be set to non-zero values. To use the default behavior of
-setting all reproductive stages to reproduce at full fecundity into immature
-and propagule stages but also incorporate given or proxy survival
-transitions, input those given and proxy transitions through the
-\code{overwrite} options.
-
-The reproduction matrix (field \code{repmatrix}) may only be supplied as
-ahistorical. If provided as historical, then \code{rlefko2()} will fail and
-produce an error.
+to transitions specified via associated fecundity multipliers in the
+\code{supplement}. If this field is left empty, then fecundity will be
+estimated at full for all transitions leading from reproductive stages to
+immature and propagule stages.
 
 Users may at times wish to estimate MPMs using a dataset incorporating
 multiple patches or subpopulations. Should the aim of analysis be a general
