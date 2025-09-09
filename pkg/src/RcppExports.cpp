@@ -142,6 +142,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// bootstrap3
+Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_indiv, Nullable<RObject> equal_size, Nullable<RObject> max_limit, Nullable<RObject> reps, String indiv_col);
+RcppExport SEXP _lefko3_bootstrap3(SEXP dataSEXP, SEXP by_indivSEXP, SEXP equal_sizeSEXP, SEXP max_limitSEXP, SEXP repsSEXP, SEXP indiv_colSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RObject >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type by_indiv(by_indivSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type equal_size(equal_sizeSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type max_limit(max_limitSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type reps(repsSEXP);
+    Rcpp::traits::input_parameter< String >::type indiv_col(indiv_colSEXP);
+    rcpp_result_gen = Rcpp::wrap(bootstrap3(data, by_indiv, equal_size, max_limit, reps, indiv_col));
+    return rcpp_result_gen;
+END_RCPP
+}
 // hoffmannofstuttgart
 Rcpp::List hoffmannofstuttgart(arma::mat& mainmat, DataFrame indices, int ahstages, StringVector stagenames);
 RcppExport SEXP _lefko3_hoffmannofstuttgart(SEXP mainmatSEXP, SEXP indicesSEXP, SEXP ahstagesSEXP, SEXP stagenamesSEXP) {
@@ -1155,6 +1171,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_pfj", (DL_FUNC) &_lefko3_pfj, 42},
     {"_lefko3_jpf", (DL_FUNC) &_lefko3_jpf, 54},
     {"_lefko3_density3", (DL_FUNC) &_lefko3_density3, 5},
+    {"_lefko3_bootstrap3", (DL_FUNC) &_lefko3_bootstrap3, 6},
     {"_lefko3_hoffmannofstuttgart", (DL_FUNC) &_lefko3_hoffmannofstuttgart, 4},
     {"_lefko3_hoffmannofstuttgart_sp", (DL_FUNC) &_lefko3_hoffmannofstuttgart_sp, 4},
     {"_lefko3_cond_hmpm", (DL_FUNC) &_lefko3_cond_hmpm, 3},

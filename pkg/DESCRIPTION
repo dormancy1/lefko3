@@ -1,8 +1,8 @@
 Package: lefko3
 Type: Package
 Title: Historical and Ahistorical Population Projection Matrix Analysis
-Version: 6.5.1
-Date: 2025-08-27
+Version: 6.5.1.9002
+Date: 2025-09-08
 Authors@R: c(person(given = "Richard P.", family = "Shefferson",
              email = "cdorm@g.ecc.u-tokyo.ac.jp", role = c("aut", "cre"),
              comment=c(ORCID="0000-0002-5234-3131")),
@@ -23,7 +23,7 @@ Imports: Rcpp (>= 1.0.5), glmmTMB, lme4, MASS, Matrix, methods, MuMIn, pscl, rla
 LinkingTo: Rcpp, RcppArmadillo, BH
 LazyData: true
 BugReports: https://github.com/dormancy1/lefko3/issues
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Suggests: knitr, popbio, rmarkdown, Rcompadre
 VignetteBuilder: knitr
 NeedsCompilation: yes

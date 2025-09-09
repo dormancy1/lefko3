@@ -11,9 +11,10 @@ using namespace LefkoUtils;
 
 // Index of functions
 // 
-// 1. List pfj - Create Vertical Structure for Horizontal Data Frame Input
-// 2. List jpf - Create Historical Vertical Structure for Ahistorical Vertical Data Frame
-// 3. NumericVector density3 - Estimate Radial Density in Cartesian Space
+// 1. List pfj  Create Vertical Structure for Horizontal Data Frame Input
+// 2. List jpf  Create Historical Vertical Structure for Ahistorical Vertical Data Frame
+// 3. NumericVector density3  Estimate Radial Density in Cartesian Space
+// 4. List bootstrap3  Bootstrap Standardized hfv_data Datasets
 
 
 
@@ -2850,7 +2851,7 @@ Rcpp::List pfj(const DataFrame& data, const DataFrame& stageframe,
   if (!retain_alive0) { 
     IntegerVector retained_bit {1};
     StringVector alive_var_used = {"alive2"};
-    List reduced_output = df_subset(final_output, retained_bit, false, true,
+    List reduced_output = LefkoUtils::df_subset(final_output, retained_bit, false, true,
       false, false, true, as<RObject>(alive_var_used));
       
     return reduced_output;
@@ -5408,7 +5409,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   if (!retain_alive0) { 
     NumericVector retained_bit {1.0};
     StringVector alive_var_used = {"alive2"};
-    List reduced_output = df_subset(final_output, retained_bit, false, true,
+    List reduced_output = LefkoUtils::df_subset(final_output, retained_bit, false, true,
       false, false, true, as<RObject>(alive_var_used));
       
     return reduced_output;
@@ -5507,5 +5508,203 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
   }
   
   return Rcpp::NumericVector(density.begin(), density.end());
+}
+
+//' Bootstrap Standardized hfv_data Datasets
+//' 
+//' Function \code{bootstrap3()} takes already standardized \code{hfvdata}
+//' datasets and bootstraps them by individual identity, or by row.
+//' 
+//' @name bootstrap3
+//' 
+//' @param data A data frame of class \code{hfvdata}.
+//' @param by_indiv A logical value indicating whether to sample the data frame
+//' by individual identity, or by row. If \code{TRUE}, then samples by
+//' individual identity. Defaults to \code{TRUE}.
+//' @param equal_size A logical value indicating whether to limit the size of
+//' each bootstrapped data frame to the same number of individuals (if
+//' \code{by_indiv = TRUE}) or of rows (if code{by_indiv = FALSE}), if set to
+//' \code{TRUE}, or to set sample to a specific number as set by
+//' \code{max_limit} (if set to \code{FALSE}). Defaults to \code{TRUE}.
+//' @param max_limit Sets the sample size to pull from the original data frame,
+//' if \code{equal_size = FALSE}. Defaults to \code{5000}.
+//' @param reps The number of bootstrap replicates to produce. Defaults to
+//' \code{100};
+//' @param indiv_col A string denoting the variable name coding for individual
+//' identity in the data frame.
+//' 
+//' @return A list of class \code{hfvlist}, which is composed of data frames of
+//' class \code{hfvdata}.
+//' 
+//' @examples
+//' data(lathyrus)
+//' 
+//' sizevector <- c(0, 100, 13, 127, 3730, 3800, 0)
+//' stagevector <- c("Sd", "Sdl", "VSm", "Sm", "VLa", "Flo", "Dorm")
+//' repvector <- c(0, 0, 0, 0, 0, 1, 0)
+//' obsvector <- c(0, 1, 1, 1, 1, 1, 0)
+//' matvector <- c(0, 0, 1, 1, 1, 1, 1)
+//' immvector <- c(1, 1, 0, 0, 0, 0, 0)
+//' propvector <- c(1, 0, 0, 0, 0, 0, 0)
+//' indataset <- c(0, 1, 1, 1, 1, 1, 1)
+//' binvec <- c(0, 100, 11, 103, 3500, 3800, 0.5)
+//' 
+//' lathframe <- sf_create(sizes = sizevector, stagenames = stagevector,
+//'   repstatus = repvector, obsstatus = obsvector, matstatus = matvector,
+//'   immstatus = immvector, indataset = indataset, binhalfwidth = binvec,
+//'   propstatus = propvector)
+//' 
+//' lathvert <- verticalize3(lathyrus, noyears = 4, firstyear = 1988,
+//'   patchidcol = "SUBPLOT", individcol = "GENET", blocksize = 9,
+//'   juvcol = "Seedling1988", sizeacol = "Volume88", repstracol = "FCODE88",
+//'   fecacol = "Intactseed88", deadacol = "Dead1988",
+//'   nonobsacol = "Dormant1988", stageassign = lathframe, stagesize = "sizea",
+//'   censorcol = "Missing1988", censorkeep = NA, censor = TRUE)
+//' 
+//' lathboot <- bootstrap3(lathvert)
+//' 
+//' lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "Sd", "Sdl"), 
+//'   stage2 = c("Sd", "Sd", "Sd", "Sd", "rep", "rep"),
+//'   stage1 = c("Sd", "rep", "Sd", "rep", "all", "all"), 
+//'   givenrate = c(0.345, 0.345, 0.054, 0.054, NA, NA),
+//'   multiplier = c(NA, NA, NA, NA, 0.345, 0.054),
+//'   type = c(1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1),
+//'   stageframe = lathframe, historical = TRUE)
+//' 
+//' ehrlen3 <- rlefko3(data = lathvert, stageframe = lathframe,
+//'   year = c(1989, 1990), stages = c("stage3", "stage2", "stage1"),
+//'   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
+//' 
+//' lathproj <- projection3(ehrlen3, nreps = 5, integeronly = TRUE,
+//'   stochastic = TRUE)
+//' 
+//' @export bootstrap3
+// [[Rcpp::export(bootstrap3)]]
+Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_indiv = R_NilValue,
+  Nullable<RObject> equal_size = R_NilValue,
+  Nullable<RObject> max_limit = R_NilValue, Nullable<RObject> reps = R_NilValue,
+  String indiv_col = "individ") {
+  
+  DataFrame true_data;
+  bool by_indiv_true {true};
+  bool equal_size_true {true};
+  int sample_limit {5000};
+  int reps_true {100};
+  
+  if (by_indiv.isNotNull()) {
+    RObject by_indiv_RO (by_indiv);
+    if (is<LogicalVector>(by_indiv_RO)) {
+      LogicalVector by_indiv_log = as<LogicalVector>(by_indiv_RO);
+      by_indiv_true = by_indiv_log(0);
+    } else LefkoUtils::pop_error("by_indiv", "a logical value", "", 1);
+  }
+  
+  if (equal_size.isNotNull()) {
+    RObject equal_size_RO (equal_size);
+    if (is<LogicalVector>(equal_size_RO)) {
+      LogicalVector equal_size_log = as<LogicalVector>(equal_size_RO);
+      equal_size_true = equal_size_log(0);
+    } else LefkoUtils::pop_error("equal_size", "a logical value", "", 1);
+  }
+  
+  if (max_limit.isNotNull()) {
+    RObject max_limit_RO (max_limit);
+    if (is<IntegerVector>(max_limit_RO) || is<NumericVector>(max_limit_RO)) {
+      IntegerVector max_limit_int = as<IntegerVector>(max_limit_RO);
+      sample_limit = max_limit_int(0);
+    } else LefkoUtils::pop_error("max_limit", "an integer", "", 1);
+  }
+  
+  if (reps.isNotNull()) {
+    RObject reps_RO (reps);
+    if (is<IntegerVector>(reps_RO) || is<NumericVector>(reps_RO)) {
+      IntegerVector reps_int = as<IntegerVector>(reps_RO);
+      reps_true = reps_int(0);
+    } else LefkoUtils::pop_error("reps", "an integer", "", 1);
+  }
+  
+  List hfv_list (reps_true);
+  
+  if (is<DataFrame>(data)) {
+    true_data = as<DataFrame>(data);
+    
+    if (true_data.hasAttribute("class")) {
+      CharacterVector true_data_classes = wrap(true_data.attr("class"));
+      bool found_hfv {false};
+      for (int i = 0; i < true_data_classes.length(); i++) {
+        if (stringcompare_hard(String(true_data_classes(i)), "hfvdata")) found_hfv = true;
+      }
+      
+      if (!found_hfv) {
+        LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
+      }
+      
+      int indiv_id_col {4};
+      bool found_indiv_col {false};
+      CharacterVector data_names = true_data.attr("names");
+      
+      for (int i = 0; i < data_names.length(); i++) {
+        if (stringcompare_hard(as<std::string>(data_names[i]), indiv_col)) {
+          indiv_id_col = i;
+          found_indiv_col = true;
+        }
+      }
+      
+      if (by_indiv_true && !found_indiv_col) {
+        LefkoUtils::pop_error("individual identity", "", "", 16);
+      }
+      
+      if (by_indiv_true && equal_size_true) {
+        if (is<IntegerVector>(true_data(indiv_id_col))) {
+          IntegerVector individuals = as<IntegerVector>(true_data(indiv_id_col));
+          IntegerVector unique_individuals = unique(individuals);
+          sample_limit = unique_individuals.length();
+          
+          for (int i = 0; i < reps_true; i++) {
+            // Row determination
+            IntegerVector sampled_individuals = Rcpp::sample(unique_individuals, sample_limit, true);
+            IntegerVector found_rows = match(sampled_individuals, individuals);
+            found_rows = found_rows - 1;
+            
+            DataFrame new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows);
+            hfv_list(i) = new_sampled_data_frame;
+          }
+          
+        } else if (is<CharacterVector>(true_data(indiv_id_col))) {
+          CharacterVector individuals = as<CharacterVector>(true_data(indiv_id_col));
+          CharacterVector unique_individuals = unique(individuals);
+          sample_limit = unique_individuals.length();
+          
+          for (int i = 0; i < reps_true; i++) {
+            // Row determination
+            CharacterVector sampled_individuals = Rcpp::sample(unique_individuals, sample_limit, true);
+            IntegerVector found_rows = match(sampled_individuals, individuals);
+            found_rows = found_rows - 1;
+            
+            DataFrame new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows);
+            hfv_list(i) = new_sampled_data_frame;
+          }
+          
+        }
+      } else if (equal_size_true) {
+        sample_limit  = true_data.nrows();
+        IntegerVector all_rows = seq_len(sample_limit);
+        
+        for (int i = 0; i < reps_true; i++) {
+          IntegerVector found_rows = Rcpp::sample(all_rows, sample_limit, true);
+          found_rows = found_rows - 1;
+          
+          DataFrame new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows);
+          hfv_list(i) = new_sampled_data_frame;
+        }
+      }
+      
+    } else LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
+  } else LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
+  
+  CharacterVector hfv_list_class = {"hfvlist"};
+  hfv_list.attr("class") = hfv_list_class;
+  
+  return hfv_list;
 }
 

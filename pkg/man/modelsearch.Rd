@@ -81,7 +81,8 @@ modelsearch(
 be of class \code{hfvdata}, but can also be a data frame formatted similarly
 to the output format provided by functions \code{\link{verticalize3}()} or
 \code{\link{historicalize3}()}, as long as all needed variables are properly
-designated.}
+designated. Can also be a list of class \code{hfvlist}, if bootstrapping is
+desired.}
 
 \item{stageframe}{The stageframe characterizing the life history model used.
 Optional unless \code{test.group = TRUE}, in which case it is required.
@@ -446,17 +447,20 @@ only messages related to transitions between different vital rate models will
 be displayed. Defaults to \code{FALSE}.}
 }
 \value{
-This function yields an object of class \code{lefkoMod}, which is a
-list in which the first 14 elements are the best-fit models for survival,
-observation status, primary size, secondary size, tertiary size,
-reproductive status, fecundity, juvenile survival, juvenile observation,
-juvenile primary size, juvenile secondary size, juvenile tertiary size,
-juvenile transition to reproduction, and juvenile transition to maturity,
-respectively. This is followed by 14 elements corresponding to the model
-tables for each of these vital rates, in order, followed by a data frame
-showing the order and names of variables used in modeling, followed by a
-single character element denoting the criterion used for model selection, and
-ending on a data frame with quality control data:
+This function yields an object of class \code{lefkoMod}, or a list of
+class \code{lefkoModList} if the data entered is of class \code{hfvlist}.
+If the latter, then each element is an object of class \code{lefkoMod}.
+Class \code{lefkoMod} objects are themselves lists. The first 14 elements are
+the best-fit models for survival, observation status, primary size,
+secondary size, tertiary size, reproductive status, fecundity,
+juvenile survival, juvenile observation, juvenile primary size, juvenile
+secondary size, juvenile tertiary size, juvenile transition to reproduction,
+and juvenile transition to maturity, respectively. This is followed by 14
+elements corresponding to the model tables for each of these vital rates, in
+order, followed by a data frame showing the order and names of variables used
+in modeling, followed by a single character element denoting the criterion
+used for model selection, and ending on a data frame with quality control
+data:
 
 \item{survival_model}{Best-fit model of the binomial probability of survival
 from occasion \emph{t} to occasion \emph{t}+1. Defaults to \code{1}.}

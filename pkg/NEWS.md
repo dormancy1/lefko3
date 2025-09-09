@@ -1,3 +1,9 @@
+# lefko3 6.6.0 (2025-XX-XX)
+
+## NEW FEATURES
+
+* Function bootstrap3() now adds hfvdata bootstrapping capability.
+
 # lefko3 6.5.1 (2025-08-27)
 
 ## USER VISIBLE CHANGES

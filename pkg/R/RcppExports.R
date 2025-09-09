@@ -270,6 +270,79 @@
     .Call('_lefko3_density3', PACKAGE = 'lefko3', data, xcol, ycol, yearcol, spacing)
 }
 
+#' Bootstrap Standardized hfv_data Datasets
+#' 
+#' Function \code{bootstrap3()} takes already standardized \code{hfvdata}
+#' datasets and bootstraps them by individual identity, or by row.
+#' 
+#' @name bootstrap3
+#' 
+#' @param data A data frame of class \code{hfvdata}.
+#' @param by_indiv A logical value indicating whether to sample the data frame
+#' by individual identity, or by row. If \code{TRUE}, then samples by
+#' individual identity. Defaults to \code{TRUE}.
+#' @param equal_size A logical value indicating whether to limit the size of
+#' each bootstrapped data frame to the same number of individuals (if
+#' \code{by_indiv = TRUE}) or of rows (if code{by_indiv = FALSE}), if set to
+#' \code{TRUE}, or to set sample to a specific number as set by
+#' \code{max_limit} (if set to \code{FALSE}). Defaults to \code{TRUE}.
+#' @param max_limit Sets the sample size to pull from the original data frame,
+#' if \code{equal_size = FALSE}. Defaults to \code{5000}.
+#' @param reps The number of bootstrap replicates to produce. Defaults to
+#' \code{100};
+#' @param indiv_col A string denoting the variable name coding for individual
+#' identity in the data frame.
+#' 
+#' @return A list of class \code{hfvlist}, which is composed of data frames of
+#' class \code{hfvdata}.
+#' 
+#' @examples
+#' data(lathyrus)
+#' 
+#' sizevector <- c(0, 100, 13, 127, 3730, 3800, 0)
+#' stagevector <- c("Sd", "Sdl", "VSm", "Sm", "VLa", "Flo", "Dorm")
+#' repvector <- c(0, 0, 0, 0, 0, 1, 0)
+#' obsvector <- c(0, 1, 1, 1, 1, 1, 0)
+#' matvector <- c(0, 0, 1, 1, 1, 1, 1)
+#' immvector <- c(1, 1, 0, 0, 0, 0, 0)
+#' propvector <- c(1, 0, 0, 0, 0, 0, 0)
+#' indataset <- c(0, 1, 1, 1, 1, 1, 1)
+#' binvec <- c(0, 100, 11, 103, 3500, 3800, 0.5)
+#' 
+#' lathframe <- sf_create(sizes = sizevector, stagenames = stagevector,
+#'   repstatus = repvector, obsstatus = obsvector, matstatus = matvector,
+#'   immstatus = immvector, indataset = indataset, binhalfwidth = binvec,
+#'   propstatus = propvector)
+#' 
+#' lathvert <- verticalize3(lathyrus, noyears = 4, firstyear = 1988,
+#'   patchidcol = "SUBPLOT", individcol = "GENET", blocksize = 9,
+#'   juvcol = "Seedling1988", sizeacol = "Volume88", repstracol = "FCODE88",
+#'   fecacol = "Intactseed88", deadacol = "Dead1988",
+#'   nonobsacol = "Dormant1988", stageassign = lathframe, stagesize = "sizea",
+#'   censorcol = "Missing1988", censorkeep = NA, censor = TRUE)
+#' 
+#' lathboot <- bootstrap3(lathvert)
+#' 
+#' lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "Sd", "Sdl"), 
+#'   stage2 = c("Sd", "Sd", "Sd", "Sd", "rep", "rep"),
+#'   stage1 = c("Sd", "rep", "Sd", "rep", "all", "all"), 
+#'   givenrate = c(0.345, 0.345, 0.054, 0.054, NA, NA),
+#'   multiplier = c(NA, NA, NA, NA, 0.345, 0.054),
+#'   type = c(1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1),
+#'   stageframe = lathframe, historical = TRUE)
+#' 
+#' ehrlen3 <- rlefko3(data = lathvert, stageframe = lathframe,
+#'   year = c(1989, 1990), stages = c("stage3", "stage2", "stage1"),
+#'   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
+#' 
+#' lathproj <- projection3(ehrlen3, nreps = 5, integeronly = TRUE,
+#'   stochastic = TRUE)
+#' 
+#' @export bootstrap3
+bootstrap3 <- function(data, by_indiv = NULL, equal_size = NULL, max_limit = NULL, reps = NULL, indiv_col = "individ") {
+    .Call('_lefko3_bootstrap3', PACKAGE = 'lefko3', data, by_indiv, equal_size, max_limit, reps, indiv_col)
+}
+
 #' Core Engine for cond_hmpm()
 #' 
 #' Creates a list of conditional ahistorical matrices in the style noted in

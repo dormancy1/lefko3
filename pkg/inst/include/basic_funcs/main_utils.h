@@ -28,38 +28,39 @@ using namespace arma;
 // 15. Rcpp::IntegerVector shrink  Resize an IntegerVector
 // 16. IntegerVector index_l3  Find Indices of a Matching String in a StringVector
 // 17. List df_subset  Subset Data Frame
-// 18. List df_remove  Remove Rows With Specific Index Values From Data Frame
-// 19. List df_shedrows  Shrink Data Frame According to Index Vector
-// 20. List exp_grd  Repeat First Vector for Each Element of Second Vector
-// 21. bool df_duplicates  Search for Duplicate Data Frame Values
-// 22. List numeric_extractor  Extract Key Components From Simple Numerical Model
-// 23. List glm_extractor  Extract Key Components of lm/glm/negbin Objects
-// 24. List vglm_extractor  Extract Key Components of vglm Objects
-// 25. List zeroinfl_extractor  Extract Key Components of zeroinfl Objects
-// 26. List lme4_extractor  Extract Key Components of merMod Objects
-// 27. List glmmTMB_extractor  Extract Key Components of glmmTMB Objects
-// 28. List S3_extractor  Extract Core Components From S3 Vital Rate Models
-// 29. List S4_extractor  Extract Core Components From S4 Vital Rate Models
-// 30. List vrm_extractor  Extract Core Components of vrm_input Models
-// 31. NumericMatrix revelations  Create Matrices of Year and Patch Terms in Models
-// 32. double rimeotam  Create a Summation of Most Terms Needed in Vital Rate Calculation
-// 33. arma::ivec foi_counter  Count Elements in Each Random Individual Covariate Portion of Model
-// 34. NumericVector flightoficarus  Create Vector of Random Individual Covariate Terms
-// 35. StringVector bootson  Create Concatenated Vector of Random Individual Covariate Term Names
-// 36. NumericVector zero_flightoficarus  Create Vector of Random Individual Covariate Terms for Zero-Inflated Models
-// 37. StringVector zero_bootson  Create Concatenated Vector of Random Individual Covariate Term Names from a Zero-Inflated Model
-// 38. arma::imat foi_index  Create Index of Element Numbers for Random Individual Covariate Terms
-// 39. NumericMatrix revelations_leslie  Create Matrices of Year and Patch Terms in Models in Leslie Models
-// 40. arma::imat foi_index_leslie  Create Index of Element Numbers for Random Individual Covariate Terms in Leslie Models
-// 41. List modelextract  Extract Coefficients from Linear Vital Rate Models
-// 42. double preouterator  Estimate Value for Vital Rate Based on Inputs
-// 43. List jerzeibalowski  Estimate All Elements of Function-based Population Projection Matrix
-// 44. List motherbalowski  Estimate All Elements of Function-based Leslie Population Projection Matrix
-// 45. DataFrame loy_inator  Converts Labels Element to LOY Data Frame
-// 46. void matrix_reducer  Reduces Matrices In A Function-based lefkoMat Object
-// 47. int whichbrew  Assess if MPM is ahistorical, historical, age-by-stage, or Leslie
-// 48. bool df_compare  Check If Two Data Frames Are Equal
-// 49. void pop_error  Standardized Error Messages
+// 18. bool df_compare  Check If Two Data Frames Are Equal
+// 19. List df_subset_byrow  Subset Data Frame By Integer Vector of Row Numbers
+// 20. List df_remove  Remove Rows With Specific Index Values From Data Frame
+// 21. List df_shedrows  Shrink Data Frame According to Index Vector
+// 22. List exp_grd  Repeat First Vector for Each Element of Second Vector
+// 23. bool df_duplicates  Search for Duplicate Data Frame Values
+// 24. List numeric_extractor  Extract Key Components From Simple Numerical Model
+// 25. List glm_extractor  Extract Key Components of lm/glm/negbin Objects
+// 26. List vglm_extractor  Extract Key Components of vglm Objects
+// 27. List zeroinfl_extractor  Extract Key Components of zeroinfl Objects
+// 28. List lme4_extractor  Extract Key Components of merMod Objects
+// 29. List glmmTMB_extractor  Extract Key Components of glmmTMB Objects
+// 30. List S3_extractor  Extract Core Components From S3 Vital Rate Models
+// 31. List S4_extractor  Extract Core Components From S4 Vital Rate Models
+// 32. List vrm_extractor  Extract Core Components of vrm_input Models
+// 33. NumericMatrix revelations  Create Matrices of Year and Patch Terms in Models
+// 34. double rimeotam  Create a Summation of Most Terms Needed in Vital Rate Calculation
+// 35. arma::ivec foi_counter  Count Elements in Each Random Individual Covariate Portion of Model
+// 36. NumericVector flightoficarus  Create Vector of Random Individual Covariate Terms
+// 37. StringVector bootson  Create Concatenated Vector of Random Individual Covariate Term Names
+// 38. NumericVector zero_flightoficarus  Create Vector of Random Individual Covariate Terms for Zero-Inflated Models
+// 39. StringVector zero_bootson  Create Concatenated Vector of Random Individual Covariate Term Names from a Zero-Inflated Model
+// 40. arma::imat foi_index  Create Index of Element Numbers for Random Individual Covariate Terms
+// 41. NumericMatrix revelations_leslie  Create Matrices of Year and Patch Terms in Models in Leslie Models
+// 42. arma::imat foi_index_leslie  Create Index of Element Numbers for Random Individual Covariate Terms in Leslie Models
+// 43. List modelextract  Extract Coefficients from Linear Vital Rate Models
+// 44. double preouterator  Estimate Value for Vital Rate Based on Inputs
+// 45. List jerzeibalowski  Estimate All Elements of Function-based Population Projection Matrix
+// 46. List motherbalowski  Estimate All Elements of Function-based Leslie Population Projection Matrix
+// 47. DataFrame loy_inator  Converts Labels Element to LOY Data Frame
+// 48. void matrix_reducer  Reduces Matrices In A Function-based lefkoMat Object
+// 49. int whichbrew  Assess if MPM is ahistorical, historical, age-by-stage, or Leslie
+// 50. void pop_error  Standardized Error Messages
 
 
 
@@ -871,6 +872,243 @@ namespace LefkoUtils {
         
         for (int j = 0; j < new_rows; j++) {
           new_var_i(j) = old_var_i(useable_indices(j));
+        }
+        new_df(i) = new_var_i;
+        
+      } else {
+        throw Rcpp::exception("Variable found of unrecognized type.", false);
+      }
+    }
+    
+    new_df.attr("names") = var_names;
+    new_df.attr("class") = df_class;
+    
+    StringVector row_names(new_rows);
+    for (int i = 0; i < new_rows; i++) {
+      row_names(i) = std::to_string(i+1);
+    }
+    new_df.attr("row.names") = row_names;
+    
+    return new_df;
+  }
+  
+  //' Check If Two Data Frames Are Equal
+  //' 
+  //' Function \code{df_compare()} assesses whether two data frames are the same.
+  //' 
+  //' @name df_compare
+  //' 
+  //' @param x First data frame.
+  //' @param y Second data frame.
+  //' 
+  //' @return Returns \code{TRUE} if the data frames are the same; otherwise,
+  //' returns \code{FALSE}.
+  //' @keywords internal
+  //' @noRd
+  inline bool df_compare(const DataFrame& x, const DataFrame& y) {
+    // bool df_equal {false};
+    bool all_equal {true};
+    
+    int x_length = x.length();
+    int y_length = y.length();
+    
+    if (x_length == y_length) {
+      CharacterVector x_varnames = x.attr("names");
+      CharacterVector y_varnames = y.attr("names");
+      
+      for (int i = 0; i < x_length; i++) {
+        RObject x_i = RObject(x(i));
+        RObject y_i = RObject(y(i));
+        
+        if (x_varnames(i) != y_varnames(i)) {
+          all_equal = false;
+          break;
+        }
+        
+        if (is<LogicalVector>(x_i) && !is<LogicalVector>(y_i)) {
+          all_equal = false;
+          break;
+        }
+        if (is<IntegerVector>(x_i) && !is<IntegerVector>(y_i)) {
+          all_equal = false;
+          break;
+        }
+        if (is<NumericVector>(x_i) && !is<NumericVector>(y_i)) {
+          all_equal = false;
+          break;
+        }
+        if (is<CharacterVector>(x_i) && !is<CharacterVector>(y_i)) {
+          all_equal = false;
+          break;
+        }
+        
+        if (is<LogicalVector>(x_i)) {
+          // Rcout << "LogicalVector" << endl;
+          
+          LogicalVector x_i_log = LogicalVector(x_i);
+          LogicalVector y_i_log = LogicalVector(y_i);
+          
+          for (int j = 0; j < x_i_log.length(); j++) {
+            if (LogicalVector::is_na(x_i_log(j)) && LogicalVector::is_na(y_i_log(j))) {
+              // No worries here
+            } else if (x_i_log(j) != y_i_log(j)) {
+              // Rcout << "Different" << endl;
+              all_equal = false;
+              break;
+            }
+          }
+          
+        } else if (is<IntegerVector>(x_i)) {
+          // Rcout << "IntegerVector" << endl;
+          
+          IntegerVector x_i_int = IntegerVector(x_i);
+          IntegerVector y_i_int = IntegerVector(y_i);
+          
+          for (int j = 0; j < static_cast<int>(x_i_int.length()); j++) {
+            if (IntegerVector::is_na(x_i_int(j)) && IntegerVector::is_na(y_i_int(j))) {
+              // No worries here
+            } else if (x_i_int(j) != y_i_int(j)) {
+              // Rcout << "Different" << endl;
+              all_equal = false;
+              break;
+            }
+          }
+          
+          if (x_i_int.hasAttribute("levels") && !y_i_int.hasAttribute("levels")) {
+            all_equal = false;
+            break;
+          }
+          if (!x_i_int.hasAttribute("levels") && y_i_int.hasAttribute("levels")) {
+            all_equal = false;
+            break;
+          }
+          
+          if (x_i_int.hasAttribute("levels")) {
+            CharacterVector x_i_levels = CharacterVector(x_i_int.attr("levels"));
+            CharacterVector y_i_levels = CharacterVector(y_i_int.attr("levels"));
+            
+            if (x_i_levels.length() != y_i_levels.length()) {
+              all_equal = false;
+              break;
+            }
+            
+            for (int j = 0; j < static_cast<int>(x_i_levels.length()); j++) {
+              if (x_i_levels(j) != y_i_levels(j)) {
+                all_equal = false;
+                break;
+              }
+            }
+          }
+          
+        } else if (is<NumericVector>(x_i)) {
+          // Rcout << "NumericVector" << endl;
+          
+          NumericVector x_i_num = NumericVector(x_i);
+          NumericVector y_i_num = NumericVector(y_i);
+          
+          for (int j = 0; j < x_i_num.length(); j++) {
+            if (NumericVector::is_na(x_i_num(j)) && NumericVector::is_na(y_i_num(j))) {
+              // No worries here
+            } else if (x_i_num(j) != y_i_num(j)) {
+              // Rcout << "Different" << endl;
+              all_equal = false;
+              break;
+            }
+          }
+          
+        } else if (is<CharacterVector>(x_i)) {
+          // Rcout << "CharacterVector" << endl;
+          
+          CharacterVector x_i_str = CharacterVector(x_i);
+          CharacterVector y_i_str = CharacterVector(y_i);
+          
+          for (int j = 0; j < x_i_str.length(); j++) {
+            if (CharacterVector::is_na(x_i_str(j)) && CharacterVector::is_na(y_i_str(j))) {
+              // No worries here
+            } else if (x_i_str(j) != y_i_str(j)) {
+              // Rcout << "Different" << endl;
+              all_equal = false;
+              break;
+            }
+          }
+          
+        } else {
+          throw Rcpp::exception("Unknown variable type in input data frame.", false);
+        }
+      }
+    } else all_equal = false;
+    
+    return(all_equal);
+  }
+  
+  //' Subset Data Frame By Integer Vector of Row Numbers
+  //' 
+  //' Returns a data frame subset of a single condition in a single variable.
+  //' 
+  //' @name df_subset_byrow
+  //' 
+  //' @param x The data frame to subset.
+  //' @param rows_to_keep An IntegerVector giving the rows to include, in order.
+  //' Entries do not need to be in order, nor do they need to be unique. Uses
+  //' C++ indexing..
+  //' 
+  //' @return A new data frame subset from the old.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline List df_subset_byrow(const DataFrame& x, IntegerVector rows_to_keep) {
+    
+    StringVector var_names = x.attr("names");
+    StringVector df_class = x.attr("class");
+    int no_vars = x.length();
+    //int no_rows = x.nrows();
+    
+    int new_rows = static_cast<int>(rows_to_keep.length());
+    List new_df (no_vars);
+    
+    for (int i = 0; i < no_vars; i++) {
+      if (is<NumericVector>(x[i])) {
+        NumericVector old_var_i = as<NumericVector>(x[i]);
+        NumericVector new_var_i (new_rows);
+        
+        for (int j = 0; j < new_rows; j++) {
+          new_var_i(j) = old_var_i(rows_to_keep(j));
+        }
+        new_df(i) = new_var_i;
+        
+      } else if (is<IntegerVector>(x[i])) {
+        IntegerVector old_var_i = as<IntegerVector>(x[i]);
+        IntegerVector new_var_i (new_rows);
+        
+        for (int j = 0; j < new_rows; j++) {
+          new_var_i(j) = old_var_i(rows_to_keep(j));
+        }
+        
+        if (old_var_i.hasAttribute("levels")) {
+          StringVector int_class = old_var_i.attr("class");
+          if (stringcompare_simple(String(int_class(0)), "fact", false)) {
+            new_var_i.attr("levels") = old_var_i.attr("levels");
+            new_var_i.attr("class") = "factor";
+          }
+        }
+        
+        new_df(i) = new_var_i;
+        
+      } else if (is<LogicalVector>(x[i])) {
+        LogicalVector old_var_i = as<LogicalVector>(x[i]);
+        LogicalVector new_var_i (new_rows);
+        
+        for (int j = 0; j < new_rows; j++) {
+          new_var_i(j) = old_var_i(rows_to_keep(j));
+        }
+        new_df(i) = new_var_i;
+        
+      } else if (is<StringVector>(x[i])) {
+        StringVector old_var_i = as<StringVector>(x[i]);
+        StringVector new_var_i (new_rows);
+        
+        for (int j = 0; j < new_rows; j++) {
+          new_var_i(j) = old_var_i(rows_to_keep(j));
         }
         new_df(i) = new_var_i;
         
@@ -9716,155 +9954,6 @@ namespace LefkoUtils {
     }
     
     return current_brew;
-  }
-  
-  //' Check If Two Data Frames Are Equal
-  //' 
-  //' Function \code{df_compare()} assesses whether two data frames are the same.
-  //' 
-  //' @name df_compare
-  //' 
-  //' @param x First data frame.
-  //' @param y Second data frame.
-  //' 
-  //' @return Returns \code{TRUE} if the data frames are the same; otherwise,
-  //' returns \code{FALSE}.
-  //' @keywords internal
-  //' @noRd
-  inline bool df_compare(const DataFrame& x, const DataFrame& y) {
-    // bool df_equal {false};
-    bool all_equal {true};
-    
-    int x_length = x.length();
-    int y_length = y.length();
-    
-    if (x_length == y_length) {
-      CharacterVector x_varnames = x.attr("names");
-      CharacterVector y_varnames = y.attr("names");
-      
-      for (int i = 0; i < x_length; i++) {
-        RObject x_i = RObject(x(i));
-        RObject y_i = RObject(y(i));
-        
-        if (x_varnames(i) != y_varnames(i)) {
-          all_equal = false;
-          break;
-        }
-        
-        if (is<LogicalVector>(x_i) && !is<LogicalVector>(y_i)) {
-          all_equal = false;
-          break;
-        }
-        if (is<IntegerVector>(x_i) && !is<IntegerVector>(y_i)) {
-          all_equal = false;
-          break;
-        }
-        if (is<NumericVector>(x_i) && !is<NumericVector>(y_i)) {
-          all_equal = false;
-          break;
-        }
-        if (is<CharacterVector>(x_i) && !is<CharacterVector>(y_i)) {
-          all_equal = false;
-          break;
-        }
-        
-        if (is<LogicalVector>(x_i)) {
-          // Rcout << "LogicalVector" << endl;
-          
-          LogicalVector x_i_log = LogicalVector(x_i);
-          LogicalVector y_i_log = LogicalVector(y_i);
-          
-          for (int j = 0; j < x_i_log.length(); j++) {
-            if (LogicalVector::is_na(x_i_log(j)) && LogicalVector::is_na(y_i_log(j))) {
-              // No worries here
-            } else if (x_i_log(j) != y_i_log(j)) {
-              // Rcout << "Different" << endl;
-              all_equal = false;
-              break;
-            }
-          }
-          
-        } else if (is<IntegerVector>(x_i)) {
-          // Rcout << "IntegerVector" << endl;
-          
-          IntegerVector x_i_int = IntegerVector(x_i);
-          IntegerVector y_i_int = IntegerVector(y_i);
-          
-          for (int j = 0; j < static_cast<int>(x_i_int.length()); j++) {
-            if (IntegerVector::is_na(x_i_int(j)) && IntegerVector::is_na(y_i_int(j))) {
-              // No worries here
-            } else if (x_i_int(j) != y_i_int(j)) {
-              // Rcout << "Different" << endl;
-              all_equal = false;
-              break;
-            }
-          }
-          
-          if (x_i_int.hasAttribute("levels") && !y_i_int.hasAttribute("levels")) {
-            all_equal = false;
-            break;
-          }
-          if (!x_i_int.hasAttribute("levels") && y_i_int.hasAttribute("levels")) {
-            all_equal = false;
-            break;
-          }
-          
-          if (x_i_int.hasAttribute("levels")) {
-            CharacterVector x_i_levels = CharacterVector(x_i_int.attr("levels"));
-            CharacterVector y_i_levels = CharacterVector(y_i_int.attr("levels"));
-            
-            if (x_i_levels.length() != y_i_levels.length()) {
-              all_equal = false;
-              break;
-            }
-            
-            for (int j = 0; j < static_cast<int>(x_i_levels.length()); j++) {
-              if (x_i_levels(j) != y_i_levels(j)) {
-                all_equal = false;
-                break;
-              }
-            }
-          }
-          
-        } else if (is<NumericVector>(x_i)) {
-          // Rcout << "NumericVector" << endl;
-          
-          NumericVector x_i_num = NumericVector(x_i);
-          NumericVector y_i_num = NumericVector(y_i);
-          
-          for (int j = 0; j < x_i_num.length(); j++) {
-            if (NumericVector::is_na(x_i_num(j)) && NumericVector::is_na(y_i_num(j))) {
-              // No worries here
-            } else if (x_i_num(j) != y_i_num(j)) {
-              // Rcout << "Different" << endl;
-              all_equal = false;
-              break;
-            }
-          }
-          
-        } else if (is<CharacterVector>(x_i)) {
-          // Rcout << "CharacterVector" << endl;
-          
-          CharacterVector x_i_str = CharacterVector(x_i);
-          CharacterVector y_i_str = CharacterVector(y_i);
-          
-          for (int j = 0; j < x_i_str.length(); j++) {
-            if (CharacterVector::is_na(x_i_str(j)) && CharacterVector::is_na(y_i_str(j))) {
-              // No worries here
-            } else if (x_i_str(j) != y_i_str(j)) {
-              // Rcout << "Different" << endl;
-              all_equal = false;
-              break;
-            }
-          }
-          
-        } else {
-          throw Rcpp::exception("Unknown variable type in input data frame.", false);
-        }
-      }
-    } else all_equal = false;
-    
-    return(all_equal);
   }
   
   //' Standardized Error Messages
