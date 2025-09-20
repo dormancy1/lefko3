@@ -48,8 +48,10 @@
 #' patches properly. Variable names should correspond to the naming conventions
 #' in \code{\link{verticalize3}()} and \code{\link{historicalize3}()}. Not
 #' required if option \code{modelsuite} is set to a \code{vrm_input} object.
-#' @param modelsuite One of two kinds of lists. The first is a \code{lefkoMod}
-#' object holding the vital rate models and associated metadata. Alternatively,
+#' @param modelsuite One of three kinds of lists. The first is a \code{lefkoMod}
+#' object holding the vital rate models and associated metadata. The second is
+#' a \code{lefkoModList} object, which is a list of \code{lefkoMod} objects
+#' generally created to conduct a bootstrapped MPM analysis. Alternatively,
 #' an object of class \code{vrm_input} may be provided. If given, then
 #' \code{surv_model}, \code{obs_model}, \code{size_model}, \code{sizeb_model},
 #' \code{sizec_model}, \code{repst_model}, \code{fec_model}, \code{jsurv_model},
@@ -233,10 +235,16 @@
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #'
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. The structure has the following
-#' elements:
+#' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
+#' object in argument \code{modelsuite}, or individual vital rate models are
+#' input separately,then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
+#' in argument \code{modelsuite}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
 #' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
 #' occasion times. All matrices output in R's \code{matrix} class, or in
@@ -668,17 +676,19 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' patches properly. Variable names should correspond to the naming conventions
 #' in \code{\link{verticalize3}()} and \code{\link{historicalize3}()}. Not
 #' required if option \code{modelsuite} is set to a \code{vrm_input} object.
-#' @param modelsuite One of two kinds of lists. The first is a \code{lefkoMod}
-#' object holding the vital rate models and associated metadata. Alternatively,
+#' @param modelsuite One of three kinds of lists. The first is a \code{lefkoMod}
+#' object holding the vital rate models and associated metadata. The second is
+#' a \code{lefkoModList} object, which is a list of \code{lefkoMod} objects
+#' generally created to conduct a bootstrapped MPM analysis. Alternatively,
 #' an object of class \code{vrm_input} may be provided. If given, then
 #' \code{surv_model}, \code{obs_model}, \code{size_model}, \code{sizeb_model},
 #' \code{sizec_model}, \code{repst_model}, \code{fec_model}, \code{jsurv_model},
 #' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 #' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model}, and
-#' \code{paramnames} are not required. No models should include size or
-#' reproductive status in occasion \emph{t}-1. Although this is optional input,
-#' it is recommended, and without it all vital rate model inputs (named
-#' \code{XX_model}) are required.
+#' \code{paramnames} are not required. One or more of these models should
+#' include size or reproductive status in occasion \emph{t}-1. Although this is
+#' optional input, it is recommended, and without it all vital rate model inputs
+#' (named \code{XX_model}) are required.
 #' @param surv_model A linear model predicting survival probability. This can 
 #' be a model of class \code{glm} or \code{glmer}, and requires a predicted
 #' binomial variable under a logit link. Ignored if \code{modelsuite} is
@@ -849,11 +859,17 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #'
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. The structure has the following
-#' elements:
-#'
+#' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
+#' object in argument \code{modelsuite}, or individual vital rate models are
+#' input separately,then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
+#' in argument \code{modelsuite}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
+#' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
 #' occasion times. All matrices output in R's \code{matrix} class, or in
 #' the \code{dgCMatrix} class from the \code{Matrix} package if sparse.}
@@ -1262,17 +1278,19 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' patches properly. Variable names should correspond to the naming conventions
 #' in \code{\link{verticalize3}()} and \code{\link{historicalize3}()}. Not
 #' required if option \code{modelsuite} is set to a \code{vrm_input} object.
-#' @param modelsuite One of two kinds of lists. The first is a \code{lefkoMod}
-#' object holding the vital rate models and associated metadata. Alternatively,
+#' @param modelsuite One of three kinds of lists. The first is a \code{lefkoMod}
+#' object holding the vital rate models and associated metadata. The second is
+#' a \code{lefkoModList} object, which is a list of \code{lefkoMod} objects
+#' generally created to conduct a bootstrapped MPM analysis. Alternatively,
 #' an object of class \code{vrm_input} may be provided. If given, then
 #' \code{surv_model}, \code{obs_model}, \code{size_model}, \code{sizeb_model},
 #' \code{sizec_model}, \code{repst_model}, \code{fec_model}, \code{jsurv_model},
 #' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 #' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model}, and
-#' \code{paramnames} are not required. No models should include size or
-#' reproductive status in occasion \emph{t}-1. Although this is optional input,
-#' it is recommended, and without it all vital rate model inputs (named
-#' \code{XX_model}) are required.
+#' \code{paramnames} are not required. One or more of these models should
+#' include size or reproductive status in occasion \emph{t}-1. Although this is
+#' optional input, it is recommended, and without it all vital rate model inputs
+#' (named \code{XX_model}) are required.
 #' @param surv_model A linear model predicting survival probability. This can 
 #' be a model of class \code{glm} or \code{glmer}, and requires a predicted
 #' binomial variable under a logit link. Ignored if \code{modelsuite} is
@@ -1450,11 +1468,17 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #'
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. The structure has the following
-#' elements:
-#'
+#' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
+#' object in argument \code{modelsuite}, or individual vital rate models are
+#' input separately,then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
+#' in argument \code{modelsuite}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
+#' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
 #' occasions. All matrices output in R's \code{matrix} class, or in
 #' the \code{dgCMatrix} class from the \code{Matrix} package if sparse.}
@@ -1749,15 +1773,19 @@ aflefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' required in order to initialize occasions and patches properly, and to assess
 #' the range of ages observed in the population. Not required if option
 #' \code{modelsuite} is set to a \code{vrm_input} object.
-#' @param modelsuite One of two optional lists. THe first is an optional
-#' \code{lefkoMod} object holding the vital rate models. Alternatively,
+#' @param modelsuite One of three kinds of lists. The first is a \code{lefkoMod}
+#' object holding the vital rate models and associated metadata. The second is
+#' a \code{lefkoModList} object, which is a list of \code{lefkoMod} objects
+#' generally created to conduct a bootstrapped MPM analysis. Alternatively,
 #' an object of class \code{vrm_input} may be provided. If given, then
-#' \code{surv_model}, \code{fec_model}, and \code{paramnames} are not required.
-#' No models should include size or reproductive status in any occasion, nor
-#' should they include any variable for occasion \emph{t}-1. Note that the
-#' modelsuite must have been created from a \code{modelsearch()} run in which
-#' \code{vitalrates = c("surv", "fec")} and the \code{suite} option was set to
-#' either \code{age} or \code{cons}.
+#' \code{surv_model}, \code{obs_model}, \code{size_model}, \code{sizeb_model},
+#' \code{sizec_model}, \code{repst_model}, \code{fec_model}, \code{jsurv_model},
+#' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
+#' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model}, and
+#' \code{paramnames} are not required. One or more of these models should
+#' include size or reproductive status in occasion \emph{t}-1. Although this is
+#' optional input, it is recommended, and without it all vital rate model inputs
+#' (named \code{XX_model}) are required.
 #' @param surv_model A linear model predicting survival probability. This can be
 #' a model of class \code{glm} or \code{glmer}, and requires a predicted
 #' binomial variable under a logit link. Ignored if \code{modelsuite} is
@@ -1856,11 +1884,17 @@ aflefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #'
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. Its structure has the following
-#' elements:
-#'
+#' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
+#' object in argument \code{modelsuite}, or individual vital rate models are
+#' input separately,then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
+#' in argument \code{modelsuite}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
+#' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
 #' occasions. All matrices output in R's \code{matrix} class, or in
 #' the \code{dgCMatrix} class from the \code{Matrix} package if sparse.}
@@ -2003,9 +2037,10 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' 
 #' @name rlefko3
 #' 
-#' @param data  A vertical demographic data frame, with variables corresponding 
-#' to the naming conventions in \code{\link{verticalize3}()} and
-#' \code{\link{historicalize3}()}.
+#' @param data A vertical demographic data frame, with variables corresponding 
+#' to the naming conventions in functions \code{\link{verticalize3}()} and
+#' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
+#' class \code{hfv_list}.
 #' @param stageframe A stageframe object that includes information on the size,
 #' observation status, propagule status, reproduction status, immaturity status,
 #' and maturity status of each ahistorical stage.
@@ -2115,11 +2150,16 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #'
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. Its structure is a list with the
-#' following elements:
-#'
+#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' \code{data}, then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' argument \code{data}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
+#' 
 #' \item{A}{A list of full projection matrices in order of sorted populations,
 #' patches, and occasions. All matrices output in the \code{matrix} class, or in
 #' the \code{dgCMatrix} class from the \code{Matrix} package if sparse.}
@@ -2310,9 +2350,10 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' 
 #' @name rlefko2
 #' 
-#' @param data  A vertical demographic data frame, with variables corresponding 
-#' to the naming conventions in \code{\link{verticalize3}()} and
-#' \code{\link{historicalize3}()}.
+#' @param data A vertical demographic data frame, with variables corresponding 
+#' to the naming conventions in functions \code{\link{verticalize3}()} and
+#' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
+#' class \code{hfv_list}.
 #' @param stageframe A stageframe object that includes information on the size,
 #' observation status, propagule status, reproduction status, immaturity status,
 #' and maturity status of each ahistorical stage.
@@ -2414,10 +2455,15 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. Its structure is a list with the
-#' following elements:
+#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' \code{data}, then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' argument \code{data}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
 #' 
 #' \item{A}{A list of full projection matrices in order of sorted populations,
 #' patches, and occasions. All matrices output in the \code{matrix} class, or in
@@ -2590,9 +2636,10 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' 
 #' @name arlefko2
 #' 
-#' @param data  A vertical demographic data frame, with variables corresponding 
-#' to the naming conventions in \code{\link{verticalize3}()} and
-#' \code{\link{historicalize3}()}.
+#' @param data A vertical demographic data frame, with variables corresponding 
+#' to the naming conventions in functions \code{\link{verticalize3}()} and
+#' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
+#' class \code{hfv_list}.
 #' @param stageframe A stageframe object that includes information on the size,
 #' observation status, propagule status, reproduction status, immaturity status,
 #' and maturity status of each ahistorical stage. Should also incorporate bin
@@ -2707,10 +2754,15 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. Its structure is a list with the
-#' following elements:
+#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' \code{data}, then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' argument \code{data}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
 #' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
 #' occasions. All matrices output in R's \code{matrix} class, or in the
@@ -2856,7 +2908,9 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @name rleslie
 #' 
 #' @param data A vertical demographic data frame, with variables corresponding 
-#' to the naming conventions in \code{\link{verticalize3}()}.
+#' to the naming conventions in functions \code{\link{verticalize3}()} and
+#' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
+#' class \code{hfv_list}.
 #' @param start_age The age from which to start the matrix. Defaults to
 #' \code{NA}, age \code{1} is used if \code{prebreeding = TRUE}, and age
 #' \code{0} is used if \code{prebreeding = FALSE}.
@@ -2933,10 +2987,15 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return If all inputs are properly formatted, then this function will return
-#' an object of class \code{lefkoMat}, which is a list that holds the matrix
-#' projection model and all of its metadata. Its structure is a list with the
-#' following elements:
+#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' \code{data}, then this function will return an object of class
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' argument \code{data}, then the output will be an object of class
+#' \code{lefkoMatList}, in which each element is an object of class
+#' \code{lefkoMat}.
+#' 
+#' A \code{lefkoMat} object is a list that holds one full  matrix projection
+#' model and all of its metadata. The structure has the following elements:
 #' 
 #' \item{A}{A list of full projection matrices in order of sorted populations,
 #' patches, and occasions. All matrices output in the \code{matrix} class, or in

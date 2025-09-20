@@ -60,15 +60,19 @@ required in order to initialize occasions and patches properly, and to assess
 the range of ages observed in the population. Not required if option
 \code{modelsuite} is set to a \code{vrm_input} object.}
 
-\item{modelsuite}{One of two optional lists. THe first is an optional
-\code{lefkoMod} object holding the vital rate models. Alternatively,
+\item{modelsuite}{One of three kinds of lists. The first is a \code{lefkoMod}
+object holding the vital rate models and associated metadata. The second is
+a \code{lefkoModList} object, which is a list of \code{lefkoMod} objects
+generally created to conduct a bootstrapped MPM analysis. Alternatively,
 an object of class \code{vrm_input} may be provided. If given, then
-\code{surv_model}, \code{fec_model}, and \code{paramnames} are not required.
-No models should include size or reproductive status in any occasion, nor
-should they include any variable for occasion \emph{t}-1. Note that the
-modelsuite must have been created from a \code{modelsearch()} run in which
-\code{vitalrates = c("surv", "fec")} and the \code{suite} option was set to
-either \code{age} or \code{cons}.}
+\code{surv_model}, \code{obs_model}, \code{size_model}, \code{sizeb_model},
+\code{sizec_model}, \code{repst_model}, \code{fec_model}, \code{jsurv_model},
+\code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
+\code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model}, and
+\code{paramnames} are not required. One or more of these models should
+include size or reproductive status in occasion \emph{t}-1. Although this is
+optional input, it is recommended, and without it all vital rate model inputs
+(named \code{XX_model}) are required.}
 
 \item{surv_model}{A linear model predicting survival probability. This can be
 a model of class \code{glm} or \code{glmer}, and requires a predicted
@@ -197,10 +201,16 @@ in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 output in standard matrix format.}
 }
 \value{
-If all inputs are properly formatted, then this function will return
-an object of class \code{lefkoMat}, which is a list that holds the matrix
-projection model and all of its metadata. Its structure has the following
-elements:
+If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
+object in argument \code{modelsuite}, or individual vital rate models are
+input separately,then this function will return an object of class
+\code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
+in argument \code{modelsuite}, then the output will be an object of class
+\code{lefkoMatList}, in which each element is an object of class
+\code{lefkoMat}.
+
+A \code{lefkoMat} object is a list that holds one full  matrix projection
+model and all of its metadata. The structure has the following elements:
 
 \item{A}{A list of full projection matrices in order of sorted patches and
 occasions. All matrices output in R's \code{matrix} class, or in

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{mpm_create}
 \alias{mpm_create}
-\title{General Matrix Projection Model Creation}
+\title{General Matrix Projection Model and Bootstrapped MPM Creation}
 \usage{
 mpm_create(
   historical = FALSE,
@@ -374,9 +374,15 @@ in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 output in standard matrix format.}
 }
 \value{
-An object of class \code{lefkoMat}. This is a list that holds the
-matrix projection model and all of its metadata. The structure has the
-following elements:
+The dominant output is an object of class \code{lefkoMat}. If
+data of class \code{hfv_list} for empirical models, or modelsuites of class
+\code{lefkoModList} for function-based models are provided, then a list of
+class \code{lefkoMatList} is provided. The latter is a list in which each
+element is a separate \code{lefkoMat} object, providing output for a
+bootstrapped MPM analysis. 
+
+Class \code{lefkoMat} objects are lists holds one full matrix projection
+model and all of its metadata. The structure has the following elements:
 
 \item{A}{A list of full projection matrices in order of sorted patches and
 occasion times. All matrices output in R's \code{matrix} class, or in
@@ -419,8 +425,7 @@ this function for indexing purposes.}
 \description{
 Function \code{mpm_create()} is the core workhorse function that creates
 all flavors of MPM in \code{lefko3}. All other MPM creation functions act
-as wrappers for this function. As such, this function provides the most
-general and most detailed control over the MPM creation process.
+as wrappers for this function.
 }
 \section{General Notes}{
 

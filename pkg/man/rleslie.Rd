@@ -37,7 +37,9 @@ rleslie(
 }
 \arguments{
 \item{data}{A vertical demographic data frame, with variables corresponding 
-to the naming conventions in \code{\link{verticalize3}()}.}
+to the naming conventions in functions \code{\link{verticalize3}()} and
+\code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
+class \code{hfv_list}.}
 
 \item{start_age}{The age from which to start the matrix. Defaults to
 \code{NA}, age \code{1} is used if \code{prebreeding = TRUE}, and age
@@ -142,10 +144,15 @@ in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 output in standard matrix format.}
 }
 \value{
-If all inputs are properly formatted, then this function will return
-an object of class \code{lefkoMat}, which is a list that holds the matrix
-projection model and all of its metadata. Its structure is a list with the
-following elements:
+If the user inputs a standard \code{hfv_data} object in argument
+\code{data}, then this function will return an object of class
+\code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+argument \code{data}, then the output will be an object of class
+\code{lefkoMatList}, in which each element is an object of class
+\code{lefkoMat}.
+
+A \code{lefkoMat} object is a list that holds one full  matrix projection
+model and all of its metadata. The structure has the following elements:
 
 \item{A}{A list of full projection matrices in order of sorted populations,
 patches, and occasions. All matrices output in the \code{matrix} class, or in

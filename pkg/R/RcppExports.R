@@ -2408,12 +2408,11 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
     .Call('_lefko3_f_projection3', PACKAGE = 'lefko3', format, prebreeding, start_age, last_age, fecage_min, fecage_max, cont, stochastic, standardize, growthonly, repvalue, integeronly, substoch, ipm_cdf, nreps, times, repmod, exp_tol, theta_tol, random_inda, random_indb, random_indc, err_check, quiet, data, stageframe, supplement, repmatrix, overwrite, modelsuite, paramnames, year, patch, sp_density, ind_terms, ann_terms, dev_terms, surv_model, obs_model, size_model, sizeb_model, sizec_model, repst_model, fec_model, jsurv_model, jobs_model, jsize_model, jsizeb_model, jsizec_model, jrepst_model, jmatst_model, start_vec, start_frame, tweights, density, density_vr, sparse)
 }
 
-#' General Matrix Projection Model Creation
+#' General Matrix Projection Model and Bootstrapped MPM Creation
 #' 
 #' Function \code{mpm_create()} is the core workhorse function that creates
 #' all flavors of MPM in \code{lefko3}. All other MPM creation functions act
-#' as wrappers for this function. As such, this function provides the most
-#' general and most detailed control over the MPM creation process.
+#' as wrappers for this function.
 #' 
 #' @name mpm_create
 #' 
@@ -2665,9 +2664,15 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return An object of class \code{lefkoMat}. This is a list that holds the
-#' matrix projection model and all of its metadata. The structure has the
-#' following elements:
+#' @return The dominant output is an object of class \code{lefkoMat}. If
+#' data of class \code{hfv_list} for empirical models, or modelsuites of class
+#' \code{lefkoModList} for function-based models are provided, then a list of
+#' class \code{lefkoMatList} is provided. The latter is a list in which each
+#' element is a separate \code{lefkoMat} object, providing output for a
+#' bootstrapped MPM analysis. 
+#' 
+#' Class \code{lefkoMat} objects are lists holds one full matrix projection
+#' model and all of its metadata. The structure has the following elements:
 #' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
 #' occasion times. All matrices output in R's \code{matrix} class, or in

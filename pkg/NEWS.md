@@ -4,6 +4,8 @@
 
 * Function bootstrap3() now adds hfvdata bootstrapping capability.
 
+* All MPM creation functions can now create bootstrapped MPMs.
+
 # lefko3 6.5.1 (2025-08-27)
 
 ## USER VISIBLE CHANGES
