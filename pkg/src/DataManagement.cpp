@@ -2998,6 +2998,8 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   bool NOasObs, bool stassign, int stszcol, double censorkeep, bool censbool,
   bool retain_alive0, const bool reduce, bool quiet) {
   
+  //Rcout << "jpf A" << endl;
+  
   int norows = data.nrows();
   int noindivs {0};
   
@@ -3016,7 +3018,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   
   Rcpp::IntegerVector individx_int;
   Rcpp::StringVector individx = as<StringVector>(data[individcol]);
-  int individ_type {0}; // 0: string, 1: integer, 2: factor
+  int individ_type {0}; // 0: string (or numeric, if default), 1: integer, 2: factor, 3: numeric
   
   StringVector individ_class;
   StringVector individ_levels;
@@ -3165,9 +3167,16 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   Rcpp::IntegerVector indcovc2x_int;
   Rcpp::IntegerVector indcovc3x_int;
   
-  int indcova_type {0}; // 0: string, 1: integer, 2: factor
-  int indcovb_type {0}; // 0: string, 1: integer, 2: factor
-  int indcovc_type {0}; // 0: string, 1: integer, 2: factor
+  Rcpp::StringVector indcova2x_str;
+  Rcpp::StringVector indcova3x_str;
+  Rcpp::StringVector indcovb2x_str;
+  Rcpp::StringVector indcovb3x_str;
+  Rcpp::StringVector indcovc2x_str;
+  Rcpp::StringVector indcovc3x_str;
+  
+  int indcova_type {3}; // 0: string, 1: integer, 2: factor, 3: numeric
+  int indcovb_type {3}; // 0: string, 1: integer, 2: factor, 3: numeric
+  int indcovc_type {3}; // 0: string, 1: integer, 2: factor, 3: numeric
   
   StringVector indcova_class;
   StringVector indcovb_class;
@@ -3279,10 +3288,13 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     fecb2x = as<NumericVector>(data[fecb2col]);
   } else {fecb2x = clone(zerovec);}
   
+  //Rcout << "jpf B" << endl;
+  
   if (indcova2col != -1) {
     RObject indcova2_test = as<RObject>(data[indcova2col]);
     
     if (is<NumericVector>(indcova2_test)) {
+      indcova_type = 3;
       indcova2x = as<NumericVector>(data[indcova2col]);
     } else if (is<IntegerVector>(indcova2_test)) {
       indcova_type = 1;
@@ -3296,6 +3308,9 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         indcova_type = 2;
         indcova_levels = indcova2x_int.attr("levels");
       }
+    } else {
+      indcova_type = 0;
+      indcova2x_str = as<StringVector>(data[indcova2col]);
     }
   } else {
     indcova2x = clone(zerovec);
@@ -3305,6 +3320,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     RObject indcova3_test = as<RObject>(data[indcova3col]);
     
     if (is<NumericVector>(indcova3_test)) {
+      indcova_type = 3;
       indcova3x = as<NumericVector>(data[indcova3col]);
     } else if (is<IntegerVector>(indcova3_test)) {
       indcova_type = 1;
@@ -3318,6 +3334,9 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         indcova_type = 2;
         indcova_levels = indcova3x_int.attr("levels");
       }
+    } else {
+      indcova_type = 0;
+      indcova3x_str = as<StringVector>(data[indcova3col]);
     }
   } else {
     indcova3x = clone(zerovec);
@@ -3327,6 +3346,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     RObject indcovb2_test = as<RObject>(data[indcovb2col]);
     
     if (is<NumericVector>(indcovb2_test)) {
+      indcovb_type = 3;
       indcovb2x = as<NumericVector>(data[indcovb2col]);
     } else if (is<IntegerVector>(indcovb2_test)) {
       indcovb_type = 1;
@@ -3340,6 +3360,9 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         indcovb_type = 2;
         indcovb_levels = indcovb2x_int.attr("levels");
       }
+    } else {
+      indcovb_type = 0;
+      indcovb2x_str = as<StringVector>(data[indcovb2col]);
     }
   } else {
     indcovb2x = clone(zerovec);
@@ -3349,6 +3372,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     RObject indcovb3_test = as<RObject>(data[indcovb3col]);
     
     if (is<NumericVector>(indcovb3_test)) {
+      indcovb_type = 3;
       indcovb3x = as<NumericVector>(data[indcovb3col]);
     } else if (is<IntegerVector>(indcovb3_test)) {
       indcovb_type = 1;
@@ -3362,6 +3386,9 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         indcovb_type = 2;
         indcovb_levels = indcovb3x_int.attr("levels");
       }
+    } else {
+      indcovb_type = 0;
+      indcovb3x_str = as<StringVector>(data[indcovb3col]);
     }
   } else {
     indcovb3x = clone(zerovec);
@@ -3371,6 +3398,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     RObject indcovc2_test = as<RObject>(data[indcovc2col]);
     
     if (is<NumericVector>(indcovc2_test)) {
+      indcovc_type = 3;
       indcovc2x = as<NumericVector>(data[indcovc2col]);
     } else if (is<IntegerVector>(indcovc2_test)) {
       indcovc_type = 1;
@@ -3384,6 +3412,9 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         indcovc_type = 2;
         indcovc_levels = indcovc2x_int.attr("levels");
       }
+    } else {
+      indcovc_type = 0;
+      indcovc2x_str = as<StringVector>(data[indcovc2col]);
     }
   } else {
     indcovc2x = clone(zerovec);
@@ -3393,6 +3424,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     RObject indcovc3_test = as<RObject>(data[indcovc3col]);
     
     if (is<NumericVector>(indcovc3_test)) {
+      indcovc_type = 3;
       indcovc3x = as<NumericVector>(data[indcovc3col]);
     } else if (is<IntegerVector>(indcovc3_test)) {
       indcovc_type = 1;
@@ -3406,10 +3438,15 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         indcovc_type = 1;
         indcovc_levels = indcovc3x_int.attr("levels");
       }
+    } else {
+      indcovc_type = 0;
+      indcovc3x_str = as<StringVector>(data[indcovc3col]);
     }
   } else {
     indcovc3x = clone(zerovec);
   }
+  
+  //Rcout << "jpf C" << endl;
   
   if (juv2col != -1) {
     juvgiven2x = as<NumericVector>(data[juv2col]);
@@ -3511,6 +3548,10 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   Rcpp::IntegerVector indcovb2_int (ndflength, NA_INTEGER);
   Rcpp::IntegerVector indcovc2_int (ndflength, NA_INTEGER);
   
+  Rcpp::StringVector indcova2_str (ndflength, NA_STRING);
+  Rcpp::StringVector indcovb2_str (ndflength, NA_STRING);
+  Rcpp::StringVector indcovc2_str (ndflength, NA_STRING);
+  
   Rcpp::IntegerVector repstatus2 (ndflength, 0);
   Rcpp::IntegerVector fecstatus2 (ndflength, 0);
   Rcpp::IntegerVector obsstatus2 (ndflength, 0);
@@ -3541,6 +3582,10 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   Rcpp::IntegerVector indcovb3_int (ndflength, NA_INTEGER);
   Rcpp::IntegerVector indcovc3_int (ndflength, NA_INTEGER);
   
+  Rcpp::StringVector indcova3_str (ndflength, NA_STRING);
+  Rcpp::StringVector indcovb3_str (ndflength, NA_STRING);
+  Rcpp::StringVector indcovc3_str (ndflength, NA_STRING);
+  
   Rcpp::IntegerVector repstatus3 (ndflength, 0);
   Rcpp::IntegerVector fecstatus3 (ndflength, 0);
   Rcpp::IntegerVector obsstatus3 (ndflength, 0);
@@ -3570,6 +3615,10 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   Rcpp::IntegerVector indcova1_int (ndflength, NA_INTEGER);
   Rcpp::IntegerVector indcovb1_int (ndflength, NA_INTEGER);
   Rcpp::IntegerVector indcovc1_int (ndflength, NA_INTEGER);
+  
+  Rcpp::StringVector indcova1_str (ndflength, NA_STRING);
+  Rcpp::StringVector indcovb1_str (ndflength, NA_STRING);
+  Rcpp::StringVector indcovc1_str (ndflength, NA_STRING);
   
   Rcpp::IntegerVector repstatus1 (ndflength, 0);
   Rcpp::IntegerVector fecstatus1 (ndflength, 0);
@@ -3626,6 +3675,8 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   arma::uvec cs4;
   int choicestage {0};
   int fsyear_check {0};
+  
+  //Rcout << "C1" << endl;
   
   // Main loop creating new dataset rows
   // Establishes state in time t for all cases in which individual is observed
@@ -3742,24 +3793,34 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     fecb2[ndfindex] = fecb2x[i];
     fecadded2[ndfindex] = feca20x[i] + (fecb20x[i] * fecrel);
     
-    if (indcova_type > 0) {
-      indcova2_int[ndfindex] = indcova2x_int[i];
-    } else {
+    //Rcout << "jpf D" << endl;
+  
+    if (indcova_type == 3) {
       indcova2[ndfindex] = indcova2x[i];
+    } else if (indcova_type == 0) {
+      indcova2_str[ndfindex] = indcova2x_str[i];
+    } else {
+      indcova2_int[ndfindex] = indcova2x_int[i];
     }
     
-    if (indcovb_type > 0) {
-      indcovb2_int[ndfindex] = indcovb2x_int[i];
-    } else {
+    if (indcovb_type == 3) {
       indcovb2[ndfindex] = indcovb2x[i];
-    }
-    
-    if (indcovc_type > 0) {
-      indcovc2_int[ndfindex] = indcovc2x_int[i];
+    } else if (indcovb_type == 0) {
+      indcovb2_str[ndfindex] = indcovb2x_str[i];
     } else {
-      indcovc2[ndfindex] = indcovc2x[i];
+      indcovb2_int[ndfindex] = indcovb2x_int[i];
     }
     
+    if (indcovc_type == 3) {
+      indcovc2[ndfindex] = indcovc2x[i];
+    } else if (indcovc_type == 0) {
+      indcovc2_str[ndfindex] = indcovc2x_str[i];
+    } else {
+      indcovc2_int[ndfindex] = indcovc2x_int[i];
+    }
+    
+    //Rcout << "jpf E" << endl;
+  
     if (repstradded2[ndfindex] > 0) {
       repstatus2[ndfindex] = 1;} else {repstatus2[ndfindex] = 0;
     }
@@ -3904,27 +3965,35 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         repstatus3[ndfindex] = 0;
       }
       
+      //Rcout << "jpf F" << endl;
+      
       if (indcova3col != -1) {
-        if (indcova_type > 0) {
-          indcova3_int[ndfindex] = indcova3x_int[i];
-        } else {
+        if (indcova_type == 3) {
           indcova3[ndfindex] = indcova3x[i];
+        } else if (indcova_type == 0) {
+          indcova3_str[ndfindex] = indcova3x_str[i];
+        } else {
+          indcova3_int[ndfindex] = indcova3x_int[i];
         }
       }
       
       if (indcovb3col != -1) {
-        if (indcovb_type > 0) {
-          indcovb3_int[ndfindex] = indcovb3x_int[i];
-        } else {
+        if (indcovb_type == 3) {
           indcovb3[ndfindex] = indcovb3x[i];
+        } else if (indcovb_type == 0) {
+          indcovb3_str[ndfindex] = indcovb3x_str[i];
+        } else {
+          indcovb3_int[ndfindex] = indcovb3x_int[i];
         }
       }
       
       if (indcovc3col != -1) {
-        if (indcovc_type > 0) {
-          indcovc3_int[ndfindex] = indcovc3x_int[i];
-        } else {
+        if (indcovc_type == 3) {
           indcovc3[ndfindex] = indcovc3x[i];
+        } else if (indcovc_type == 0) {
+          indcovc3_str[ndfindex] = indcovc3x_str[i];
+        } else {
+          indcovc3_int[ndfindex] = indcovc3x_int[i];
         }
       }
       
@@ -3982,6 +4051,8 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       } else if (stassign) {stage3[ndfindex] = "NotAlive";}
     } // End of currentyear if statement
   } // End of i loop
+  
+  //Rcout << "jpf G" << endl;
   
   // Loop determining most states in time t+1 and t-1, and stages in all times
   for (int i = 0; i < ndflength; i++) { // i refers to rows in final dataset
@@ -4090,22 +4161,30 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         fecb3[i] = fecb2[nextyrindex];
         fecadded3[i] = fecadded2[nextyrindex];
         
-        if (indcova_type > 0) {
-          indcova3_int[i] = indcova2_int[nextyrindex];
-        } else {
+        //Rcout << "jpf H" << endl;
+        
+        if (indcova_type == 3) {
           indcova3[i] = indcova2[nextyrindex];
+        } else if (indcova_type == 0) {
+          indcova3_str[i] = indcova2_str[nextyrindex];
+        } else {
+          indcova3_int[i] = indcova2_int[nextyrindex];
         }
         
-        if (indcovb_type > 0) {
-          indcovb3_int[i] = indcovb2_int[nextyrindex];
-        } else {
+        if (indcovb_type == 3) {
           indcovb3[i] = indcovb2[nextyrindex];
+        } else if (indcovb_type == 0) {
+          indcovb3_str[i] = indcovb2_str[nextyrindex];
+        } else {
+          indcovb3_int[i] = indcovb2_int[nextyrindex];
         }
         
-        if (indcovc_type > 0) {
-          indcovc3_int[i] = indcovc2_int[nextyrindex];
-        } else {
+        if (indcovc_type == 3) {
           indcovc3[i] = indcovc2[nextyrindex];
+        } else if (indcova_type == 0) {
+          indcovc3_str[i] = indcovc2_str[nextyrindex];
+        } else {
+          indcovc3_int[i] = indcovc2_int[nextyrindex];
         }
         
         if (fecadded3[i] > 0) {
@@ -4163,22 +4242,30 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
         fecb1[i] = fecb2[prevyrindex];
         fecadded1[i] = fecadded2[prevyrindex];
         
-        if (indcova_type > 0) { 
-          indcova1_int[i] = indcova2_int[prevyrindex];
-        } else { 
+        //Rcout << "jpf I" << endl;
+        
+        if (indcova_type == 3) {
           indcova1[i] = indcova2[prevyrindex];
+        } else if (indcova_type == 0) {
+          indcova1_str[i] = indcova2_str[prevyrindex];
+        } else {
+          indcova1_int[i] = indcova2_int[prevyrindex];
         }
         
-        if (indcovb_type > 0) { 
-          indcovb1_int[i] = indcovb2_int[prevyrindex];
-        } else { 
+        if (indcovb_type == 3) {
           indcovb1[i] = indcovb2[prevyrindex];
+        } else if (indcovb_type == 0) {
+          indcovb1_str[i] = indcovb2_str[prevyrindex];
+        } else {
+          indcovb1_int[i] = indcovb2_int[prevyrindex];
         }
         
-        if (indcovc_type > 0) { 
-          indcovc1_int[i] = indcovc2_int[prevyrindex];
-        } else { 
+        if (indcovc_type == 3) {
           indcovc1[i] = indcovc2[prevyrindex];
+        } else if (indcova_type == 0) {
+          indcovc1_str[i] = indcovc2_str[prevyrindex];
+        } else {
+          indcovc1_int[i] = indcovc2_int[prevyrindex];
         }
         
         if (fecadded1[i] > 0) {
@@ -4208,6 +4295,8 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       if (xpos3[i] != xpos2[i] && xpos3[i] == 0.0) {xpos3[i] = xpos2[i];}
       if (ypos1[i] != ypos2[i] && ypos1[i] == 0.0) {ypos1[i] = ypos2[i];}
       if (ypos3[i] != ypos2[i] && ypos3[i] == 0.0) {ypos3[i] = ypos2[i];}
+      
+      //Rcout << "jpf J" << endl;
       
       // Stage assignments
       if (stassign && stage2col == -1) {
@@ -4508,6 +4597,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
             Rf_warningcall(R_NilValue,
               "Some stages in the dataset do not match stage descriptions in the stageframe.");
           }
+          if (i > 836) throw Rcpp::exception("made it this far 7f", false); 
         } else if (cs4.n_elem > 1) {
           if (!quiet) {
             Rf_warningcall(R_NilValue,
@@ -4574,6 +4664,8 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
   
   // Output list creation
   List final_output;
+  
+  //Rcout << "jpf K" << endl;
   
   if (reduce) { 
     bool xpos1_used {false}, ypos1_used {false}, xpos2_used {false};
@@ -4663,6 +4755,8 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       }
     }
     
+    //Rcout << "jpf L" << endl;
+    
     NumericVector censor1_u = unique(censor1);
     if (censor1_u.length() > 1) censor1_used = true;
     NumericVector censor2_u = unique(censor2);
@@ -4740,35 +4834,57 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
     NumericVector fec3added_u = unique(fecadded3);
     if (fec3added_u.length() > 1) fec3added_used = true;
     
+    //Rcout << "jpf M" << endl;
+    
     NumericVector indcova1_u = unique(indcova1);
     IntegerVector indcova1_int_u = unique(indcova1_int);
-    if (indcova1_u.length() > 1 || indcova1_int_u.length() > 1) indcova1_used = true;
+    StringVector indcova1_str_u = unique(indcova1_str);
+    if (indcova1_u.length() > 1 || indcova1_int_u.length() > 1 ||
+        indcova1_str_u.length() > 1) indcova1_used = true;
     NumericVector indcova2_u = unique(indcova2);
     IntegerVector indcova2_int_u = unique(indcova2_int);
-    if (indcova2_u.length() > 1 || indcova2_int_u.length() > 1) indcova2_used = true;
+    StringVector indcova2_str_u = unique(indcova2_str);
+    if (indcova2_u.length() > 1 || indcova2_int_u.length() > 1 ||
+        indcova2_str_u.length() > 1) indcova2_used = true;
     NumericVector indcova3_u = unique(indcova3);
     IntegerVector indcova3_int_u = unique(indcova3_int);
-    if (indcova3_u.length() > 1 || indcova3_int_u.length() > 1) indcova3_used = true;
+    StringVector indcova3_str_u = unique(indcova3_str);
+    if (indcova3_u.length() > 1 || indcova3_int_u.length() > 1 ||
+        indcova3_str_u.length() > 1) indcova3_used = true;
     
     NumericVector indcovb1_u = unique(indcovb1);
     IntegerVector indcovb1_int_u = unique(indcovb1_int);
-    if (indcovb1_u.length() > 1 || indcovb1_int_u.length() > 1) indcovb1_used = true;
+    StringVector indcovb1_str_u = unique(indcovb1_str);
+    if (indcovb1_u.length() > 1 || indcovb1_int_u.length() > 1 ||
+        indcovb1_str_u.length() > 1) indcovb1_used = true;
     NumericVector indcovb2_u = unique(indcovb2);
     IntegerVector indcovb2_int_u = unique(indcovb2_int);
-    if (indcovb2_u.length() > 1 || indcovb2_int_u.length() > 1) indcovb2_used = true;
+    StringVector indcovb2_str_u = unique(indcovb2_str);
+    if (indcovb2_u.length() > 1 || indcovb2_int_u.length() > 1 ||
+        indcovb2_str_u.length() > 1) indcovb2_used = true;
     NumericVector indcovb3_u = unique(indcovb3);
     IntegerVector indcovb3_int_u = unique(indcovb3_int);
-    if (indcovb3_u.length() > 1 || indcovb3_int_u.length() > 1) indcovb3_used = true;
+    StringVector indcovb3_str_u = unique(indcovb3_str);
+    if (indcovb3_u.length() > 1 || indcovb3_int_u.length() > 1 ||
+        indcovb3_str_u.length() > 1) indcovb3_used = true;
     
     NumericVector indcovc1_u = unique(indcovc1);
     IntegerVector indcovc1_int_u = unique(indcovc1_int);
-    if (indcovc1_u.length() > 1 || indcovc1_int_u.length() > 1) indcovc1_used = true;
+    StringVector indcovc1_str_u = unique(indcovc1_str);
+    if (indcovc1_u.length() > 1 || indcovc1_int_u.length() > 1 ||
+        indcovc1_str_u.length() > 1) indcovc1_used = true;
     NumericVector indcovc2_u = unique(indcovc2);
     IntegerVector indcovc2_int_u = unique(indcovc2_int);
-    if (indcovc2_u.length() > 1 || indcovc2_int_u.length() > 1) indcovc2_used = true;
+    StringVector indcovc2_str_u = unique(indcovc2_str);
+    if (indcovc2_u.length() > 1 || indcovc2_int_u.length() > 1 ||
+        indcovc2_str_u.length() > 1) indcovc2_used = true;
     NumericVector indcovc3_u = unique(indcovc3);
     IntegerVector indcovc3_int_u = unique(indcovc3_int);
-    if (indcovc3_u.length() > 1 || indcovc3_int_u.length() > 1) indcovc3_used = true;
+    StringVector indcovc3_str_u = unique(indcovc3_str);
+    if (indcovc3_u.length() > 1 || indcovc3_int_u.length() > 1 ||
+        indcovc3_str_u.length() > 1) indcovc3_used = true;
+    
+    //Rcout << "jpf N" << endl;
     
     NumericVector juvgiven1_u = unique(juvgiven1);
     if (juvgiven1_u.length() > 1) juvgiven1_used = true;
@@ -4908,41 +5024,51 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       red_tracker++;
     }
     
+    //Rcout << "jpf O" << endl;
+    
     if (indcova1_used) {
-      if (indcova_type == 0) {
+      if (indcova_type == 3) {
         reduced(red_tracker) = indcova1;
-      } else {
+      } else if (indcova_type > 0) {
         indcova1_int.attr("class") = indcova_class;
         if (indcova_type == 2) indcova1_int.attr("levels") = indcova_levels;
         reduced(red_tracker) = indcova1_int;
+      } else {
+        reduced(red_tracker) = indcova1_str;
       }
       varnames(red_tracker) = "indcova1";
       red_tracker++;
     }
     
     if (indcovb1_used) {
-      if (indcovb_type == 0) {
+      if (indcovb_type == 3) {
         reduced(red_tracker) = indcovb1;
-      } else {
+      } else if (indcovb_type > 0) {
         indcovb1_int.attr("class") = indcovb_class;
         if (indcovb_type == 2) indcovb1_int.attr("levels") = indcovb_levels;
         reduced(red_tracker) = indcovb1_int;
+      } else {
+        reduced(red_tracker) = indcovb1_str;
       }
       varnames(red_tracker) = "indcovb1";
       red_tracker++;
     }
     
     if (indcovc1_used) {
-      if (indcovc_type == 0) {
+      if (indcovc_type == 3) {
         reduced(red_tracker) = indcovc1;
-      } else {
+      } else if (indcovc_type > 0) {
         indcovc1_int.attr("class") = indcovc_class;
         if (indcovc_type == 2) indcovc1_int.attr("levels") = indcovc_levels;
         reduced(red_tracker) = indcovc1_int;
+      } else {
+        reduced(red_tracker) = indcovc1_str;
       }
       varnames(red_tracker) = "indcovc1";
       red_tracker++;
     }
+    
+    //Rcout << "jpf P" << endl;
     
     if (censor1_used) {
       reduced(red_tracker) = censor1;
@@ -5040,41 +5166,51 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       red_tracker++;
     }
     
+    //Rcout << "jpf Q" << endl;
+    
     if (indcova2_used) {
-      if (indcova_type == 0) {
+      if (indcova_type == 3) {
         reduced(red_tracker) = indcova2;
-      } else {
+      } else if (indcova_type > 0) {
         indcova2_int.attr("class") = indcova_class;
         if (indcova_type == 2) indcova2_int.attr("levels") = indcova_levels;
         reduced(red_tracker) = indcova2_int;
+      } else {
+        reduced(red_tracker) = indcova2_str;
       }
       varnames(red_tracker) = "indcova2";
       red_tracker++;
     }
     
     if (indcovb2_used) {
-      if (indcovb_type == 0) {
+      if (indcovb_type == 3) {
         reduced(red_tracker) = indcovb2;
-      } else {
+      } else if (indcovb_type > 0) {
         indcovb2_int.attr("class") = indcovb_class;
         if (indcovb_type == 2) indcovb2_int.attr("levels") = indcovb_levels;
         reduced(red_tracker) = indcovb2_int;
+      } else {
+        reduced(red_tracker) = indcovb2_str;
       }
       varnames(red_tracker) = "indcovb2";
       red_tracker++;
     }
     
     if (indcovc2_used) {
-      if (indcovc_type == 0) {
+      if (indcovc_type == 3) {
         reduced(red_tracker) = indcovc2;
-      } else {
+      } else if (indcovc_type > 0) {
         indcovc2_int.attr("class") = indcovc_class;
         if (indcovc_type == 2) indcovc2_int.attr("levels") = indcovc_levels;
         reduced(red_tracker) = indcovc2_int;
+      } else {
+        reduced(red_tracker) = indcovc2_str;
       }
       varnames(red_tracker) = "indcovc2";
       red_tracker++;
     }
+    
+    //Rcout << "jpf R" << endl;
     
     if (censor2_used) {
       reduced(red_tracker) = censor2;
@@ -5172,41 +5308,51 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       red_tracker++;
     }
     
+    //Rcout << "jpf S" << endl;
+    
     if (indcova3_used) {
-      if (indcova_type == 0) {
+      if (indcova_type == 3) {
         reduced(red_tracker) = indcova3;
-      } else {
+      } else if (indcova_type > 0) {
         indcova3_int.attr("class") = indcova_class;
         if (indcova_type == 2) indcova3_int.attr("levels") = indcova_levels;
         reduced(red_tracker) = indcova3_int;
+      } else {
+        reduced(red_tracker) = indcova3_str;
       }
       varnames(red_tracker) = "indcova3";
       red_tracker++;
     }
     
     if (indcovb3_used) {
-      if (indcovb_type == 0) {
+      if (indcovb_type == 3) {
         reduced(red_tracker) = indcovb3;
-      } else {
+      } else if (indcovb_type > 0) {
         indcovb3_int.attr("class") = indcovb_class;
         if (indcovb_type == 2) indcovb3_int.attr("levels") = indcovb_levels;
         reduced(red_tracker) = indcovb3_int;
+      } else {
+        reduced(red_tracker) = indcovb3_str;
       }
       varnames(red_tracker) = "indcovb3";
       red_tracker++;
     }
     
     if (indcovc3_used) {
-      if (indcovc_type == 0) {
+      if (indcovc_type == 3) {
         reduced(red_tracker) = indcovc3;
-      } else {
+      } else if (indcovc_type > 0) {
         indcovc3_int.attr("class") = indcovc_class;
         if (indcovc_type == 2) indcovc3_int.attr("levels") = indcovc_levels;
         reduced(red_tracker) = indcovc3_int;
+      } else {
+        reduced(red_tracker) = indcovc3_str;
       }
       varnames(red_tracker) = "indcovc3";
       red_tracker++;
     }
+    
+    //Rcout << "jpf T" << endl;
     
     if (censor3_used) {
       reduced(red_tracker) = censor3;
@@ -5353,35 +5499,51 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
       output_longlist(3) = individ;
     }
     
-    if (indcova_type > 0) {
+    //Rcout << "jpf U" << endl;
+    
+    if (indcova_type == 1 || indcova_type == 2) {
       output_longlist(21) = indcova1_int;
       output_longlist(45) = indcova2_int;
       output_longlist(69) = indcova3_int;
-    } else { 
+    } else if (indcova_type == 3) { 
       output_longlist(21) = indcova1;
       output_longlist(45) = indcova2;
       output_longlist(69) = indcova3;
+    } else {
+      output_longlist(21) = indcova1_str;
+      output_longlist(45) = indcova2_str;
+      output_longlist(69) = indcova3_str;
     }
     
-    if (indcovb_type > 0) { 
+    if (indcovb_type > 0 || indcovb_type == 2) { 
       output_longlist(22) = indcovb1_int;
       output_longlist(46) = indcovb2_int;
       output_longlist(70) = indcovb3_int;
-    } else { 
+    } else if (indcovb_type == 3)  { 
       output_longlist(22) = indcovb1;
       output_longlist(46) = indcovb2;
       output_longlist(70) = indcovb3;
+    } else {
+      output_longlist(22) = indcovb1_str;
+      output_longlist(46) = indcovb2_str;
+      output_longlist(70) = indcovb3_str;
     }
     
-    if (indcovc_type > 0) { 
+    if (indcovc_type > 0 || indcovc_type == 2) { 
       output_longlist(23) = indcovc1_int;
       output_longlist(47) = indcovc2_int;
       output_longlist(71) = indcovc3_int;
-    } else { 
+    } else if (indcovc_type == 3)  { 
       output_longlist(23) = indcovc1;
       output_longlist(47) = indcovc2;
       output_longlist(71) = indcovc3;
+    } else {
+      output_longlist(23) = indcovc1_str;
+      output_longlist(47) = indcovc2_str;
+      output_longlist(71) = indcovc3_str;
     }
+    
+    //Rcout << "jpf V" << endl;
     
     Rcpp::CharacterVector varnames {"rowid", "popid", "patchid", "individ",
       "year2", "firstseen", "lastseen", "obsage", "obslifespan","xpos1", "ypos1",
