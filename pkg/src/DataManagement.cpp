@@ -5680,20 +5680,39 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
 //' @name bootstrap3
 //' 
 //' @param data A data frame of class \code{hfvdata}.
+//' @param by_pop A logical value indicating whether to sample the data frame
+//' by population. If \code{TRUE}, then the number of individuals sampled for
+//' each population will be set to the respective population's actual number of
+//' individuals; otherwise, population identity is ignored. Defaults to
+//' \code{TRUE}.
+//' @param by_patch A logical value indicating whether to sample the data frame
+//' by patch. If \code{TRUE}, then the number of individuals sampled for each
+//' patch will be set to the respective patch's actual number of individuals;
+//' otherwise, patch identity is ignored. Defaults to \code{TRUE}.
 //' @param by_indiv A logical value indicating whether to sample the data frame
 //' by individual identity, or by row. If \code{TRUE}, then samples by
 //' individual identity. Defaults to \code{TRUE}.
-//' @param equal_size A logical value indicating whether to limit the size of
-//' each bootstrapped data frame to the same number of individuals (if
-//' \code{by_indiv = TRUE}) or of rows (if code{by_indiv = FALSE}), if set to
-//' \code{TRUE}, or to set sample to a specific number as set by
-//' \code{max_limit} (if set to \code{FALSE}). Defaults to \code{TRUE}.
+//' @param prop_size A logical value indicating whether to keep the proportions
+//' of individuals (if \code{by_indiv = TRUE}) or of rows (if \code{by_indiv =
+//' FALSE}) in each bootstrapped dataset to the same proportions across
+//' populations (if \code{by_pop = TRUE}, and patches (if
+//' \code{by_patch = TRUE}, as in the original dataset. If \code{FALSE}, then
+//' allows the specific proportions to be set by argument \code{max_limit}.
+//' Defaults to \code{TRUE}.
 //' @param max_limit Sets the sample size to pull from the original data frame,
-//' if \code{equal_size = FALSE}. Defaults to \code{5000}.
+//' if \code{prop_size = FALSE}. Defaults to the size of the original dataset if
+//' \code{prop_size = TRUE}, and to 100 if if \code{prop_size = FALSE}. Can also
+//' be input as an integer vector giving the number of samples to take by
+//' population (if \code{by_pop = TRUE}), patch (if \code{by_patch = TRUE}), or
+//' population-patch (if \code{by_pop = TRUE} and \code{by_patch = TRUE}).
 //' @param reps The number of bootstrap replicates to produce. Defaults to
-//' \code{100};
-//' @param indiv_col A string denoting the variable name coding for individual
-//' identity in the data frame.
+//' \code{100}.
+//' @param popcol A string denoting the variable name coding for population
+//' identity in the data frame. Defaults to \code{"popid"}.
+//' @param patchcol A string denoting the variable name coding for patch
+//' identity in the data frame. Defaults to \code{"patchid"}.
+//' @param indivcol A string denoting the variable name coding for individual
+//' identity in the data frame. Defaults to \code{"individ"}.
 //' 
 //' @return A list of class \code{hfvlist}, which is composed of data frames of
 //' class \code{hfvdata}.
@@ -5742,38 +5761,87 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
 //' 
 //' @export bootstrap3
 // [[Rcpp::export(bootstrap3)]]
-Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_indiv = R_NilValue,
-  Nullable<RObject> equal_size = R_NilValue,
-  Nullable<RObject> max_limit = R_NilValue, Nullable<RObject> reps = R_NilValue,
-  String indiv_col = "individ") {
+Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
+  Nullable<RObject> by_patch = R_NilValue, Nullable<RObject> by_indiv = R_NilValue,
+  Nullable<RObject> prop_size = R_NilValue, Nullable<RObject> max_limit = R_NilValue,
+  Nullable<RObject> reps = R_NilValue, Nullable<RObject> popcol = R_NilValue,
+  Nullable<RObject> patchcol = R_NilValue, Nullable<RObject> indivcol = R_NilValue ) {
   
   DataFrame true_data;
-  bool by_indiv_true {true};
-  bool equal_size_true {true};
-  int sample_limit {5000};
+  bool by_pop_bool {true};
+  bool by_patch_bool {true};
+  bool by_indiv_bool {true};
+  bool prop_size_bool {true};
+  bool max_limit_bool {false};
   int reps_true {100};
+  int default_sample_set {100};
+  
+  StringVector popcol_str;
+  StringVector patchcol_str;
+  StringVector indivcol_str;
+  int popcol_int {-1};
+  int patchcol_int {-1};
+  int indivcol_int {-1};
+  bool found_pop_col {false};
+  bool found_patch_col {false};
+  bool found_indiv_col {false};
+  
+  int total_pops {1};
+  int total_patches {1};
+  int total_poppatches {1};
+  int total_indivs {0};
+  int total_rows {0};
+  
+  StringVector pops_allrows_str;
+  StringVector patches_allrows_str;
+  StringVector poppatches_allrows_str;
+  StringVector individuals_allrows_str;
+  StringVector unique_pops_str;
+  StringVector unique_patches_str;
+  StringVector unique_poppatches_str;
+  StringVector unique_individuals_str;
+  IntegerVector max_limit_int;
+  
+  CharacterVector df_class_lel = {"data.frame", "hfvdata"};
+  
+  if (by_pop.isNotNull()) {
+    RObject by_pop_RO (by_pop);
+    if (is<LogicalVector>(by_pop_RO)) {
+      LogicalVector by_pop_log = as<LogicalVector>(by_pop_RO);
+      by_pop_bool = by_pop_log(0);
+    } else LefkoUtils::pop_error("by_pop", "a logical value", "", 1);
+  }
+  
+  if (by_patch.isNotNull()) {
+    RObject by_patch_RO (by_patch);
+    if (is<LogicalVector>(by_patch_RO)) {
+      LogicalVector by_patch_log = as<LogicalVector>(by_patch_RO);
+      by_patch_bool = by_patch_log(0);
+    } else LefkoUtils::pop_error("by_patch", "a logical value", "", 1);
+  }
   
   if (by_indiv.isNotNull()) {
     RObject by_indiv_RO (by_indiv);
     if (is<LogicalVector>(by_indiv_RO)) {
       LogicalVector by_indiv_log = as<LogicalVector>(by_indiv_RO);
-      by_indiv_true = by_indiv_log(0);
+      by_indiv_bool = by_indiv_log(0);
     } else LefkoUtils::pop_error("by_indiv", "a logical value", "", 1);
   }
   
-  if (equal_size.isNotNull()) {
-    RObject equal_size_RO (equal_size);
-    if (is<LogicalVector>(equal_size_RO)) {
-      LogicalVector equal_size_log = as<LogicalVector>(equal_size_RO);
-      equal_size_true = equal_size_log(0);
-    } else LefkoUtils::pop_error("equal_size", "a logical value", "", 1);
+  if (prop_size.isNotNull()) {
+    RObject prop_size_RO (prop_size);
+    if (is<LogicalVector>(prop_size_RO)) {
+      LogicalVector prop_size_log = as<LogicalVector>(prop_size_RO);
+      prop_size_bool = prop_size_log(0);
+    } else LefkoUtils::pop_error("prop_size", "a logical value", "", 1);
   }
   
   if (max_limit.isNotNull()) {
     RObject max_limit_RO (max_limit);
     if (is<IntegerVector>(max_limit_RO) || is<NumericVector>(max_limit_RO)) {
-      IntegerVector max_limit_int = as<IntegerVector>(max_limit_RO);
-      sample_limit = max_limit_int(0);
+      max_limit_int = as<IntegerVector>(max_limit_RO);
+      max_limit_bool = true;
+      //sample_limit = max_limit_int(0);
     } else LefkoUtils::pop_error("max_limit", "an integer", "", 1);
   }
   
@@ -5789,6 +5857,10 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_indiv = R_NilValue,
   
   if (is<DataFrame>(data)) {
     true_data = as<DataFrame>(data);
+    total_rows = static_cast<int>(true_data.nrows());
+    
+    CharacterVector data_names = true_data.attr("names");
+    int df_var_num = static_cast<int>(data_names.length());
     
     if (true_data.hasAttribute("class")) {
       CharacterVector true_data_classes = wrap(true_data.attr("class"));
@@ -5801,69 +5873,774 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_indiv = R_NilValue,
         LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
       }
       
-      int indiv_id_col {4};
-      bool found_indiv_col {false};
-      CharacterVector data_names = true_data.attr("names");
+      if (popcol.isNotNull()) {
+        RObject popcol_RO (popcol);
+        if (is<StringVector>(popcol_RO)) {
+          popcol_str = as<StringVector>(popcol_RO);
+          
+          for (int i = 0; i < data_names.length(); i++) {
+            if (stringcompare_hard(as<std::string>(data_names(i)), String(popcol_str(0)))) {
+              popcol_int = i;
+              found_pop_col = true;
+            }
+          }
+        } else if (is<IntegerVector>(popcol_RO) || is<NumericVector>(popcol_RO)) {
+          IntegerVector popcol_intvec = as<IntegerVector>(popcol_RO);
+          popcol_int = popcol_intvec(0);
+          if (popcol_int >= 0 && popcol_int < df_var_num) found_pop_col = true;
+        } else LefkoUtils::pop_error("popcol", "a string value", "", 1);
+        
+        if (is<IntegerVector>(true_data(popcol_int))) {
+          IntegerVector pops_alldata = as<IntegerVector>(true_data(popcol_int));
+          pops_allrows_str = StringVector(pops_alldata);
+          
+        } else if (is<NumericVector>(true_data(popcol_int))) {
+          NumericVector pops_alldata = as<NumericVector>(true_data(popcol_int));
+          pops_allrows_str = StringVector(pops_alldata);
+          
+        } else if (is<StringVector>(true_data(popcol_int))) {
+          StringVector pops_alldata = as<StringVector>(true_data(popcol_int));
+          pops_allrows_str = StringVector(pops_alldata);
+          
+        } else throw Rcpp::exception("Population identity is not in a recognized format.", false);
+        
+        unique_pops_str = sort_unique(pops_allrows_str);
+        total_pops = static_cast<int>(unique_pops_str.length());
+        
+      } else if (by_pop_bool) {
+        StringVector new_popcol_str = {"popid"};
+        popcol_str = new_popcol_str;
+        
+        for (int i = 0; i < data_names.length(); i++) {
+          if (stringcompare_hard(as<std::string>(data_names(i)), String(popcol_str(0)))) {
+            popcol_int = i;
+            found_pop_col = true;
+          }
+        }
+        
+        if (is<IntegerVector>(true_data(popcol_int))) {
+          IntegerVector pops_alldata = as<IntegerVector>(true_data(popcol_int));
+          pops_allrows_str = StringVector(pops_alldata);
+          
+        } else if (is<NumericVector>(true_data(popcol_int))) {
+          NumericVector pops_alldata = as<NumericVector>(true_data(popcol_int));
+          pops_allrows_str = StringVector(pops_alldata);
+          
+        } else if (is<StringVector>(true_data(popcol_int))) {
+          StringVector pops_alldata = as<StringVector>(true_data(popcol_int));
+          pops_allrows_str = StringVector(pops_alldata);
+          
+        } else throw Rcpp::exception("Population identity is not in a recognized format.", false);
+        
+        unique_pops_str = sort_unique(pops_allrows_str);
+        total_pops = static_cast<int>(unique_pops_str.length());
+      } else {
+        StringVector new_popcol_str = {"popid"};
+        popcol_str = new_popcol_str;
+        
+        for (int i = 0; i < data_names.length(); i++) {
+          if (stringcompare_hard(as<std::string>(data_names(i)), String(popcol_str(0)))) {
+            popcol_int = i;
+            found_pop_col = true;
+          }
+        }
+        
+        StringVector pops_allrows_str_temp (total_rows);
+        for (int i = 0; i < total_rows; i++) pops_allrows_str_temp(i) = "0";
+        pops_allrows_str = pops_allrows_str_temp;
+        unique_pops_str = sort_unique(pops_allrows_str);
+      }
+      
+      if (patchcol.isNotNull()) {
+        RObject patchcol_RO (patchcol);
+        if (is<StringVector>(patchcol_RO)) {
+          patchcol_str = as<StringVector>(patchcol_RO);
+          
+          for (int i = 0; i < data_names.length(); i++) {
+            if (stringcompare_hard(as<std::string>(data_names(i)), String(patchcol_str(0)))) {
+              patchcol_int = i;
+              found_patch_col = true;
+            }
+          }
+        } else if (is<IntegerVector>(patchcol_RO) || is<NumericVector>(patchcol_RO)) {
+          IntegerVector patchcol_intvec = as<IntegerVector>(patchcol_RO);
+          patchcol_int = patchcol_intvec(0);
+          if (patchcol_int >= 0 && patchcol_int < df_var_num) found_patch_col = true;
+        } else LefkoUtils::pop_error("patchcol", "a string value", "", 1);
+        
+        if (is<IntegerVector>(true_data(patchcol_int))) {
+          IntegerVector patches_alldata = as<IntegerVector>(true_data(patchcol_int));
+          patches_allrows_str = StringVector(patches_alldata);
+          
+        } else if (is<NumericVector>(true_data(patchcol_int))) {
+          NumericVector patches_alldata = as<NumericVector>(true_data(patchcol_int));
+          patches_allrows_str = StringVector(patches_alldata);
+          
+        } else if (is<StringVector>(true_data(patchcol_int))) {
+          StringVector patches_alldata = as<StringVector>(true_data(patchcol_int));
+          patches_allrows_str = StringVector(patches_alldata);
+          
+        } else throw Rcpp::exception("Patch identity is not in a recognized format.", false);
+        
+        unique_patches_str = sort_unique(patches_allrows_str); // Should be redone as pop-patches
+        total_patches = static_cast<int>(unique_patches_str.length()); // Should be redone as pop-patches
+        
+      } else if (by_patch_bool) {
+        StringVector new_patchcol_str = {"patchid"};
+        patchcol_str = new_patchcol_str;
+        
+        for (int i = 0; i < data_names.length(); i++) {
+          if (stringcompare_hard(as<std::string>(data_names(i)), String(patchcol_str(0)))) {
+            patchcol_int = i;
+            found_patch_col = true;
+          }
+        }
+        
+        if (is<IntegerVector>(true_data(patchcol_int))) {
+          IntegerVector patches_alldata = as<IntegerVector>(true_data(patchcol_int));
+          patches_allrows_str = StringVector(patches_alldata);
+          
+        } else if (is<NumericVector>(true_data(patchcol_int))) {
+          NumericVector patches_alldata = as<NumericVector>(true_data(patchcol_int));
+          patches_allrows_str = StringVector(patches_alldata);
+          
+        } else if (is<StringVector>(true_data(patchcol_int))) {
+          StringVector patches_alldata = as<StringVector>(true_data(patchcol_int));
+          patches_allrows_str = StringVector(patches_alldata);
+          
+        } else throw Rcpp::exception("Patch identity is not in a recognized format.", false);
+        
+        unique_patches_str = sort_unique(patches_allrows_str); // Should be redone as pop-patches
+        total_patches = static_cast<int>(unique_patches_str.length()); // Should be redone as pop-patches
+      } else {
+        StringVector new_patchcol_str = {"patchid"};
+        patchcol_str = new_patchcol_str;
+        
+        for (int i = 0; i < data_names.length(); i++) {
+          if (stringcompare_hard(as<std::string>(data_names(i)), String(patchcol_str(0)))) {
+            patchcol_int = i;
+            found_patch_col = true;
+          }
+        }
+        
+        StringVector patches_allrows_str_temp (total_rows);
+        for (int i = 0; i < total_rows; i++) patches_allrows_str_temp(i) = "0";
+        patches_allrows_str = patches_allrows_str_temp; // Should be redone as pop-patches
+        unique_patches_str = sort_unique(patches_allrows_str); // Should be redone as pop-patches
+      }
+      
+      if (by_patch_bool && !found_patch_col) {
+        LefkoUtils::pop_error("patch identity", "", "", 16);
+      }
+      
+      StringVector poppatches_allrows_str (total_rows);    // By rowstr_temp (total_rows);
+      for (int i = 0; i < total_rows; i++) {
+        poppatches_allrows_str(i) = pops_allrows_str(i);
+        poppatches_allrows_str(i) += " ";
+        poppatches_allrows_str(i) += patches_allrows_str(i);
+      }
+      StringVector unique_poppatches_str = sort_unique(poppatches_allrows_str);
+      total_poppatches = static_cast<int>(unique_poppatches_str.length());
+      
+      arma::uvec pop_by_row = zeros<uvec>(total_rows);
+      arma::uvec poppatch_by_row = zeros<uvec>(total_rows);
+      for (int i = 0; i < total_rows; i++) {
+        for (int j = 0; j < total_pops; j++) {
+          if (pops_allrows_str(i) == unique_pops_str(j)) pop_by_row(i) = j;
+        }
+        for (int j = 0; j < total_poppatches; j++) {
+          if (poppatches_allrows_str(i) == unique_poppatches_str(j)) poppatch_by_row(i) = j;
+        }
+      }
+      
+      int length_of_max_limit_int = static_cast<int>(max_limit_int.length());
+      if (!prop_size_bool && length_of_max_limit_int > 1) {
+        if (max_limit_bool) {
+          if (by_pop_bool && by_patch_bool) {
+            if (length_of_max_limit_int != total_poppatches) {
+              String eat_my_shorts = "Argument max_limit should include entries for all ";
+              eat_my_shorts += total_poppatches;
+              eat_my_shorts += " pop-patches.";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+          } else if (by_pop_bool) {
+            if (length_of_max_limit_int != total_pops) {
+              String eat_my_shorts = "Argument max_limit should include entries for all ";
+              eat_my_shorts += total_pops;
+              eat_my_shorts += " populations.";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+          } else if (by_patch_bool) {
+            if (length_of_max_limit_int != total_poppatches) {
+              String eat_my_shorts = "Argument max_limit should include entries for all ";
+              eat_my_shorts += total_poppatches;
+              eat_my_shorts += " patches.";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+          }
+        }
+      }
+      
+      if (indivcol.isNotNull()) {
+        RObject indivcol_RO (indivcol);
+        if (is<StringVector>(indivcol_RO)) {
+          indivcol_str = as<StringVector>(indivcol_RO);
+        } else if (is<IntegerVector>(indivcol_RO) || is<NumericVector>(indivcol_RO)) {
+          IntegerVector indivcol_intvec = as<IntegerVector>(indivcol_RO);
+          indivcol_int = indivcol_intvec(0);
+        } else LefkoUtils::pop_error("indivcol", "a string value", "", 1);
+      } else {
+        StringVector new_indivcol_str = {"individ"};
+        indivcol_str = new_indivcol_str;
+      }
+      
+      if (popcol_int >= 0 && popcol_int <= df_var_num) found_pop_col = true;
+      if (patchcol_int >= 0 && patchcol_int <= df_var_num) found_patch_col = true;
+      if (indivcol_int >= 0 && indivcol_int <= df_var_num) found_indiv_col = true;
       
       for (int i = 0; i < data_names.length(); i++) {
-        if (stringcompare_hard(as<std::string>(data_names[i]), indiv_col)) {
-          indiv_id_col = i;
+        if (stringcompare_hard(as<std::string>(data_names(i)), String(indivcol_str(0)))) {
+          indivcol_int = i;
           found_indiv_col = true;
         }
       }
       
-      if (by_indiv_true && !found_indiv_col) {
+      if (by_pop_bool && !found_pop_col) {
+        LefkoUtils::pop_error("population identity", "", "", 16);
+      }
+      if (by_patch_bool && !found_patch_col) {
+        LefkoUtils::pop_error("patch identity", "", "", 16);
+      }
+      if (by_indiv_bool && !found_indiv_col) {
         LefkoUtils::pop_error("individual identity", "", "", 16);
       }
       
-      if (by_indiv_true && equal_size_true) {
-        if (is<IntegerVector>(true_data(indiv_id_col))) {
-          IntegerVector individuals = as<IntegerVector>(true_data(indiv_id_col));
-          IntegerVector unique_individuals = unique(individuals);
-          sample_limit = unique_individuals.length();
+      if (by_indiv_bool) {
+        if (is<IntegerVector>(true_data(indivcol_int))) {
+          IntegerVector individuals = as<IntegerVector>(true_data(indivcol_int));
+          individuals_allrows_str = StringVector(individuals);
           
-          for (int i = 0; i < reps_true; i++) {
-            // Row determination
-            IntegerVector sampled_individuals = Rcpp::sample(unique_individuals, sample_limit, true);
-            IntegerVector found_rows = match(sampled_individuals, individuals);
-            found_rows = found_rows - 1;
-            
-            DataFrame new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows);
-            hfv_list(i) = new_sampled_data_frame;
-          }
+        } else if (is<NumericVector>(true_data(indivcol_int))) {
+          NumericVector individuals = as<NumericVector>(true_data(indivcol_int));
+          individuals_allrows_str = StringVector(individuals);
           
-        } else if (is<CharacterVector>(true_data(indiv_id_col))) {
-          CharacterVector individuals = as<CharacterVector>(true_data(indiv_id_col));
-          CharacterVector unique_individuals = unique(individuals);
-          sample_limit = unique_individuals.length();
-          
-          for (int i = 0; i < reps_true; i++) {
-            // Row determination
-            CharacterVector sampled_individuals = Rcpp::sample(unique_individuals, sample_limit, true);
-            IntegerVector found_rows = match(sampled_individuals, individuals);
-            found_rows = found_rows - 1;
-            
-            DataFrame new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows);
-            hfv_list(i) = new_sampled_data_frame;
-          }
+        } else if (is<CharacterVector>(true_data(indivcol_int))) {
+          CharacterVector individuals = as<CharacterVector>(true_data(indivcol_int));
+          individuals_allrows_str = StringVector(individuals);
           
         }
-      } else if (equal_size_true) {
-        sample_limit  = true_data.nrows();
-        IntegerVector all_rows = seq_len(sample_limit);
         
-        for (int i = 0; i < reps_true; i++) {
-          IntegerVector found_rows = Rcpp::sample(all_rows, sample_limit, true);
-          found_rows = found_rows - 1;
+        unique_individuals_str = sort_unique(individuals_allrows_str);
+        total_indivs = unique_individuals_str.length();
+        
+        if (prop_size_bool) {
+          // Equal sample proportions, by individual
           
-          DataFrame new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows);
-          hfv_list(i) = new_sampled_data_frame;
+          if (length_of_max_limit_int > 1) {
+            String eat_my_shorts = "If prop_size is TRUE, then argument ";
+            eat_my_shorts += "max_limit should be empty or set to a single ";
+            eat_my_shorts += "value.";
+            
+            throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+          }
+          
+          if (by_patch_bool) {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_poppatches; j++) {
+                arma::uvec current_poppatch_rows = find(poppatch_by_row == j);
+                int found_indivs_selection = static_cast<int>(current_poppatch_rows.n_elem);
+                StringVector current_indiv_selection (found_indivs_selection);
+                for (int k = 0; k < found_indivs_selection; k++) {
+                  current_indiv_selection(k) = individuals_allrows_str(current_poppatch_rows(k));
+                }
+                
+                StringVector unique_indivs_current_poppatch = sort_unique(current_indiv_selection);
+                
+                int current_poppatch_sample_limit {0};
+                if (max_limit_bool) {
+                  double base_num = static_cast<double>(unique_indivs_current_poppatch.length());
+                  double base_denom = static_cast<double>(total_indivs);
+                  
+                  double current_prop = base_num / base_denom;
+                  double current_sample_double = current_prop * base_denom;
+                  current_poppatch_sample_limit = static_cast<int>(round(current_sample_double));
+                } else {
+                  current_poppatch_sample_limit = static_cast<int>(unique_indivs_current_poppatch.length());
+                }
+                
+                // Row determination
+                CharacterVector sampled_individuals = Rcpp::sample(unique_indivs_current_poppatch,
+                  current_poppatch_sample_limit, true);
+                
+                for (int k = 0; k < current_poppatch_sample_limit; k++) {
+                  arma::uvec rows_identified_arma (total_rows, fill::zeros);
+                  for (int l = 0; l < total_rows; l++) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && poppatch_by_row(l) == j) {
+                      rows_identified_arma(l) = 1;
+                    }
+                  }
+                  arma::uvec found_rows_for_indiv_arma = find(rows_identified_arma);
+                  IntegerVector found_rows_for_indiv = wrap(found_rows_for_indiv_arma);
+                  
+                  if (j == 0 && k == 0) {
+                    new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  } else {
+                    DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  }
+                }
+                
+              }
+            }
+          } else if (by_pop_bool) {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_pops; j++) {
+                arma::uvec current_pop_rows = find(pop_by_row == j);
+                int found_indivs_selection = static_cast<int>(current_pop_rows.n_elem);
+                StringVector current_indiv_selection (found_indivs_selection);
+                for (int k = 0; k < found_indivs_selection; k++) {
+                  current_indiv_selection(k) = individuals_allrows_str(current_pop_rows(k));
+                }
+                
+                StringVector unique_indivs_current_pop = sort_unique(current_indiv_selection);
+                
+                int current_pop_sample_limit {0};
+                if (max_limit_bool) {
+                  double base_num = static_cast<double>(unique_indivs_current_pop.length());
+                  double base_denom = static_cast<double>(total_indivs);
+                  
+                  double current_prop = base_num / base_denom;
+                  double current_sample_double = current_prop * base_denom;
+                  current_pop_sample_limit = static_cast<int>(round(current_sample_double));
+                } else {
+                  current_pop_sample_limit = static_cast<int>(unique_indivs_current_pop.length());
+                }
+                
+                // Row determination
+                CharacterVector sampled_individuals = Rcpp::sample(unique_indivs_current_pop,
+                  current_pop_sample_limit, true);
+                
+                for (int k = 0; k < current_pop_sample_limit; k++) {
+                  arma::uvec rows_identified_arma (total_rows, fill::zeros);
+                  for (int l = 0; l < total_rows; l++) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && pop_by_row(l) == j) {
+                      rows_identified_arma(l) = 1;
+                    }
+                  }
+                  arma::uvec found_rows_for_indiv_arma = find(rows_identified_arma);
+                  IntegerVector found_rows_for_indiv = wrap(found_rows_for_indiv_arma);
+                  
+                  if (j == 0 && k == 0) {
+                    new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  } else {
+                    DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  }
+                }
+                
+              }
+            }
+          } else {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              StringVector current_indiv_selection = individuals_allrows_str;
+              
+              StringVector unique_indivs_current = sort_unique(current_indiv_selection);
+              int current_sample_limit = static_cast<int>(unique_indivs_current.length());
+              
+              // Row determination
+              CharacterVector sampled_individuals = Rcpp::sample(unique_indivs_current,
+                current_sample_limit, true);
+              
+              for (int k = 0; k < current_sample_limit; k++) {
+                arma::uvec rows_identified_arma (total_rows, fill::zeros);
+                for (int l = 0; l < total_rows; l++) {
+                  if (individuals_allrows_str(l) == sampled_individuals(k)) {
+                    rows_identified_arma(l) = 1;
+                  }
+                }
+                arma::uvec found_rows_for_indiv_arma = find(rows_identified_arma);
+                IntegerVector found_rows_for_indiv = wrap(found_rows_for_indiv_arma);
+                
+                if (k == 0) {
+                  new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                } else {
+                  DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                }
+              }
+              
+            }
+          }
+        } else {
+          // User-set sample number, by individual
+          if (by_patch_bool) {
+            if (length_of_max_limit_int > 1 && length_of_max_limit_int != total_poppatches) {
+              String eat_my_shorts = "If prop_size is FALSE, then argument ";
+              eat_my_shorts += "max_limit should be empty, set to a single ";
+              eat_my_shorts += "value, or set to the number of pop-patches.";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+            
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_poppatches; j++) {
+                arma::uvec current_poppatch_rows = find(poppatch_by_row == j);
+                int found_indivs_selection = static_cast<int>(current_poppatch_rows.n_elem);
+                StringVector current_indiv_selection (found_indivs_selection);
+                for (int k = 0; k < found_indivs_selection; k++) {
+                  current_indiv_selection(k) = individuals_allrows_str(current_poppatch_rows(k));
+                }
+                
+                StringVector unique_indivs_current_poppatch = sort_unique(current_indiv_selection);
+                
+                int current_poppatch_sample_limit {0};
+                if (max_limit_bool) {
+                  if (length_of_max_limit_int > 1) {
+                    current_poppatch_sample_limit = max_limit_int(j);
+                  } else if (length_of_max_limit_int == 1) {
+                    current_poppatch_sample_limit = max_limit_int(0);
+                  } else {
+                    current_poppatch_sample_limit = default_sample_set;
+                  }
+                } else {
+                  current_poppatch_sample_limit = default_sample_set;
+                }
+                
+                // Row determination
+                CharacterVector sampled_individuals = Rcpp::sample(unique_indivs_current_poppatch,
+                  current_poppatch_sample_limit, true);
+                
+                for (int k = 0; k < current_poppatch_sample_limit; k++) {
+                  arma::uvec rows_identified_arma (total_rows, fill::zeros);
+                  for (int l = 0; l < total_rows; l++) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && poppatch_by_row(l) == j) {
+                      rows_identified_arma(l) = 1;
+                    }
+                  }
+                  arma::uvec found_rows_for_indiv_arma = find(rows_identified_arma);
+                  IntegerVector found_rows_for_indiv = wrap(found_rows_for_indiv_arma);
+                  
+                  if (j == 0 && k == 0) {
+                    new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  } else {
+                    DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  }
+                }
+                
+              }
+            }
+          } else if (by_pop_bool) {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_pops; j++) {
+                arma::uvec current_pop_rows = find(pop_by_row == j);
+                int found_indivs_selection = static_cast<int>(current_pop_rows.n_elem);
+                StringVector current_indiv_selection (found_indivs_selection);
+                for (int k = 0; k < found_indivs_selection; k++) {
+                  current_indiv_selection(k) = individuals_allrows_str(current_pop_rows(k));
+                }
+                
+                StringVector unique_indivs_current_pop = sort_unique(current_indiv_selection);
+                
+                int current_pop_sample_limit {0};
+                if (max_limit_bool) {
+                  if (length_of_max_limit_int > 1) {
+                    current_pop_sample_limit = max_limit_int(j);
+                  } else if (length_of_max_limit_int == 1) {
+                    current_pop_sample_limit = max_limit_int(0);
+                  } else {
+                    current_pop_sample_limit = default_sample_set;
+                  }
+                } else {
+                  current_pop_sample_limit = default_sample_set;
+                }
+                
+                // Row determination
+                CharacterVector sampled_individuals = Rcpp::sample(unique_indivs_current_pop,
+                  current_pop_sample_limit, true);
+                
+                for (int k = 0; k < current_pop_sample_limit; k++) {
+                  arma::uvec rows_identified_arma (total_rows, fill::zeros);
+                  for (int l = 0; l < total_rows; l++) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && pop_by_row(l) == j) {
+                      rows_identified_arma(l) = 1;
+                    }
+                  }
+                  arma::uvec found_rows_for_indiv_arma = find(rows_identified_arma);
+                  IntegerVector found_rows_for_indiv = wrap(found_rows_for_indiv_arma);
+                  
+                  if (j == 0 && k == 0) {
+                    new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  } else {
+                    DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                    hfv_list(i) = clone(new_sampled_data_frame);
+                  }
+                }
+                
+              }
+            }
+          } else {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              StringVector current_indiv_selection = individuals_allrows_str;
+              
+              StringVector unique_indivs_current = sort_unique(current_indiv_selection);
+              int current_sample_limit = static_cast<int>(unique_indivs_current.length());
+              
+              // Row determination
+              CharacterVector sampled_individuals = Rcpp::sample(unique_indivs_current,
+                current_sample_limit, true);
+              
+              for (int k = 0; k < current_sample_limit; k++) {
+                arma::uvec rows_identified_arma (total_rows, fill::zeros);
+                for (int l = 0; l < total_rows; l++) {
+                  if (individuals_allrows_str(l) == sampled_individuals(k)) {
+                    rows_identified_arma(l) = 1;
+                  }
+                }
+                arma::uvec found_rows_for_indiv_arma = find(rows_identified_arma);
+                IntegerVector found_rows_for_indiv = wrap(found_rows_for_indiv_arma);
+                
+                if (k == 0) {
+                  new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                } else {
+                  DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                }
+              }
+              
+            }
+          }
+        }
+      } else {
+        // By row
+        if (prop_size_bool) {
+          // Equal sample proportions, by row
+          if (length_of_max_limit_int > 1) {
+            String eat_my_shorts = "If prop_size is TRUE, then argument ";
+            eat_my_shorts += "max_limit should be empty or set to a single ";
+            eat_my_shorts += "value.";
+            
+            throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+          }
+          
+          if (by_patch_bool) {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_poppatches; j++) {
+                arma::uvec current_poppatch_rows = find(poppatch_by_row == j);
+                int found_rows_selection = static_cast<int>(current_poppatch_rows.n_elem);
+                
+                int current_poppatch_sample_limit {0};
+                if (max_limit_bool) {
+                  double base_num = static_cast<double>(found_rows_selection);
+                  double base_denom = static_cast<double>(total_rows);
+                  
+                  double current_prop = base_num / base_denom;
+                  double current_sample_double = current_prop * base_denom;
+                  current_poppatch_sample_limit = static_cast<int>(round(current_sample_double));
+                } else {
+                  current_poppatch_sample_limit = found_rows_selection;
+                }
+                
+                // Row determination
+                IntegerVector current_poppatch_rows_int = wrap(current_poppatch_rows);
+                IntegerVector sampled_rows = Rcpp::sample(current_poppatch_rows_int,
+                  current_poppatch_sample_limit, true);
+                
+                if (j == 0) {
+                  new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                } else {
+                  DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                }
+              }
+            }
+          } else if (by_pop_bool) {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_pops; j++) {
+                arma::uvec current_pop_rows = find(pop_by_row == j);
+                int found_rows_selection = static_cast<int>(current_pop_rows.n_elem);
+                
+                int current_pop_sample_limit {0};
+                if (max_limit_bool) {
+                  double base_num = static_cast<double>(found_rows_selection);
+                  double base_denom = static_cast<double>(total_rows);
+                  
+                  double current_prop = base_num / base_denom;
+                  double current_sample_double = current_prop * base_denom;
+                  current_pop_sample_limit = static_cast<int>(round(current_sample_double));
+                } else {
+                  current_pop_sample_limit = found_rows_selection;
+                }
+                
+                // Row determination
+                IntegerVector current_pop_rows_int = wrap(current_pop_rows);
+                IntegerVector sampled_rows = Rcpp::sample(current_pop_rows_int,
+                  current_pop_sample_limit, true);
+                
+                if (j == 0) {
+                  new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                } else {
+                  DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                }
+              }
+            }
+          } else {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              IntegerVector unique_rows_current = seq(0, (total_rows - 1));
+              int current_sample_limit = total_rows;
+              
+              // Row determination
+              IntegerVector sampled_rows = Rcpp::sample(unique_rows_current,
+                current_sample_limit, true);
+              
+              new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+              hfv_list(i) = clone(new_sampled_data_frame);
+            }
+          }
+        } else {
+          // User-set sample number, by individual
+          if (by_patch_bool) {
+            if (length_of_max_limit_int > 1 && length_of_max_limit_int != total_poppatches) {
+              String eat_my_shorts = "If prop_size is FALSE, then argument ";
+              eat_my_shorts += "max_limit should be empty, set to a single ";
+              eat_my_shorts += "value, or set to the number of pop-patches.";
+              
+              throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
+            }
+            
+            
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_poppatches; j++) {
+                arma::uvec current_poppatch_rows = find(poppatch_by_row == j);
+                int found_rows_selection = static_cast<int>(current_poppatch_rows.n_elem);
+                
+                int current_poppatch_sample_limit {0};
+                if (max_limit_bool) {
+                  if (length_of_max_limit_int > 1) {
+                    current_poppatch_sample_limit = max_limit_int(j);
+                  } else if (length_of_max_limit_int == 1) {
+                    current_poppatch_sample_limit = max_limit_int(0);
+                  } else {
+                    current_poppatch_sample_limit = default_sample_set;
+                  }
+                } else {
+                  current_poppatch_sample_limit = default_sample_set;
+                }
+                
+                // Row determination
+                IntegerVector current_poppatch_rows_int = wrap(current_poppatch_rows);
+                IntegerVector sampled_rows = Rcpp::sample(current_poppatch_rows_int,
+                  current_poppatch_sample_limit, true);
+                
+                if (j == 0) {
+                  new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                } else {
+                  DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                }
+                
+              }
+            }
+          } else if (by_pop_bool) {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              for (int j = 0; j < total_pops; j++) {
+                arma::uvec current_pop_rows = find(pop_by_row == j);
+                int found_rows_selection = static_cast<int>(current_pop_rows.n_elem);
+                
+                int current_pop_sample_limit {0};
+                if (max_limit_bool) {
+                  if (length_of_max_limit_int > 1) {
+                    current_pop_sample_limit = max_limit_int(j);
+                  } else if (length_of_max_limit_int == 1) {
+                    current_pop_sample_limit = max_limit_int(0);
+                  } else {
+                    current_pop_sample_limit = default_sample_set;
+                  }
+                } else {
+                  current_pop_sample_limit = default_sample_set;
+                }
+                
+                // Row determination
+                IntegerVector current_pop_rows_int = wrap(current_pop_rows);
+                IntegerVector sampled_rows = Rcpp::sample(current_pop_rows_int,
+                  current_pop_sample_limit, true);
+                
+                if (j == 0) {
+                  new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                } else {
+                  DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+                  new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
+                  hfv_list(i) = clone(new_sampled_data_frame);
+                }
+              }
+            }
+          } else {
+            for (int i = 0; i < reps_true; i++) {
+              DataFrame new_sampled_data_frame;
+              
+              int current_sample_limit {0};
+              if (max_limit_bool) {
+                if (length_of_max_limit_int > 0) {
+                  current_sample_limit = max_limit_int(0);
+                } else {
+                  current_sample_limit = default_sample_set;
+                }
+              } else {
+                current_sample_limit = default_sample_set;
+              }
+                
+              // Row determination
+              IntegerVector unique_rows_current = seq(0, (total_rows - 1));
+              IntegerVector sampled_rows = Rcpp::sample(unique_rows_current,
+                current_sample_limit, true);
+              
+              new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, sampled_rows);
+              hfv_list(i) = clone(new_sampled_data_frame);
+            }
+          }
         }
       }
-      
     } else LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
   } else LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
   
+  for (int i = 0; i < reps_true; i++) {
+    DataFrame new_sampled_data_frame = as<DataFrame>(hfv_list(i));
+    new_sampled_data_frame.attr("class") = df_class_lel;
+  }
   CharacterVector hfv_list_class = {"hfvlist"};
   hfv_list.attr("class") = hfv_list_class;
   

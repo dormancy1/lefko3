@@ -278,20 +278,39 @@
 #' @name bootstrap3
 #' 
 #' @param data A data frame of class \code{hfvdata}.
+#' @param by_pop A logical value indicating whether to sample the data frame
+#' by population. If \code{TRUE}, then the number of individuals sampled for
+#' each population will be set to the respective population's actual number of
+#' individuals; otherwise, population identity is ignored. Defaults to
+#' \code{TRUE}.
+#' @param by_patch A logical value indicating whether to sample the data frame
+#' by patch. If \code{TRUE}, then the number of individuals sampled for each
+#' patch will be set to the respective patch's actual number of individuals;
+#' otherwise, patch identity is ignored. Defaults to \code{TRUE}.
 #' @param by_indiv A logical value indicating whether to sample the data frame
 #' by individual identity, or by row. If \code{TRUE}, then samples by
 #' individual identity. Defaults to \code{TRUE}.
-#' @param equal_size A logical value indicating whether to limit the size of
-#' each bootstrapped data frame to the same number of individuals (if
-#' \code{by_indiv = TRUE}) or of rows (if code{by_indiv = FALSE}), if set to
-#' \code{TRUE}, or to set sample to a specific number as set by
-#' \code{max_limit} (if set to \code{FALSE}). Defaults to \code{TRUE}.
+#' @param prop_size A logical value indicating whether to keep the proportions
+#' of individuals (if \code{by_indiv = TRUE}) or of rows (if \code{by_indiv =
+#' FALSE}) in each bootstrapped dataset to the same proportions across
+#' populations (if \code{by_pop = TRUE}, and patches (if
+#' \code{by_patch = TRUE}, as in the original dataset. If \code{FALSE}, then
+#' allows the specific proportions to be set by argument \code{max_limit}.
+#' Defaults to \code{TRUE}.
 #' @param max_limit Sets the sample size to pull from the original data frame,
-#' if \code{equal_size = FALSE}. Defaults to \code{5000}.
+#' if \code{prop_size = FALSE}. Defaults to the size of the original dataset if
+#' \code{prop_size = TRUE}, and to 100 if if \code{prop_size = FALSE}. Can also
+#' be input as an integer vector giving the number of samples to take by
+#' population (if \code{by_pop = TRUE}), patch (if \code{by_patch = TRUE}), or
+#' population-patch (if \code{by_pop = TRUE} and \code{by_patch = TRUE}).
 #' @param reps The number of bootstrap replicates to produce. Defaults to
-#' \code{100};
-#' @param indiv_col A string denoting the variable name coding for individual
-#' identity in the data frame.
+#' \code{100}.
+#' @param popcol A string denoting the variable name coding for population
+#' identity in the data frame. Defaults to \code{"popid"}.
+#' @param patchcol A string denoting the variable name coding for patch
+#' identity in the data frame. Defaults to \code{"patchid"}.
+#' @param indivcol A string denoting the variable name coding for individual
+#' identity in the data frame. Defaults to \code{"individ"}.
 #' 
 #' @return A list of class \code{hfvlist}, which is composed of data frames of
 #' class \code{hfvdata}.
@@ -339,8 +358,8 @@
 #'   stochastic = TRUE)
 #' 
 #' @export bootstrap3
-bootstrap3 <- function(data, by_indiv = NULL, equal_size = NULL, max_limit = NULL, reps = NULL, indiv_col = "individ") {
-    .Call('_lefko3_bootstrap3', PACKAGE = 'lefko3', data, by_indiv, equal_size, max_limit, reps, indiv_col)
+bootstrap3 <- function(data, by_pop = NULL, by_patch = NULL, by_indiv = NULL, prop_size = NULL, max_limit = NULL, reps = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL) {
+    .Call('_lefko3_bootstrap3', PACKAGE = 'lefko3', data, by_pop, by_patch, by_indiv, prop_size, max_limit, reps, popcol, patchcol, indivcol)
 }
 
 #' Core Engine for cond_hmpm()
