@@ -5435,8 +5435,9 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' age x stage matrices, as well as smaller ahistorical matrices, and general
 #' projetions.
 #' 
-#' @param mpm A \code{lefkoMat} object, a list of projection matrices, a
-#' \code{lefkoProj} object, or a single projection matrix.
+#' @param mpm A \code{lefkoMat} object, a \code{lefkoMatList} object, a list of
+#' projection matrices, a \code{lefkoProj} object, or a single projection
+#' matrix in either standard or sparse format.
 #' @param force_sparse A logical value or string detailing whether to force
 #' sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},
 #' which only forces sparse matrix coding if simple matrices are input that are
@@ -5449,7 +5450,11 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' @return The value returned depends on the class of the \code{mpm} argument.
 #' If a \code{lefkoMat} object is provided, then this function will return the
 #' \code{labels} data frame with a new column named \code{lambda} showing the
-#' dominant eigenvalues for each matrix. If a list of matrices is provided,
+#' dominant eigenvalues for each matrix. If a \code{lefkoMatList} object is
+#' provided, then a two element list in which the first element is a vector
+#' composed of the mean lambda values of each \code{lefkoMat} element within
+#' the list is provided, and the second element is a list of \code{lefkoMat}
+#' lambda summaries as previously described. If a list of matrices is provided,
 #' then this function will produce a numeric vector with the dominant
 #' eigenvalues provided in order of matrix. If a single matrix is provided,
 #' then this function will return the dominant eigenvalue of that matrix. Only

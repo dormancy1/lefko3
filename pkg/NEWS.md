@@ -6,6 +6,8 @@
 
 * All MPM creation functions can now create bootstrapped MPMs.
 
+* Function lambda3() can now handle lefkoMatList objects.
+
 ## BUG FIXES
 
 * Function historicalize3() no longer crashes when string-based individual

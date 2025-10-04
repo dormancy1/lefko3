@@ -300,7 +300,7 @@ stablestage3 <- function(mats, ...) UseMethod("stablestage3")
 stablestage3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
   tweights = NA, seed = NA, force_sparse = "auto", ...) {
   
-  matrix_set <- theprohecy <- NULL
+  matrix_set <- theprophecy <- NULL
   sparsemethod <- sparse_auto <- sparse_input <- FALSE
   
   if (is(mats$A[[1]], "dgCMatrix")) sparse_input <- TRUE
