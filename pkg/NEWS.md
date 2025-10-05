@@ -6,7 +6,8 @@
 
 * All MPM creation functions can now create bootstrapped MPMs.
 
-* Function lambda3() can now handle lefkoMatList objects.
+* Functions lmean(), lambda3(), and stablestage3()  can now handle lefkoMatList
+  objects.
 
 ## BUG FIXES
 

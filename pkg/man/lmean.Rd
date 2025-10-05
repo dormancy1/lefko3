@@ -7,8 +7,8 @@
 lmean(mats, matsout = NULL, force_sparse = FALSE)
 }
 \arguments{
-\item{mats}{A \code{lefkoMat} object, or a list of square matrices of equal
-dimension.}
+\item{mats}{A \code{lefkoMat} object, a \code{lefkoMatList} object, or a
+list of square matrices of equal dimension in standard or sparse format.}
 
 \item{matsout}{A string identifying which means to estimate. Option
 \code{"pop"} indicates population-level only, \code{"patch"} indicates
@@ -19,7 +19,9 @@ population-level means should be estimated. Defaults to \code{"all"}.}
 matrices in sparse format, if input as standard matrices.}
 }
 \value{
-Yields a \code{lefkoMat} object with the following characteristics:
+Yields a \code{lefkoMat} object, a \code{lefkoMatList} object, or
+a list of matrices. If a \code{lefkoMat} object. then will have the
+following characteristics:
 
 \item{A}{A list of full mean projection matrices in order of sorted
 populations, patches, and years. These are typically estimated as the sums
@@ -50,7 +52,8 @@ resulting from raw matrix estimation.}
 Function \code{lmean()} estimates mean projection matrices as element-wise
 arithmetic means. It produces \code{lefkoMat} objects if provided with them,
 or single matrices in a simple one-element list if provided a list of
-matrices.
+matrices. Will produce a \code{lefkoMatList} object, in which each element
+is a \code{lefkoMat} object, if provided with a \code{lefkoMatList} object.
 }
 \examples{
 data(cypdata)

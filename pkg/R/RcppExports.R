@@ -1102,12 +1102,13 @@ hist_null <- function(mpm, format = 1L, err_check = FALSE) {
 #' Function \code{lmean()} estimates mean projection matrices as element-wise
 #' arithmetic means. It produces \code{lefkoMat} objects if provided with them,
 #' or single matrices in a simple one-element list if provided a list of
-#' matrices.
+#' matrices. Will produce a \code{lefkoMatList} object, in which each element
+#' is a \code{lefkoMat} object, if provided with a \code{lefkoMatList} object.
 #' 
 #' @name lmean
 #' 
-#' @param mats A \code{lefkoMat} object, or a list of square matrices of equal
-#' dimension.
+#' @param mats A \code{lefkoMat} object, a \code{lefkoMatList} object, or a
+#' list of square matrices of equal dimension in standard or sparse format.
 #' @param matsout A string identifying which means to estimate. Option
 #' \code{"pop"} indicates population-level only, \code{"patch"} indicates
 #' patch-level only, and \code{"all"} indicates that both patch- and
@@ -1115,7 +1116,9 @@ hist_null <- function(mpm, format = 1L, err_check = FALSE) {
 #' @param force_sparse A logical value identifying whether to output the mean
 #' matrices in sparse format, if input as standard matrices.
 #' 
-#' @return Yields a \code{lefkoMat} object with the following characteristics:
+#' @return Yields a \code{lefkoMat} object, a \code{lefkoMatList} object, or
+#' a list of matrices. If a \code{lefkoMat} object. then will have the
+#' following characteristics:
 #' 
 #' \item{A}{A list of full mean projection matrices in order of sorted
 #' populations, patches, and years. These are typically estimated as the sums
