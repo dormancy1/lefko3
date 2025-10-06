@@ -70,4 +70,6 @@ stablestage3(ehrlen3$A[[1]])
 \code{\link{stablestage3.list}()}
 
 \code{\link{stablestage3.matrix}()}
+
+\code{\link{stablestage3.lefkoMatList}()}
 }

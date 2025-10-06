@@ -207,4 +207,6 @@ stablestage3(cypmatrix2r, stochastic = TRUE)
 \code{\link{stablestage3.matrix}()}
 
 \code{\link{stablestage3.dgCMatrix}()}
+
+\code{\link{stablestage3.lefkoMatList}()}
 }

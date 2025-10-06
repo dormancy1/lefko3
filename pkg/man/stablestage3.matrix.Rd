@@ -85,6 +85,8 @@ stablestage3(ehrlen3mean$A[[1]])
 
 \code{\link{stablestage3.lefkoMat}()}
 
+\code{\link{stablestage3.lefkoMatList}()}
+
 \code{\link{stablestage3.list}()}
 
 \code{\link{stablestage3.dgCMatrix}()}

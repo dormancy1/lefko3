@@ -206,6 +206,7 @@ stablestage3 <- function(mats, ...) UseMethod("stablestage3")
 #' @seealso \code{\link{stablestage3.list}()}
 #' @seealso \code{\link{stablestage3.matrix}()}
 #' @seealso \code{\link{stablestage3.dgCMatrix}()}
+#' @seealso \code{\link{stablestage3.lefkoMatList}()}
 #' 
 #' @examples
 #' # Lathyrus deterministic example
@@ -591,6 +592,7 @@ stablestage3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
 #' 
 #' @seealso \code{\link{stablestage3}()}
 #' @seealso \code{\link{stablestage3.lefkoMat}()}
+#' @seealso \code{\link{stablestage3.lefkoMatList}()}
 #' @seealso \code{\link{stablestage3.list}()}
 #' @seealso \code{\link{stablestage3.dgCMatrix}()}
 #' 
@@ -686,6 +688,7 @@ stablestage3.matrix <- function(mats, force_sparse = "auto", ...)
 #' @seealso \code{\link{stablestage3.lefkoMat}()}
 #' @seealso \code{\link{stablestage3.list}()}
 #' @seealso \code{\link{stablestage3.matrix}()}
+#' @seealso \code{\link{stablestage3.lefkoMatList}()}
 #' 
 #' @examples
 #' data(lathyrus)
@@ -876,11 +879,11 @@ stablestage3.dgCMatrix <- function(mats, ...)
 #'   type = c(1, 1, 1, 1, 3, 3, 1), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
 #'   stageframe = lathframe, historical = TRUE)
 #' 
-#' ehrlen3_boot <- rlefko3(data = lathvert_bot, stageframe = lathframe,
+#' ehrlen3_boot <- rlefko3(data = lathvert_boot, stageframe = lathframe,
 #'   year = "all", stages = c("stage3", "stage2", "stage1"),
 #'   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
 #' 
-#' ehrlen3mean <- lmean(ehrlen3)
+#' ehrlen3mean <- lmean(ehrlen3_boot)
 #' stablestage3(ehrlen3mean)
 #' 
 #' # Cypripedium stochastic example

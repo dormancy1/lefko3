@@ -31,7 +31,7 @@ using namespace arma;
 // 15. Rcpp::IntegerVector shrink  Resize an IntegerVector
 // 16. IntegerVector index_l3  Find Indices of a Matching String in a StringVector
 // 
-// 17. List df_subset  Subset Data Frame
+// 17. List df_subset  Subset Data Frame By A Specific Variable
 // 18. bool df_compare  Check If Two Data Frames Are Equal
 // 19. List df_subset_byrow  Subset Data Frame By Integer Vector of Row Numbers
 // 20. List df_remove  Remove Rows With Specific Index Values From Data Frame
@@ -635,7 +635,7 @@ namespace LefkoUtils {
     return all_indices;
   }
   
-  //' Subset Data Frame
+  //' Subset Data Frame By A Specific Variable
   //' 
   //' Returns a data frame subset of a single condition in a single variable.
   //' 
@@ -1669,6 +1669,7 @@ namespace LefkoUtils {
             CharacterVector unique_levels = unique(col_mergedLevels);
             
             combinedCol.attr("levels") = unique_levels;
+            combinedCol.attr("class") = "factor";
           }
           out_df(i) = combinedCol;
           break;

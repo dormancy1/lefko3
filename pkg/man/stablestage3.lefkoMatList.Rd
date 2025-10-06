@@ -153,11 +153,11 @@ lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "Sd", "Sdl", "mat
   type = c(1, 1, 1, 1, 3, 3, 1), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
   stageframe = lathframe, historical = TRUE)
 
-ehrlen3_boot <- rlefko3(data = lathvert_bot, stageframe = lathframe,
+ehrlen3_boot <- rlefko3(data = lathvert_boot, stageframe = lathframe,
   year = "all", stages = c("stage3", "stage2", "stage1"),
   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
 
-ehrlen3mean <- lmean(ehrlen3)
+ehrlen3mean <- lmean(ehrlen3_boot)
 stablestage3(ehrlen3mean)
 
 # Cypripedium stochastic example
