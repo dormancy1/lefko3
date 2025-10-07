@@ -949,9 +949,20 @@ stablestage3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
     
     if (i == 1) {
       focused_frame <- new_correction
-      focused_frame$ss_prop <- new_correction$ss_prop / length_of_list
+      
+      if (!is.data.frame(focused_frame)) {
+        focused_frame$hist$ss_prop <- focused_frame$hist$ss_prop / length_of_list
+        focused_frame$ahist$ss_prop <- focused_frame$ahist$ss_prop / length_of_list
+      } else {
+        focused_frame$ss_prop <- new_correction$ss_prop / length_of_list
+      }
     } else {
-      focused_frame$ss_prop <- focused_frame$ss_prop +  (new_correction$ss_prop / length_of_list)
+      if (!is.data.frame(focused_frame)) {
+        focused_frame$hist$ss_prop <- focused_frame$hist$ss_prop + (focused_frame$hist$ss_prop / length_of_list)
+        focused_frame$ahist$ss_prop <- focused_frame$ahist$ss_prop + (focused_frame$ahist$ss_prop / length_of_list)
+      } else {
+        focused_frame$ss_prop <- focused_frame$ss_prop + (new_correction$ss_prop / length_of_list)
+      }
     }
   }
   
@@ -2168,16 +2179,25 @@ repvalue3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
     
     if (i == 1) {
       focused_frame <- new_correction
-      focused_frame$ss_prop <- new_correction$ss_prop / length_of_list
+      
+      if (!is.data.frame(focused_frame)) {
+        focused_frame$hist$rep_value <- focused_frame$hist$rep_value / length_of_list
+        focused_frame$ahist$rep_value <- focused_frame$ahist$rep_value / length_of_list
+      } else {
+        focused_frame$rep_value <- new_correction$rep_value / length_of_list
+      }
     } else {
-      focused_frame$ss_prop <- focused_frame$ss_prop +  (new_correction$ss_prop / length_of_list)
+      if (!is.data.frame(focused_frame)) {
+        focused_frame$hist$rep_value <- focused_frame$hist$rep_value + (focused_frame$hist$rep_value / length_of_list)
+        focused_frame$ahist$rep_value <- focused_frame$ahist$rep_value + (focused_frame$ahist$rep_value / length_of_list)
+      } else {
+        focused_frame$rep_value <- focused_frame$rep_value + (new_correction$rep_value / length_of_list)
+      }
     }
   }
   
   final_output <- list(mean = focused_frame, summaries = output_list)
   return(final_output)
-
-  return(output)
 }
 
 #' Estimate Reproductive Value Vector for a List of Projection Matrices
