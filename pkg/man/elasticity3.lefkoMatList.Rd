@@ -194,7 +194,7 @@ elasticity3(cypmatrix2r_boot)
 \seealso{
 \code{\link{elasticity3}()}
 
-\code{\link{sensitivity3.lefkoMat}()}
+\code{\link{elasticity3.lefkoMat}()}
 
 \code{\link{elasticity3.dgCMatrix}()}
 

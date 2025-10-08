@@ -3117,22 +3117,30 @@ sensitivity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
       focused_frame <- new_correction
       
       if (is.matrix(focused_frame$ah_sensmats)) {
-        focused_frame$ah_sensmats[[1]] <- focused_frame$ah_sensmats[[1]] / length_of_list
-        focused_frame$h_sensmats[[1]] <- focused_frame$h_sensmats[[1]] / length_of_list
+        focused_frame$ah_sensmats <- focused_frame$ah_sensmats / length_of_list
+        if (is.matrix(focused_frame$h_sensmats)) {
+          focused_frame$h_sensmats <- focused_frame$h_sensmats / length_of_list
+        }
       } else {
         for (i in c(1:length(focused_frame$ah_sensmats))) {
-        focused_frame$ah_sensmats[[i]] <- focused_frame$ah_sensmats[[i]] / length_of_list
-        focused_frame$h_sensmats[[i]] <- focused_frame$h_sensmats[[i]] / length_of_list
+          focused_frame$ah_sensmats[[i]] <- focused_frame$ah_sensmats[[i]] / length_of_list
+          if (is.list(focused_frame$h_sensmats)) {
+            focused_frame$h_sensmats[[i]] <- focused_frame$h_sensmats[[i]] / length_of_list
+          }
         }
       }
     } else {
       if (is.matrix(focused_frame$ah_sensmats)) {
-        focused_frame$ah_sensmats[[1]] <- focused_frame$ah_sensmats[[1]] + (new_correction$ah_sensmats[[1]] / length_of_list)
-        focused_frame$h_sensmats[[1]] <- focused_frame$h_sensmats[[1]] + (new_correction$h_sensmats[[1]] / length_of_list)
+        focused_frame$ah_sensmats <- focused_frame$ah_sensmats + (new_correction$ah_sensmats / length_of_list)
+        if (is.matrix(focused_frame$h_sensmats)) {
+          focused_frame$h_sensmats <- focused_frame$h_sensmats + (new_correction$h_sensmats / length_of_list)
+        }
       } else {
         for (i in c(1:length(focused_frame$ah_sensmats))) {
-        focused_frame$ah_sensmats[[i]] <- focused_frame$ah_sensmats[[i]] + (new_correction$ah_sensmats[[i]] / length_of_list)
-        focused_frame$h_sensmats[[i]] <- focused_frame$h_sensmats[[i]] + (new_correction$h_sensmats[[i]] / length_of_list)
+          focused_frame$ah_sensmats[[i]] <- focused_frame$ah_sensmats[[i]] + (new_correction$ah_sensmats[[i]] / length_of_list)
+          if (is.list(focused_frame$h_sensmats)) {
+            focused_frame$h_sensmats[[i]] <- focused_frame$h_sensmats[[i]] + (new_correction$h_sensmats[[i]] / length_of_list)
+          }
         }
       }
     }
@@ -4160,7 +4168,7 @@ elasticity3.dgCMatrix <- function(mats, sparse = "auto", ...)
 #' \code{sparse} arguments.
 #' 
 #' @seealso \code{\link{elasticity3}()}
-#' @seealso \code{\link{sensitivity3.lefkoMat}()}
+#' @seealso \code{\link{elasticity3.lefkoMat}()}
 #' @seealso \code{\link{elasticity3.dgCMatrix}()}
 #' @seealso \code{\link{elasticity3.matrix}()}
 #' @seealso \code{\link{elasticity3.list}()}
@@ -4275,22 +4283,30 @@ elasticity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
       focused_frame <- new_correction
       
       if (is.matrix(focused_frame$ah_elasmats)) {
-        focused_frame$ah_elasmats[[1]] <- focused_frame$ah_elasmats[[1]] / length_of_list
-        focused_frame$h_elasmats[[1]] <- focused_frame$h_elasmats[[1]] / length_of_list
+        focused_frame$ah_elasmats <- focused_frame$ah_elasmats / length_of_list
+        if (is.matrix(focused_frame$h_elasmats)) {
+          focused_frame$h_elasmats <- focused_frame$h_elasmats / length_of_list
+        }
       } else {
         for (i in c(1:length(focused_frame$ah_elasmats))) {
-        focused_frame$ah_elasmats[[i]] <- focused_frame$ah_elasmats[[i]] / length_of_list
-        focused_frame$h_elasmats[[i]] <- focused_frame$h_elasmats[[i]] / length_of_list
+          focused_frame$ah_elasmats[[i]] <- focused_frame$ah_elasmats[[i]] / length_of_list
+          if (is.list(focused_frame$h_elasmats)) {
+            focused_frame$h_elasmats[[i]] <- focused_frame$h_elasmats[[i]] / length_of_list
+          }
         }
       }
     } else {
       if (is.matrix(focused_frame$ah_elasmats)) {
-        focused_frame$ah_elasmats[[1]] <- focused_frame$ah_elasmats[[1]] + (new_correction$ah_elasmats[[1]] / length_of_list)
-        focused_frame$h_elasmats[[1]] <- focused_frame$h_elasmats[[1]] + (new_correction$h_elasmats[[1]] / length_of_list)
+        focused_frame$ah_elasmats <- focused_frame$ah_elasmats + (new_correction$ah_elasmats / length_of_list)
+        if (is.matrix(focused_frame$h_elasmats)) {
+          focused_frame$h_elasmats <- focused_frame$h_elasmats + (new_correction$h_elasmats / length_of_list)
+        }
       } else {
         for (i in c(1:length(focused_frame$ah_elasmats))) {
-        focused_frame$ah_elasmats[[i]] <- focused_frame$ah_elasmats[[i]] + (new_correction$ah_elasmats[[i]] / length_of_list)
-        focused_frame$h_elasmats[[i]] <- focused_frame$h_elasmats[[i]] + (new_correction$h_elasmats[[i]] / length_of_list)
+          focused_frame$ah_elasmats[[i]] <- focused_frame$ah_elasmats[[i]] + (new_correction$ah_elasmats[[i]] / length_of_list)
+          if (is.list(focused_frame$h_elasmats)) {
+            focused_frame$h_elasmats[[i]] <- focused_frame$h_elasmats[[i]] + (new_correction$h_elasmats[[i]] / length_of_list)
+          }
         }
       }
     }
@@ -4301,7 +4317,6 @@ elasticity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
 
   return(output)
 }
-
 #' Estimate Elasticity of Population Growth Rate of a List of Matrices
 #' 
 #' \code{elasticity3.list()} returns the elasticities of lambda to elements
