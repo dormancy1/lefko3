@@ -83,4 +83,6 @@ sensitivity3(ehrlen3$A[[1]])
 \code{\link{sensitivity3.list}()}
 
 \code{\link{sensitivity3.matrix}()}
+
+\code{\link{sensitivity3.lefkoMatList}()}
 }

@@ -191,4 +191,6 @@ sensitivity3(cypmatrix2r$A)
 \code{\link{sensitivity3.matrix}()}
 
 \code{\link{sensitivity3.dgCMatrix}()}
+
+\code{\link{sensitivity3.lefkoMatList}()}
 }

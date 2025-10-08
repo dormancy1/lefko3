@@ -81,5 +81,7 @@ elasticity3(ehrlen3mean$A[[1]])
 
 \code{\link{elasticity3.matrix}()}
 
+\code{\link{elasticity3.lefkoMatList}()}
+
 \code{\link{summary.lefkoElas}()}
 }
