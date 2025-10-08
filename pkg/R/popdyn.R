@@ -4209,7 +4209,7 @@ elasticity3.dgCMatrix <- function(mats, sparse = "auto", ...)
 #'   year = "all", stages = c("stage3", "stage2", "stage1"),
 #'   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
 #' 
-#' elasticity3(ehrlen3, stochastic = TRUE)
+#' elasticity3(ehrlen3_boot, stochastic = TRUE)
 #' 
 #' # Cypripedium example
 #' data(cypdata)
