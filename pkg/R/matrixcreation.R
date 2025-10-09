@@ -3095,7 +3095,7 @@ rleslie <- function(data, start_age = NA, last_age = NA, continue = TRUE,
 #' @param object An object of class \code{lefkoMat}.
 #' @param colsums A logical value indicating whether column sums should be shown
 #' for U matrices, allowing users to check stage survival probabilities.
-#' Defaults to TRUE.
+#' Defaults to \code{TRUE}.
 #' @param check_cycle A logical value indicating whether to test matrices for
 #' stage discontinuities in the life cycle. Defaults to \code{TRUE}.
 #' @param ... Other parameters.
@@ -3167,6 +3167,8 @@ rleslie <- function(data, start_age = NA, last_age = NA, continue = TRUE,
 #' @export
 summary.lefkoMat <- function(object, colsums = TRUE, check_cycle = TRUE, ...) {
   
+  histmark <- "ahistorical"
+  
   matrices <- object
   
   matdim <- dim(matrices$A[[1]])[1]
@@ -3181,8 +3183,6 @@ summary.lefkoMat <- function(object, colsums = TRUE, check_cycle = TRUE, ...) {
   
   if (!all(is.na(matrices$hstages))) {
     histmark <- "historical"
-  } else {
-    histmark <- "ahistorical"
   }
   
   if (mqcc == 1) {
@@ -3399,5 +3399,580 @@ summary.lefkoMat <- function(object, colsums = TRUE, check_cycle = TRUE, ...) {
   writeLines("\n")
   
   if (check_cycle) invisible(cycle_check(matrices))
+}
+
+#' Summary of Class "lefkoMatList"
+#'
+#' A function to simplify the viewing of basic information describing the
+#' bootstrapped matrices produced through functions \code{\link{flefko3}()},
+#' \code{\link{flefko2}()}, \code{\link{rlefko3}()}, \code{\link{rlefko2}()},
+#' \code{\link{aflefko2}()}, \code{\link{rleslie}()}, and
+#' \code{\link{fleslie}()} when using bootstrapped data input in format
+#' \code{hfvlist}.
+#' 
+#' @name summary.lefkoMatList
+#' 
+#' @param object An object of class \code{lefkoMatList}.
+#' @param elem_summaries A logical value indicating whether to include
+#' summaries of all \code{lefkoMat} elements within the input
+#' \code{lefkoMatList} object. Defaults to \code{FALSE}.
+#' @param colsums If \code{elem_summaries = TRUE}, then this is a logical value
+#' indicating whether column sums should be shown for U matrices, allowing users
+#' to check stage survival probabilities. Defaults to \code{TRUE}.
+#' @param check_cycle If \code{elem_summaries = TRUE}, then this is a logical
+#' value indicating whether to test matrices for stage discontinuities in the
+#' life cycle. Defaults to \code{TRUE}.
+#' @param ... Other parameters.
+#' 
+#' @return A general summary of the \code{lefkoMatList} object, showing the
+#' number and type of \code{lefkoMat} objects included, the mean number of
+#' annual matrices per \code{lefkoMat} element, the mean size of each matrix,
+#' the mean number of estimated (non-zero) elements across all matrices and per
+#' matrix, the mean number of unique transitions in the bootstrapped datasets,
+#' the mean number of individuals, and summaries of the column sums of the survival-transition
+#' matrices across all \code{lefkoMat} objects.
+#' 
+#' if \code{elem_summaries = TRUE}, then \code{\link{summary.lefkoMat}{}} output
+#' is also shown for each \code{lefkoMat} object per entered \code{lefkoMatList}
+#' object.
+#' 
+#' Stage discontinuities may also be also checked across all \code{lefkoMat}
+#' objects with function \code{cycle_check}. This function will also yield
+#' warnings if any survival-transition matrices include elements outside of the
+#' interval [0,1], if any fecundity matrices contain negative elements, and if
+#' any matrices include NA values.
+#' 
+#' @section Notes:
+#' Under the Gaussian and gamma size distributions, the number of estimated
+#' parameters may differ between the two \code{ipm_method} settings. Because
+#' the midpoint method has a tendency to incorporate upward bias in the
+#' estimation of size transition probabilities, it is more likely to yield non-
+#' zero values when the true probability is extremely close to 0. This will
+#' result in the \code{summary.lefkoMat} function yielding higher numbers of
+#' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
+#' 
+#' @examples
+#' data(cypdata)
+#' 
+#' sizevector <- c(0, 0, 0, 0, 0, 0, 1, 2.5, 4.5, 8, 17.5)
+#' stagevector <- c("SD", "P1", "P2", "P3", "SL", "D", "XSm", "Sm", "Md", "Lg",
+#'   "XLg")
+#' repvector <- c(0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
+#' obsvector <- c(0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1)
+#' matvector <- c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1)
+#' immvector <- c(0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0)
+#' propvector <- c(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+#' indataset <- c(0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1)
+#' binvec <- c(0, 0, 0, 0, 0, 0.5, 0.5, 1, 1, 2.5, 7)
+#' 
+#' cypframe_raw <- sf_create(sizes = sizevector, stagenames = stagevector,
+#'   repstatus = repvector, obsstatus = obsvector, matstatus = matvector,
+#'   propstatus = propvector, immstatus = immvector, indataset = indataset,
+#'   binhalfwidth = binvec)
+#' 
+#' cypraw_v1 <- verticalize3(data = cypdata, noyears = 6, firstyear = 2004,
+#'   patchidcol = "patch", individcol = "plantid", blocksize = 4,
+#'   sizeacol = "Inf2.04", sizebcol = "Inf.04", sizeccol = "Veg.04",
+#'   repstracol = "Inf.04", repstrbcol = "Inf2.04", fecacol = "Pod.04",
+#'   stageassign = cypframe_raw, stagesize = "sizeadded", NAas0 = TRUE,
+#'   NRasRep = TRUE)
+#' 
+#' cypraw_v1_boot <- bootstrap3(cypraw_v1, reps = 3)
+#' 
+#' # Here we use supplemental() to provide overwrite and reproductive info
+#' cypsupp2r <- supplemental(stage3 = c("SD", "P1", "P2", "P3", "SL", "D", 
+#'     "XSm", "Sm", "SD", "P1"),
+#'   stage2 = c("SD", "SD", "P1", "P2", "P3", "SL", "SL", "SL", "rep",
+#'     "rep"),
+#'   eststage3 = c(NA, NA, NA, NA, NA, "D", "XSm", "Sm", NA, NA),
+#'   eststage2 = c(NA, NA, NA, NA, NA, "XSm", "XSm", "XSm", NA, NA),
+#'   givenrate = c(0.10, 0.20, 0.20, 0.20, 0.25, NA, NA, NA, NA, NA),
+#'   multiplier = c(NA, NA, NA, NA, NA, NA, NA, NA, 0.5, 0.5),
+#'   type =c(1, 1, 1, 1, 1, 1, 1, 1, 3, 3),
+#'   stageframe = cypframe_raw, historical = FALSE)
+#' 
+#' cypmatrix2r_boot <- rlefko2(data = cypraw_v1_boot, stageframe = cypframe_raw, 
+#'   year = "all", patch = "all", stages = c("stage3", "stage2", "stage1"),
+#'   size = c("size3added", "size2added"), supplement = cypsupp2r,
+#'   yearcol = "year2", patchcol = "patchid", indivcol = "individ")
+#' 
+#' summary(cypmatrix2r_boot)
+#' 
+#' @export
+summary.lefkoMatList <- function(object, elem_summaries = FALSE, colsums = TRUE,
+  check_cycle = TRUE, ...) {
+  
+  histmark <- "ahistorical"
+  dataqc_bool <- FALSE
+  modelqc_bool <- FALSE
+  
+  lmatlist <- object
+  lmatlist_length <- length(lmatlist)
+  
+  if (!all(is.na(lmatlist[[1]]$hstages))) {
+    histmark <- "historical"
+  }
+  if (is.element("dataqc", names(lmatlist[[1]]))) dataqc_bool <- TRUE
+  
+  if (is.element("modelqc", names(lmatlist[[1]]))) {
+    if (is.data.frame(lmatlist[[1]]$modelqc) & dim(lmatlist[[1]]$modelqc)[1] > 0) {
+      modelqc_bool <- TRUE
+    }
+  }
+  
+  writeLines(paste0("\nThis lefkoMatList object contains ", lmatlist_length, " ",
+    histmark, " lefkoMat objects."))
+  
+  nummats <- rep(1.0, lmatlist_length)
+  numpops <- rep(1.0, lmatlist_length)
+  numpatches <- rep(1.0, lmatlist_length)
+  numyears <- rep(1.0, lmatlist_length)
+  
+  mqac_vec <- rep(1.0, lmatlist_length)
+  mqbc_vec <- rep(1.0, lmatlist_length)
+  mqca_vec <- rep(1.0, lmatlist_length)
+  mqcb_vec <- rep(1.0, lmatlist_length)
+  dqca_vec <- rep(NA, lmatlist_length)
+  dqcb_vec <- rep(NA, lmatlist_length)
+  
+  moqc12_vec <- rep(NA, lmatlist_length)
+  moqc22_vec <- rep(NA, lmatlist_length)
+  moqc32_vec <- rep(NA, lmatlist_length)
+  moqc42_vec <- rep(NA, lmatlist_length)
+  moqc52_vec <- rep(NA, lmatlist_length)
+  moqc62_vec <- rep(NA, lmatlist_length)
+  moqc72_vec <- rep(NA, lmatlist_length)
+  moqc82_vec <- rep(NA, lmatlist_length)
+  moqc92_vec <- rep(NA, lmatlist_length)
+  moqc102_vec <- rep(NA, lmatlist_length)
+  moqc112_vec <- rep(NA, lmatlist_length)
+  moqc122_vec <- rep(NA, lmatlist_length)
+  moqc132_vec <- rep(NA, lmatlist_length)
+  moqc142_vec <- rep(NA, lmatlist_length)
+  
+  moqc13_vec <- rep(NA, lmatlist_length)
+  moqc23_vec <- rep(NA, lmatlist_length)
+  moqc33_vec <- rep(NA, lmatlist_length)
+  moqc43_vec <- rep(NA, lmatlist_length)
+  moqc53_vec <- rep(NA, lmatlist_length)
+  moqc63_vec <- rep(NA, lmatlist_length)
+  moqc73_vec <- rep(NA, lmatlist_length)
+  moqc83_vec <- rep(NA, lmatlist_length)
+  moqc93_vec <- rep(NA, lmatlist_length)
+  moqc103_vec <- rep(NA, lmatlist_length)
+  moqc113_vec <- rep(NA, lmatlist_length)
+  moqc123_vec <- rep(NA, lmatlist_length)
+  moqc133_vec <- rep(NA, lmatlist_length)
+  moqc143_vec <- rep(NA, lmatlist_length)
+  
+  for (i in c(1:lmatlist_length)) {
+    matrices <- object[[i]]
+    matdim <- dim(matrices$A[[1]])[1]
+  
+    mqca <- matrices$matrixqc[1]
+    mqcb <- matrices$matrixqc[2]
+    mqcc <- matrices$matrixqc[3]
+    
+    mqac <- mqca / mqcc
+    if (mqac != floor(mqac)) mqac <- round(mqac, digits = 3)
+    
+    mqbc <- mqcb / mqcc
+    if (mqbc != floor(mqbc)) mqbc <- round(mqbc, digits = 3)
+    
+    totalpops <- length(unique(matrices$labels$pop))
+    totalpatches <- length(unique(matrices$labels$patch))
+    totalyears <- length(unique(matrices$labels$year2))
+    
+    nummats[i] <- mqcc
+    numpops[i] <- totalpops
+    numpatches[i] <- totalpatches
+    numyears[i] <- totalyears
+    
+    mqac_vec[i] <- mqac
+    mqbc_vec[i] <- mqbc
+    mqca_vec[i] <- mqca
+    mqcb_vec[i] <- mqcb
+    
+    if (dataqc_bool) {
+      dqca <- matrices$dataqc[1]
+      dqcb <- matrices$dataqc[2]
+      
+      dqca_vec[i] <- dqca
+      dqcb_vec[i] <- dqcb
+    }
+    
+    
+    
+    
+    
+    
+    if (modelqc_bool) {
+      moqc12 <- matrices$modelqc[1,2]
+      moqc22 <- matrices$modelqc[2,2]
+      moqc32 <- matrices$modelqc[3,2]
+      moqc42 <- matrices$modelqc[4,2]
+      moqc52 <- matrices$modelqc[5,2]
+      moqc62 <- matrices$modelqc[6,2]
+      moqc72 <- matrices$modelqc[7,2]
+      moqc82 <- matrices$modelqc[8,2]
+      moqc92 <- matrices$modelqc[9,2]
+      moqc102 <- matrices$modelqc[10,2]
+      moqc112 <- matrices$modelqc[11,2]
+      moqc122 <- matrices$modelqc[12,2]
+      moqc132 <- matrices$modelqc[13,2]
+      moqc142 <- matrices$modelqc[14,2]
+      
+      moqc13 <- matrices$modelqc[1,3]
+      moqc23 <- matrices$modelqc[2,3]
+      moqc33 <- matrices$modelqc[3,3]
+      moqc43 <- matrices$modelqc[4,3]
+      moqc53 <- matrices$modelqc[5,3]
+      moqc63 <- matrices$modelqc[6,3]
+      moqc73 <- matrices$modelqc[7,3]
+      moqc83 <- matrices$modelqc[8,3]
+      moqc93 <- matrices$modelqc[9,3]
+      moqc103 <- matrices$modelqc[10,3]
+      moqc113 <- matrices$modelqc[11,3]
+      moqc123 <- matrices$modelqc[12,3]
+      moqc133 <- matrices$modelqc[13,3]
+      moqc143 <- matrices$modelqc[14,3]
+      
+      moqc12_vec[i] <- moqc12
+      moqc22_vec[i] <- moqc22
+      moqc32_vec[i] <- moqc32
+      moqc42_vec[i] <- moqc42
+      moqc52_vec[i] <- moqc52
+      moqc62_vec[i] <- moqc62
+      moqc72_vec[i] <- moqc72
+      moqc82_vec[i] <- moqc82
+      moqc92_vec[i] <- moqc92
+      moqc102_vec[i] <- moqc102
+      moqc112_vec[i] <- moqc112
+      moqc122_vec[i] <- moqc122
+      moqc132_vec[i] <- moqc132
+      moqc142_vec[i] <- moqc142
+      
+      moqc13_vec[i] <- moqc13
+      moqc23_vec[i] <- moqc23
+      moqc33_vec[i] <- moqc33
+      moqc43_vec[i] <- moqc43
+      moqc53_vec[i] <- moqc53
+      moqc63_vec[i] <- moqc63
+      moqc73_vec[i] <- moqc73
+      moqc83_vec[i] <- moqc83
+      moqc93_vec[i] <- moqc93
+      moqc103_vec[i] <- moqc103
+      moqc113_vec[i] <- moqc113
+      moqc123_vec[i] <- moqc123
+      moqc133_vec[i] <- moqc133
+      moqc143_vec[i] <- moqc143
+    }
+    
+    
+    # dethonthetoilet <- apply(as.matrix(c(1:length(matrices$U))), 1, function(X) {
+    #     if (is(matrices$U[[1]], "dgCMatrix")) {
+    #       summary(Matrix::colSums(matrices$U[[X]]))
+    #     } else {
+    #       summary(colSums(matrices$U[[X]]))
+    #     }
+    #   }
+    # )
+# sexinthelavatory <- apply(as.matrix(c(1:length(matrices$U))), 1, function(X) {
+    #     summary(colSums(matrices$F[[X]]))
+    #   }
+    # )
+    # 
+    # dethintheurinal <- apply(as.matrix(c(1:length(matrices$U))), 1, function(X) {
+    #     any(is.na(matrices$A[[X]]))
+    #   }
+    # )
+    # 
+    # if (colsums) {
+    #   writeLines("\nSurvival probability sum check (each matrix represented by column in order):")
+    #   print(dethonthetoilet, digits = 3)
+    # }
+    # 
+    # if (max(dethonthetoilet) > 1) {
+    #   warning("Some matrices include stages with survival probability greater than 1.0.", call. = FALSE)
+    # }
+    # 
+    # if (min(dethonthetoilet) < 0) {
+    #   warning("Some matrices include stages with survival probability less than 0.0.", call. = FALSE)
+    # }
+    # 
+    # if (min(sexinthelavatory) < 0) {
+    #   warning("Some matrices include stages with fecundity less than 0.0.", call. = FALSE)
+    # }
+    # 
+    # if (any(dethintheurinal)) {
+    #   warning("Some matrices include NA values.", call. = FALSE)
+    # }
+  }
+  
+  ave_num_mats <- mean(nummats)
+  ave_pops <- mean(numpops)
+  ave_patches <- mean(numpatches)
+  ave_years <- mean(numyears)
+  
+  if (ave_num_mats != floor(ave_num_mats)) ave_num_mats <- round(ave_num_mats, digits = 3)
+  if (ave_pops != floor(ave_pops)) ave_pops <- round(ave_pops, digits = 3)
+  if (ave_patches != floor(ave_patches)) ave_patches <- round(ave_patches, digits = 3)
+  if (ave_years != floor(ave_years)) ave_years <- round(ave_years, digits = 3)
+  
+  if (ave_num_mats == 1) {
+    writeLines(paste0("The average lefkoMat object contains ", mqcc, " matrix."))
+  } else {
+    writeLines(paste0("The average lefkoMat object contains ", mqcc, " matrices."))
+  }
+  
+  grammar_pops <- " populations, "
+  grammar_patches <- " patches, and "
+  grammar_years <- " time steps."
+  if (ave_pops == 1) grammar_pops <- " population, "
+  if (ave_patches == 1) grammar_patches <- " patch, and "
+  if (ave_years == 1) grammar_years <- " time step."
+  
+  writeLines(paste0("\nThis lefkoMatList object covers an average of ", ave_pops,
+    grammar_pops, ave_patches, grammar_patches, ave_years, grammar_years))
+  
+  writeLines(paste0("Each matrix is square with ", matdim,
+    " rows and columns, and a total of ", matdim*matdim, " elements."))
+  
+  if (!all(is.na(mqca_vec)) & !all(is.na(mqac_vec))) {
+    mqac_mean <- mean(mqac_vec, na.rm = TRUE)
+    mqbc_mean <- mean(mqbc_vec, na.rm = TRUE)
+    mqca_mean <- mean(mqca_vec, na.rm = TRUE)
+    mqcb_mean <- mean(mqcb_vec, na.rm = TRUE)
+    
+    
+    if (mqac_mean != floor(mqac_mean)) mqac_mean <- round(mqac_mean, digits = 3)
+    if (mqbc_mean != floor(mqac_mean)) mqbc_mean <- round(mqbc_mean, digits = 3)
+    if (mqca_mean != floor(mqca_mean)) mqca_mean <- round(mqca_mean, digits = 3)
+    if (mqcb_mean != floor(mqcb_mean)) mqcb_mean <- round(mqcb_mean, digits = 3)
+    
+    writeLines(paste0("An average of ", mqca_mean, " survival transitions were ",
+      "estimated in each lefkoMat object,"))
+    writeLines(paste0("with an average of ", mqac_mean, " per matrix."))
+    writeLines(paste0("An average of ", mqcb_mean, " fecundity transitions were ",
+      "estimated in each lefkoMat object,"))
+    writeLines(paste0("with an average of ", mqbc_mean, " per matrix."))
+  } else {
+    mqac_mean <- mean(mqac_vec, na.rm = TRUE)
+    mqca_mean <- mean(mqca_vec, na.rm = TRUE)
+    
+    writeLines(paste0("An average of ", mqca_mean, " transitions were estimated",
+      "in each lefkoMat object,"))
+    writeLines(paste0("with an average of ", mqac_mean, " per matrix. Positions of ",
+      "survival vs fecundity transitions are not known."))
+  }
+  
+  if (dataqc_bool) {
+    dqca_mean <- mean(dqca_vec, na.rm = TRUE)
+    dqcb_mean <- mean(dqcb_vec, na.rm = TRUE)
+    
+    if (dqca_mean != floor(dqca_mean)) dqca_mean <- round(dqca_mean, digits = 3)
+    if (dqcb_mean != floor(dqcb_mean)) dqcb_mean <- round(dqcb_mean, digits = 3)
+    
+    if (!is.na(dqca_vec[1]) & !is.na(dqcb_vec[1])) {
+      writeLines(paste0("\nThe datasets contain an average total of ", dqca_mean,
+        " unique individuals and ", dqcb_mean, " unique transitions."))
+    } else if (!is.na(dqca_vec[1])) {
+      writeLines(paste0("\nThe datasets contain an average of ", dqca_mean, " unique individuals."))
+      writeLines("Average number of unique transitions not known.")
+    } else if (!is.na(dqcb_vec[1])) {
+      writeLines(paste0("\nThe datasets contain an average of ", dqcb_mean, " unique transitions."))
+      writeLines("Average number of unique individuals not known.")
+    } else {
+      writeLines("\nThese lefkoMatList objects appear to have been imported.")
+      writeLines("Average number of unique individuals and transitions not known.")
+    }
+  }
+  
+  if (modelqc_bool) {
+    writeLines("\nVital rate modeling quality control:\n")
+    
+    moqc12_mean <- mean(moqc12_vec, na.rm = TRUE)
+    moqc22_mean <- mean(moqc22_vec, na.rm = TRUE)
+    moqc32_mean <- mean(moqc32_vec, na.rm = TRUE)
+    moqc42_mean <- mean(moqc42_vec, na.rm = TRUE)
+    moqc52_mean <- mean(moqc52_vec, na.rm = TRUE)
+    moqc62_mean <- mean(moqc62_vec, na.rm = TRUE)
+    moqc72_mean <- mean(moqc72_vec, na.rm = TRUE)
+    moqc82_mean <- mean(moqc82_vec, na.rm = TRUE)
+    moqc92_mean <- mean(moqc92_vec, na.rm = TRUE)
+    moqc102_mean <- mean(moqc102_vec, na.rm = TRUE)
+    moqc112_mean <- mean(moqc112_vec, na.rm = TRUE)
+    moqc122_mean <- mean(moqc122_vec, na.rm = TRUE)
+    moqc132_mean <- mean(moqc132_vec, na.rm = TRUE)
+    moqc142_mean <- mean(moqc142_vec, na.rm = TRUE)
+    
+    moqc13_mean <- mean(moqc13_vec, na.rm = TRUE)
+    moqc23_mean <- mean(moqc23_vec, na.rm = TRUE)
+    moqc33_mean <- mean(moqc33_vec, na.rm = TRUE)
+    moqc43_mean <- mean(moqc43_vec, na.rm = TRUE)
+    moqc53_mean <- mean(moqc53_vec, na.rm = TRUE)
+    moqc63_mean <- mean(moqc63_vec, na.rm = TRUE)
+    moqc73_mean <- mean(moqc73_vec, na.rm = TRUE)
+    moqc83_mean <- mean(moqc83_vec, na.rm = TRUE)
+    moqc93_mean <- mean(moqc93_vec, na.rm = TRUE)
+    moqc103_mean <- mean(moqc103_vec, na.rm = TRUE)
+    moqc113_mean <- mean(moqc113_vec, na.rm = TRUE)
+    moqc123_mean <- mean(moqc123_vec, na.rm = TRUE)
+    moqc133_mean <- mean(moqc133_vec, na.rm = TRUE)
+    moqc143_mean <- mean(moqc143_vec, na.rm = TRUE)
+    
+    if (moqc12_mean != floor(moqc12_mean)) moqc12_mean <- round(moqc12_mean, digits = 3)
+    if (moqc22_mean != floor(moqc22_mean)) moqc22_mean <- round(moqc22_mean, digits = 3)
+    if (moqc32_mean != floor(moqc32_mean)) moqc32_mean <- round(moqc32_mean, digits = 3)
+    if (moqc42_mean != floor(moqc42_mean)) moqc42_mean <- round(moqc42_mean, digits = 3)
+    if (moqc52_mean != floor(moqc52_mean)) moqc52_mean <- round(moqc52_mean, digits = 3)
+    if (moqc62_mean != floor(moqc62_mean)) moqc62_mean <- round(moqc62_mean, digits = 3)
+    if (moqc72_mean != floor(moqc72_mean)) moqc72_mean <- round(moqc72_mean, digits = 3)
+    if (moqc82_mean != floor(moqc82_mean)) moqc82_mean <- round(moqc82_mean, digits = 3)
+    if (moqc92_mean != floor(moqc92_mean)) moqc92_mean <- round(moqc92_mean, digits = 3)
+    if (moqc102_mean != floor(moqc102_mean)) moqc102_mean <- round(moqc102_mean, digits = 3)
+    if (moqc112_mean != floor(moqc112_mean)) moqc112_mean <- round(moqc112_mean, digits = 3)
+    if (moqc122_mean != floor(moqc122_mean)) moqc122_mean <- round(moqc122_mean, digits = 3)
+    if (moqc132_mean != floor(moqc132_mean)) moqc132_mean <- round(moqc132_mean, digits = 3)
+    if (moqc142_mean != floor(moqc142_mean)) moqc142_mean <- round(moqc142_mean, digits = 3)
+    
+    if (moqc13_mean != floor(moqc13_mean)) moqc13_mean <- round(moqc13_mean, digits = 3)
+    if (moqc23_mean != floor(moqc23_mean)) moqc23_mean <- round(moqc23_mean, digits = 3)
+    if (moqc33_mean != floor(moqc33_mean)) moqc33_mean <- round(moqc33_mean, digits = 3)
+    if (moqc43_mean != floor(moqc43_mean)) moqc43_mean <- round(moqc43_mean, digits = 3)
+    if (moqc53_mean != floor(moqc53_mean)) moqc53_mean <- round(moqc53_mean, digits = 3)
+    if (moqc63_mean != floor(moqc63_mean)) moqc63_mean <- round(moqc63_mean, digits = 3)
+    if (moqc73_mean != floor(moqc73_mean)) moqc73_mean <- round(moqc73_mean, digits = 3)
+    if (moqc83_mean != floor(moqc83_mean)) moqc83_mean <- round(moqc83_mean, digits = 3)
+    if (moqc93_mean != floor(moqc93_mean)) moqc93_mean <- round(moqc93_mean, digits = 3)
+    if (moqc103_mean != floor(moqc103_mean)) moqc103_mean <- round(moqc103_mean, digits = 3)
+    if (moqc113_mean != floor(moqc113_mean)) moqc113_mean <- round(moqc113_mean, digits = 3)
+    if (moqc123_mean != floor(moqc123_mean)) moqc123_mean <- round(moqc123_mean, digits = 3)
+    if (moqc133_mean != floor(moqc133_mean)) moqc133_mean <- round(moqc133_mean, digits = 3)
+    if (moqc143_mean != floor(moqc143_mean)) moqc143_mean <- round(moqc143_mean, digits = 3)
+    
+    if (!is.na(moqc12_vec[1])) {
+      if (moqc12_mean > 0) {
+        writeLines(paste0("Survival estimated with an average of ", moqc12_mean,
+          " individuals and ", moqc13_mean, " individual transitions."))
+      } else {
+        writeLines("Survival not estimated.")
+      }
+    }
+    if (!is.na(moqc22_vec[1])) {
+      if (moqc22_mean > 0) {
+        writeLines(paste0("Observation estimated with an average of ", moqc22_mean,
+          " individuals and ", moqc23_mean, " individual transitions."))
+      } else {
+        writeLines("Observation probability not estimated.")
+      }
+    }
+    if (!is.na(moqc32_vec[1])) {
+      if (moqc32_mean > 0) {
+        writeLines(paste0("Primary size estimated with an average of ", moqc32_mean,
+          " individuals and ", moqc33_mean, " individual transitions."))
+      } else {
+        writeLines("Primary size transition not estimated.")
+      }
+    }
+    if (!is.na(moqc42_vec[1])) {
+      if (moqc42_mean > 0) {
+        writeLines(paste0("Secondary size estimated with an average of ", moqc42_mean,
+          " individuals and ", moqc43_mean, " individual transitions."))
+      } else {
+        writeLines("Secondary size transition not estimated.")
+      }
+    }
+    if (!is.na(moqc52_vec[1])) {
+      if (moqc52_mean > 0) {
+        writeLines(paste0("Tertiary size estimated with an average of ", moqc52_mean,
+          " individuals and ", moqc53_mean, " individual transitions."))
+      } else {
+        writeLines("Tertiary size transition not estimated.")
+      }
+    }
+    if (!is.na(moqc62_vec[1])) {
+      if (moqc62_mean > 0) {
+        writeLines(paste0("Reproductive status estimated with an average of ",
+          moqc62_mean, " individuals and ", moqc63_mean, " individual transitions."))
+      } else {
+        writeLines("Reproduction probability not estimated.")
+      }
+    }
+    if (!is.na(moqc72_vec[1])) {
+      if (moqc72_mean > 0) {
+        writeLines(paste0("Fecundity estimated with an average of ", moqc72_mean,
+          " individuals and ", moqc73_mean, " individual transitions."))
+      } else {
+        writeLines("Fecundity not estimated.")
+      }
+    }
+    if (!is.na(moqc82_vec[1])) {
+      if (moqc82_mean > 0) {
+        writeLines(paste0("Juvenile survival estimated with an average of ", moqc82_mean,
+          " individuals and ", moqc83_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile survival not estimated.")
+      }
+    }
+    if (!is.na(moqc92_vec[1])) {
+      if (moqc92_mean > 0) {
+        writeLines(paste0("Juvenile observation estimated with an average of ", moqc92_mean,
+          " individuals and ", moqc93_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile observation probability not estimated.")
+      }
+    }
+    if (!is.na(moqc102_vec[1])) {
+      if (moqc102_mean > 0) {
+        writeLines(paste0("Juvenile primary size estimated with an average of ", moqc102_mean,
+          " individuals and ", moqc103_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile primary size transition not estimated.")
+      }
+    }
+    if (!is.na(moqc112_vec[1])) {
+      if (moqc112_mean > 0) {
+        writeLines(paste0("Juvenile secondary size estimated with an average of ", moqc112_mean,
+          " individuals and ", moqc113_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile secondary size transition not estimated.")
+      }
+    }
+    if (!is.na(moqc122_vec[1])) {
+      if (moqc122_mean > 0) {
+        writeLines(paste0("Juvenile tertiary size estimated with an average of ", moqc122_mean,
+          " individuals and ", moqc123_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile tertiary size transition not estimated.")
+      }
+    }
+    if (!is.na(moqc132_vec[1])) {
+      if (moqc132_mean > 0) {
+        writeLines(paste0("Juvenile reproduction estimated with an average of ", moqc132_mean,
+          " individuals and ", moqc133_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile reproduction probability not estimated.")
+      }
+    }
+    if (!is.na(moqc142_vec[1])) {
+      if (moqc142_mean > 0) {
+        writeLines(paste0("Juvenile maturity transition estimated with an average of ", moqc142_mean,
+          " individuals and ", moqc143_mean, " individual transitions."))
+      } else {
+        writeLines("Juvenile maturity transition probability not estimated.")
+      }
+    }
+  }
+  
+  writeLines("\n")
+  
+  if (elem_summaries[1] == TRUE) {
+    for (i in c(1:lmatlist_length)) {
+      writeLines(paste0("\nSUMMARY OF ELEMENT ", i))
+      summary(object[[i]])
+    }
+  }
+  #if (check_cycle) invisible(cycle_check(matrices))
 }
 

@@ -104,6 +104,9 @@ LTRE (sna-LTRE) contributions.
 }
 \section{Notes}{
 
+Function \code{ltre3()} cannot handle \code{lefkoMatList} inputs, although
+individual \code{lefkoMat} elements within these lists can be used.
+
 Deterministic LTRE is one-way, fixed, and based on the sensitivities of the
 matrix midway between each input matrix and the reference matrix, per Caswell
 (2001, Matrix Population Models, Sinauer Associates, MA, USA). Stochastic

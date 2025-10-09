@@ -2189,7 +2189,7 @@ repvalue3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
     } else {
       if (!is.data.frame(focused_frame)) {
         focused_frame$hist$rep_value <- focused_frame$hist$rep_value + (new_correction$hist$rep_value / length_of_list)
-        focused_frame$ahist$rep_value <- focused_frame$ahist$rep_value + (fnew_correction$ahist$rep_value / length_of_list)
+        focused_frame$ahist$rep_value <- focused_frame$ahist$rep_value + (new_correction$ahist$rep_value / length_of_list)
       } else {
         focused_frame$rep_value <- focused_frame$rep_value + (new_correction$rep_value / length_of_list)
       }
@@ -4654,6 +4654,9 @@ elasticity3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' U, and F matrices.
 #' 
 #' @section Notes:
+#' Function \code{ltre3()} cannot handle \code{lefkoMatList} inputs, although
+#' individual \code{lefkoMat} elements within these lists can be used.
+#' 
 #' Deterministic LTRE is one-way, fixed, and based on the sensitivities of the
 #' matrix midway between each input matrix and the reference matrix, per Caswell
 #' (2001, Matrix Population Models, Sinauer Associates, MA, USA). Stochastic

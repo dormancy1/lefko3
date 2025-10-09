@@ -8,6 +8,8 @@
 
 * Functions lmean(), lambda3(), stablestage3(), repvalue3(), sensitivity3(), and
   elasticity3() can now handle lefkoMatList objects.
+  
+* Function summary.lefkoMatList() created to summarize lefkoMatList objects.
 
 ## BUG FIXES
 
