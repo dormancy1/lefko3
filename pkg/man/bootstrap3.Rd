@@ -95,7 +95,7 @@ lathvert <- verticalize3(lathyrus, noyears = 4, firstyear = 1988,
   nonobsacol = "Dormant1988", stageassign = lathframe, stagesize = "sizea",
   censorcol = "Missing1988", censorkeep = NA, censor = TRUE)
 
-lathboot <- bootstrap3(lathvert)
+lathboot <- bootstrap3(lathvert, reps = 3)
 
 lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "Sd", "Sdl"), 
   stage2 = c("Sd", "Sd", "Sd", "Sd", "rep", "rep"),
@@ -105,11 +105,8 @@ lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "Sd", "Sdl"),
   type = c(1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1),
   stageframe = lathframe, historical = TRUE)
 
-ehrlen3 <- rlefko3(data = lathvert, stageframe = lathframe,
+ehrlen3_boot <- rlefko3(data = lathboot, stageframe = lathframe,
   year = c(1989, 1990), stages = c("stage3", "stage2", "stage1"),
   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
-
-lathproj <- projection3(ehrlen3, nreps = 5, integeronly = TRUE,
-  stochastic = TRUE)
 
 }

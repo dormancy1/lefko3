@@ -2,7 +2,7 @@
 % Please edit documentation in R/errorchecks.R
 \name{summary_hfv}
 \alias{summary_hfv}
-\title{Summary of Class "hfvdata"}
+\title{Summary of Classes "hfvdata" and "hfvlist}
 \usage{
 summary_hfv(
   object,
@@ -10,13 +10,14 @@ summary_hfv(
   patchid = "patchid",
   individ = "individ",
   year2id = "year2",
-  full = TRUE,
+  full = FALSE,
   err_check = TRUE,
   ...
 )
 }
 \arguments{
-\item{object}{An object of class \code{hfvdata}.}
+\item{object}{An object of either class \code{hfvdata} or class
+\code{hfvlist}.}
 
 \item{popid}{A string denoting the name of the variable denoting population
 identity.}
@@ -32,7 +33,7 @@ in time \emph{t}.}
 
 \item{full}{A logical value indicating whether to include basic data frame
 summary information in addition to hfvdata-specific summary information.
-Defaults to \code{TRUE}.}
+Defaults to \code{FALSE}.}
 
 \item{err_check}{A logical value indicating whether to check for errors in
 stage assignment.}
@@ -40,16 +41,29 @@ stage assignment.}
 \item{...}{Other parameters.}
 }
 \value{
-A summary of the object. The first line shows the numbers of
-populations, patches, individuals, and time steps. If \code{full = TRUE}, 
-then this is followed by a standard data frame summary of the hfv dataset.
-If \code{err_check = TRUE}, then a subset of the original data frame input
-as \code{object} is exported with only rows showing stage assignment issues.
+A summary of the object. If an object of class \code{hfvdata} is
+entered, then the first line of output shows the numbers of populations,
+patches, individuals, and time steps. If \code{full = TRUE}, then this is
+followed by a standard data frame summary of the hfv dataset. If
+\code{err_check = TRUE}, then a subset of the original data frame input as
+\code{object} is exported with only rows showing stage assignment issues.
+
+If an object of class \code{hfvlist} in entered, then the first line of
+output shows the number of bootstrapped datasets. This is followed by lines
+showing the mean number of rows and variables per data frame, as well as the
+mean numbers of populations, patches, individuals, and years per data frame.
+This is followed by lines showing the total number of unique populations,
+patches, individuals, and years sampled across the bootstrapped data frames.
+If \code{full = TRUE}, then this is followed by standard data frame summaries
+of all bootstrapped data frames. If \code{err_check = TRUE}, then a data
+frame is output with all of the problem rows across all bootstrapped data
+frames, starting with a new variable giving the bootstrap number of origin.
 }
 \description{
 A function to simplify the viewing of basic information describing
 demographic data in historical vertical format (data frames of class
-\code{hfvdata}).
+\code{hfvdata}, or bootstrapped data frames in lists of class
+\code{hfvlist}).
 }
 \section{Notes}{
 
@@ -88,5 +102,9 @@ cypraw_v1 <- verticalize3(data = cypdata, noyears = 6, firstyear = 2004,
   NRasRep = TRUE)
 
 summary_hfv(cypraw_v1)
+
+cypraw_v1_boot <- bootstrap3(cypraw_v1, reps = 3)
+
+summary_hfv(cypraw_v1_boot)
 
 }

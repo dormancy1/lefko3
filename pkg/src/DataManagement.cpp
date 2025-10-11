@@ -5742,7 +5742,7 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
 //'   nonobsacol = "Dormant1988", stageassign = lathframe, stagesize = "sizea",
 //'   censorcol = "Missing1988", censorkeep = NA, censor = TRUE)
 //' 
-//' lathboot <- bootstrap3(lathvert)
+//' lathboot <- bootstrap3(lathvert, reps = 3)
 //' 
 //' lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "Sd", "Sdl"), 
 //'   stage2 = c("Sd", "Sd", "Sd", "Sd", "rep", "rep"),
@@ -5752,12 +5752,9 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
 //'   type = c(1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1),
 //'   stageframe = lathframe, historical = TRUE)
 //' 
-//' ehrlen3 <- rlefko3(data = lathvert, stageframe = lathframe,
+//' ehrlen3_boot <- rlefko3(data = lathboot, stageframe = lathframe,
 //'   year = c(1989, 1990), stages = c("stage3", "stage2", "stage1"),
 //'   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
-//' 
-//' lathproj <- projection3(ehrlen3, nreps = 5, integeronly = TRUE,
-//'   stochastic = TRUE)
 //' 
 //' @export bootstrap3
 // [[Rcpp::export(bootstrap3)]]
@@ -5787,7 +5784,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   bool found_indiv_col {false};
   
   int total_pops {1};
-  int total_patches {1};
+  //int total_patches {1};
   int total_poppatches {1};
   int total_indivs {0};
   int total_rows {0};
@@ -5983,7 +5980,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         } else throw Rcpp::exception("Patch identity is not in a recognized format.", false);
         
         unique_patches_str = sort_unique(patches_allrows_str); // Should be redone as pop-patches
-        total_patches = static_cast<int>(unique_patches_str.length()); // Should be redone as pop-patches
+        //total_patches = static_cast<int>(unique_patches_str.length()); // Should be redone as pop-patches
         
       } else if (by_patch_bool) {
         StringVector new_patchcol_str = {"patchid"};
@@ -6011,7 +6008,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         } else throw Rcpp::exception("Patch identity is not in a recognized format.", false);
         
         unique_patches_str = sort_unique(patches_allrows_str); // Should be redone as pop-patches
-        total_patches = static_cast<int>(unique_patches_str.length()); // Should be redone as pop-patches
+        //total_patches = static_cast<int>(unique_patches_str.length()); // Should be redone as pop-patches
+        
       } else {
         StringVector new_patchcol_str = {"patchid"};
         patchcol_str = new_patchcol_str;
@@ -6542,7 +6540,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
               DataFrame new_sampled_data_frame;
               for (int j = 0; j < total_poppatches; j++) {
                 arma::uvec current_poppatch_rows = find(poppatch_by_row == j);
-                int found_rows_selection = static_cast<int>(current_poppatch_rows.n_elem);
+                //int found_rows_selection = static_cast<int>(current_poppatch_rows.n_elem);
                 
                 int current_poppatch_sample_limit {0};
                 if (max_limit_bool) {
@@ -6578,7 +6576,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
               DataFrame new_sampled_data_frame;
               for (int j = 0; j < total_pops; j++) {
                 arma::uvec current_pop_rows = find(pop_by_row == j);
-                int found_rows_selection = static_cast<int>(current_pop_rows.n_elem);
+                //int found_rows_selection = static_cast<int>(current_pop_rows.n_elem);
                 
                 int current_pop_sample_limit {0};
                 if (max_limit_bool) {

@@ -3601,11 +3601,6 @@ summary.lefkoMatList <- function(object, elem_summaries = FALSE, colsums = TRUE,
       dqcb_vec[i] <- dqcb
     }
     
-    
-    
-    
-    
-    
     if (modelqc_bool) {
       moqc12 <- matrices$modelqc[1,2]
       moqc22 <- matrices$modelqc[2,2]
@@ -3667,46 +3662,6 @@ summary.lefkoMatList <- function(object, elem_summaries = FALSE, colsums = TRUE,
       moqc133_vec[i] <- moqc133
       moqc143_vec[i] <- moqc143
     }
-    
-    
-    # dethonthetoilet <- apply(as.matrix(c(1:length(matrices$U))), 1, function(X) {
-    #     if (is(matrices$U[[1]], "dgCMatrix")) {
-    #       summary(Matrix::colSums(matrices$U[[X]]))
-    #     } else {
-    #       summary(colSums(matrices$U[[X]]))
-    #     }
-    #   }
-    # )
-# sexinthelavatory <- apply(as.matrix(c(1:length(matrices$U))), 1, function(X) {
-    #     summary(colSums(matrices$F[[X]]))
-    #   }
-    # )
-    # 
-    # dethintheurinal <- apply(as.matrix(c(1:length(matrices$U))), 1, function(X) {
-    #     any(is.na(matrices$A[[X]]))
-    #   }
-    # )
-    # 
-    # if (colsums) {
-    #   writeLines("\nSurvival probability sum check (each matrix represented by column in order):")
-    #   print(dethonthetoilet, digits = 3)
-    # }
-    # 
-    # if (max(dethonthetoilet) > 1) {
-    #   warning("Some matrices include stages with survival probability greater than 1.0.", call. = FALSE)
-    # }
-    # 
-    # if (min(dethonthetoilet) < 0) {
-    #   warning("Some matrices include stages with survival probability less than 0.0.", call. = FALSE)
-    # }
-    # 
-    # if (min(sexinthelavatory) < 0) {
-    #   warning("Some matrices include stages with fecundity less than 0.0.", call. = FALSE)
-    # }
-    # 
-    # if (any(dethintheurinal)) {
-    #   warning("Some matrices include NA values.", call. = FALSE)
-    # }
   }
   
   ave_num_mats <- mean(nummats)
@@ -3973,6 +3928,5 @@ summary.lefkoMatList <- function(object, elem_summaries = FALSE, colsums = TRUE,
       summary(object[[i]])
     }
   }
-  #if (check_cycle) invisible(cycle_check(matrices))
 }
 

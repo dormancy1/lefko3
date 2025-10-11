@@ -937,15 +937,17 @@ diff_lM <- function(mpm1, mpm2) {
   return(output)
 }
 
-#' Summary of Class "hfvdata"
+#' Summary of Classes "hfvdata" and "hfvlist
 #'
 #' A function to simplify the viewing of basic information describing
 #' demographic data in historical vertical format (data frames of class
-#' \code{hfvdata}).
+#' \code{hfvdata}, or bootstrapped data frames in lists of class
+#' \code{hfvlist}).
 #' 
 #' @name summary_hfv
 #' 
-#' @param object An object of class \code{hfvdata}.
+#' @param object An object of either class \code{hfvdata} or class
+#' \code{hfvlist}.
 #' @param popid A string denoting the name of the variable denoting population
 #' identity.
 #' @param patchid A string denoting the name of the variable denoting patch
@@ -956,16 +958,28 @@ diff_lM <- function(mpm1, mpm2) {
 #' in time \emph{t}.
 #' @param full A logical value indicating whether to include basic data frame
 #' summary information in addition to hfvdata-specific summary information.
-#' Defaults to \code{TRUE}.
+#' Defaults to \code{FALSE}.
 #' @param err_check A logical value indicating whether to check for errors in
 #' stage assignment.
 #' @param ... Other parameters.
 #' 
-#' @return A summary of the object. The first line shows the numbers of
-#' populations, patches, individuals, and time steps. If \code{full = TRUE}, 
-#' then this is followed by a standard data frame summary of the hfv dataset.
-#' If \code{err_check = TRUE}, then a subset of the original data frame input
-#' as \code{object} is exported with only rows showing stage assignment issues.
+#' @return A summary of the object. If an object of class \code{hfvdata} is
+#' entered, then the first line of output shows the numbers of populations,
+#' patches, individuals, and time steps. If \code{full = TRUE}, then this is
+#' followed by a standard data frame summary of the hfv dataset. If
+#' \code{err_check = TRUE}, then a subset of the original data frame input as
+#' \code{object} is exported with only rows showing stage assignment issues.
+#' 
+#' If an object of class \code{hfvlist} in entered, then the first line of
+#' output shows the number of bootstrapped datasets. This is followed by lines
+#' showing the mean number of rows and variables per data frame, as well as the
+#' mean numbers of populations, patches, individuals, and years per data frame.
+#' This is followed by lines showing the total number of unique populations,
+#' patches, individuals, and years sampled across the bootstrapped data frames.
+#' If \code{full = TRUE}, then this is followed by standard data frame summaries
+#' of all bootstrapped data frames. If \code{err_check = TRUE}, then a data
+#' frame is output with all of the problem rows across all bootstrapped data
+#' frames, starting with a new variable giving the bootstrap number of origin.
 #' 
 #' @section Notes:
 #' Stage assignment issue identified by option \code{err_check} fall under two
@@ -1003,92 +1017,260 @@ diff_lM <- function(mpm1, mpm2) {
 #' 
 #' summary_hfv(cypraw_v1)
 #' 
+#' cypraw_v1_boot <- bootstrap3(cypraw_v1, reps = 3)
+#' 
+#' summary_hfv(cypraw_v1_boot)
+#' 
 #' @export
 summary_hfv <- function(object, popid = "popid", patchid = "patchid",
-  individ = "individ", year2id = "year2", full = TRUE, err_check = TRUE, ...) {
+  individ = "individ", year2id = "year2", full = FALSE, err_check = TRUE, ...) {
+  
+  pops_across <- patches_across <- indivs_across <- years_across <- NULL
+  input_class <- 0 # 1 is hfvdata and 2 is hfvlist, 0 is an error
   
   identified_problems <- NULL
   need_return <- FALSE
   
   demodata <- object
   
-  if (!is(demodata, "hfvdata")) {
-    stop("This summary function requires an object of class hfvdata as input.",
+  if (is(demodata, "hfvdata")) {
+    input_class <- 1
+  } else if (is(demodata, "hfvlist")) {
+    input_class <- 2
+  } else {
+    stop("This summary function requires an object of class hfvdata or class hfvlist as input.",
       call. = FALSE)
   }
   
-  matdim <- dim(demodata)
-  
-  if (!is.element(popid, names(demodata))) {
-    stop("Population ID variable not found.", call. = FALSE)
-  }
-  if (!is.element(patchid, names(demodata))) {
-    stop("Patch ID variable not found.", call. = FALSE)
-  }
-  if (!is.element(individ, names(demodata))) {
-    stop("Individual ID variable not found.", call. = FALSE)
-  }
-  if (!is.element(year2id, names(demodata))) {
-    stop("Year at time t ID variable not found.", call. = FALSE)
-  }
-  
-  totalpops <- length(unique(demodata[, popid]))
-  totalpatches <- length(unique(demodata[, patchid]))
-  totalindivs <- length(unique(demodata[, individ]))
-  totalyears <- length(unique(demodata[, year2id]))
-  
-  grammar_rows <- " rows, "
-  grammar_vars <- " variables, "
-  grammar_pops <- " populations, "
-  grammar_patches <- " patches, "
-  grammar_indivs <- " individuals, and "
-  grammar_years <- " time steps."
-  if (matdim[1] == 1) grammar_rows <- " row, "
-  if (matdim[2] == 1) grammar_vars <- " variable, "
-  if (totalpops == 1) grammar_pops <- " population, "
-  if (totalpatches == 1) grammar_patches <- " patch, "
-  if (totalindivs == 1) grammar_indivs <- " individual, and "
-  if (totalyears == 1) grammar_years <- " time step."
-  
-  writeLines(paste0("\nThis hfv dataset contains ", matdim[1], grammar_rows,
-      matdim[2], grammar_vars, totalpops, grammar_pops))
-  writeLines(paste0(totalpatches, grammar_patches, totalindivs, grammar_indivs,
-      totalyears, grammar_years))
-  
-  if (err_check) {
-    stage1_NoMatches <- which(demodata[, "stage1"] == "NoMatch")
-    stage2_NoMatches <- which(demodata[, "stage2"] == "NoMatch")
-    stage3_NoMatches <- which(demodata[, "stage3"] == "NoMatch")
+  if (input_class == 1) {
+    matdim <- dim(demodata)
     
-    stage1_NotAlive <- which(demodata[, "stage1"] == "NotAlive")
-    stage2_NotAlive <- which(demodata[, "stage2"] == "NotAlive")
-    stage3_NotAlive <- which(demodata[, "stage3"] == "NotAlive")
-    
-    alive1 <- which(demodata[, "alive1"] == 1)
-    alive2 <- which(demodata[, "alive2"] == 1)
-    alive3 <- which(demodata[, "alive3"] == 1)
-    
-    s1_NotA_al <- intersect(stage1_NotAlive, alive1)
-    s2_NotA_al <- intersect(stage2_NotAlive, alive2)
-    s3_NotA_al <- intersect(stage3_NotAlive, alive3)
-    
-    problem_rows <- sort(unique(c(stage1_NoMatches, stage2_NoMatches,
-      stage3_NoMatches, s1_NotA_al, s2_NotA_al, s3_NotA_al)))
-    
-    if (length(problem_rows) > 0) {
-      need_return <- TRUE
-      writeLines(paste0("Problems in stage assignment identified in rows:\n"))
-      print(problem_rows)
-      
-      identified_problems <- demodata[problem_rows,]
+    if (!is.element(popid, names(demodata))) {
+      stop("Population ID variable not found.", call. = FALSE)
     }
+    if (!is.element(patchid, names(demodata))) {
+      stop("Patch ID variable not found.", call. = FALSE)
+    }
+    if (!is.element(individ, names(demodata))) {
+      stop("Individual ID variable not found.", call. = FALSE)
+    }
+    if (!is.element(year2id, names(demodata))) {
+      stop("Year at time t ID variable not found.", call. = FALSE)
+    }
+    
+    totalpops <- length(unique(demodata[, popid]))
+    totalpatches <- length(unique(demodata[, patchid]))
+    totalindivs <- length(unique(demodata[, individ]))
+    totalyears <- length(unique(demodata[, year2id]))
+    
+    grammar_rows <- " rows, "
+    grammar_vars <- " variables, "
+    grammar_pops <- " populations, "
+    grammar_patches <- " patches, "
+    grammar_indivs <- " individuals, and "
+    grammar_years <- " time steps."
+    if (matdim[1] == 1) grammar_rows <- " row, "
+    if (matdim[2] == 1) grammar_vars <- " variable, "
+    if (totalpops == 1) grammar_pops <- " population, "
+    if (totalpatches == 1) grammar_patches <- " patch, "
+    if (totalindivs == 1) grammar_indivs <- " individual, and "
+    if (totalyears == 1) grammar_years <- " time step."
+    
+    writeLines(paste0("\nThis hfv dataset contains ", matdim[1], grammar_rows,
+        matdim[2], grammar_vars, totalpops, grammar_pops))
+    writeLines(paste0(totalpatches, grammar_patches, totalindivs, grammar_indivs,
+        totalyears, grammar_years))
+    
+    if (err_check) {
+      stage1_NoMatches <- which(demodata[, "stage1"] == "NoMatch")
+      stage2_NoMatches <- which(demodata[, "stage2"] == "NoMatch")
+      stage3_NoMatches <- which(demodata[, "stage3"] == "NoMatch")
+      
+      stage1_NotAlive <- which(demodata[, "stage1"] == "NotAlive")
+      stage2_NotAlive <- which(demodata[, "stage2"] == "NotAlive")
+      stage3_NotAlive <- which(demodata[, "stage3"] == "NotAlive")
+      
+      alive1 <- which(demodata[, "alive1"] == 1)
+      alive2 <- which(demodata[, "alive2"] == 1)
+      alive3 <- which(demodata[, "alive3"] == 1)
+      
+      s1_NotA_al <- intersect(stage1_NotAlive, alive1)
+      s2_NotA_al <- intersect(stage2_NotAlive, alive2)
+      s3_NotA_al <- intersect(stage3_NotAlive, alive3)
+      
+      problem_rows <- sort(unique(c(stage1_NoMatches, stage2_NoMatches,
+        stage3_NoMatches, s1_NotA_al, s2_NotA_al, s3_NotA_al)))
+      
+      if (length(problem_rows) > 0) {
+        need_return <- TRUE
+        writeLines(paste0("Problems in stage assignment identified in rows:\n"))
+        print(problem_rows)
+        
+        identified_problems <- demodata[problem_rows,]
+      }
+    }
+    
+    if (full) {
+      dethonthetoilet <- summary.data.frame(demodata)
+      print(dethonthetoilet, digits = 3)
+    }
+    
+    if (err_check & need_return) return(identified_problems)
+    
+  } else {
+    hfvlist_length <- length(demodata)
+    
+    df_rows_vec <- rep(0, hfvlist_length)
+    df_vars_vec <- rep(0, hfvlist_length)
+    totalpops_vec <- rep(0, hfvlist_length)
+    totalpatches_vec <- rep(0, hfvlist_length)
+    totalindivs_vec <- rep(0, hfvlist_length)
+    totalyears_vec <- rep(0, hfvlist_length)
+    
+    problem_list <- vector(mode = "list", hfvlist_length)
+    problem_counter <- 0
+    
+    for (i in c(1:hfvlist_length)) {
+      matdim <- dim(demodata[[i]])
+      
+      current_rows <- matdim[1]
+      current_vars <- matdim[2]
+      df_rows_vec[i] <- current_rows
+      df_vars_vec[i] <- current_vars
+      
+      if (!is.element(popid, names(demodata[[i]]))) {
+        stop(paste("Population ID variable not found in data frame", i), call. = FALSE)
+      }
+      if (!is.element(patchid, names(demodata[[i]]))) {
+        stop(paste("Patch ID variable not found in data frame", i), call. = FALSE)
+      }
+      if (!is.element(individ, names(demodata[[i]]))) {
+        stop(paste("Individual ID variable not found in data frame", i), call. = FALSE)
+      }
+      if (!is.element(year2id, names(demodata[[i]]))) {
+        stop(paste("Year at time t ID variable not found in data frame", i), call. = FALSE)
+      }
+      
+      totalpops <- length(unique(demodata[[i]][, popid]))
+      totalpatches <- length(unique(demodata[[i]][, patchid]))
+      totalindivs <- length(unique(demodata[[i]][, individ]))
+      totalyears <- length(unique(demodata[[i]][, year2id]))
+      
+      totalpops_vec[i] <- totalpops
+      totalpatches_vec[i] <- totalpatches
+      totalindivs_vec[i] <- totalindivs
+      totalyears_vec[i] <- totalyears
+      
+      if (i == 1) {
+        pops_across <- unique(demodata[[i]][, popid])
+        patches_across <- unique(demodata[[i]][, patchid])
+        indivs_across <- unique(demodata[[i]][, individ])
+        years_across <- unique(demodata[[i]][, year2id])
+      } else {
+        pops_across <- c(pops_across, unique(demodata[[i]][, popid]))
+        patches_across <- c(patches_across, unique(demodata[[i]][, patchid]))
+        indivs_across <- c(indivs_across, unique(demodata[[i]][, individ]))
+        years_across <- c(years_across, unique(demodata[[i]][, year2id]))
+      }
+      
+      if (err_check) {
+        stage1_NoMatches <- which(demodata[[i]][, "stage1"] == "NoMatch")
+        stage2_NoMatches <- which(demodata[[i]][, "stage2"] == "NoMatch")
+        stage3_NoMatches <- which(demodata[[i]][, "stage3"] == "NoMatch")
+        
+        stage1_NotAlive <- which(demodata[[i]][, "stage1"] == "NotAlive")
+        stage2_NotAlive <- which(demodata[[i]][, "stage2"] == "NotAlive")
+        stage3_NotAlive <- which(demodata[[i]][, "stage3"] == "NotAlive")
+        
+        alive1 <- which(demodata[[i]][, "alive1"] == 1)
+        alive2 <- which(demodata[[i]][, "alive2"] == 1)
+        alive3 <- which(demodata[[i]][, "alive3"] == 1)
+        
+        s1_NotA_al <- intersect(stage1_NotAlive, alive1)
+        s2_NotA_al <- intersect(stage2_NotAlive, alive2)
+        s3_NotA_al <- intersect(stage3_NotAlive, alive3)
+        
+        problem_rows <- sort(unique(c(stage1_NoMatches, stage2_NoMatches,
+          stage3_NoMatches, s1_NotA_al, s2_NotA_al, s3_NotA_al)))
+        
+        if (length(problem_rows) > 0) {
+          need_return <- TRUE
+          problem_counter = problem_counter + 1
+          
+          prlength <- length(problem_rows)
+          
+          problem_rows_headrow <- data.frame(bootstrap = rep(i, prlength))
+          
+          chittle_fiddle <- cbind.data.frame(problem_rows_headrow, demodata[[i]][problem_rows,])
+          
+          if (problem_counter == 1) {
+            identified_problems <- chittle_fiddle
+            
+          } else {
+            identified_problems <- rbind.data.frame(identified_problems, chittle_fiddle)
+          }
+        }
+      }
+    }
+    
+    mean_rows <- mean(df_rows_vec, na.rm = TRUE)
+    mean_vars <- mean(df_vars_vec, na.rm = TRUE)
+    mean_pops <- mean(totalpops_vec, na.rm = TRUE)
+    mean_patches <- mean(totalpatches_vec, na.rm = TRUE)
+    mean_indivs <- mean(totalindivs_vec, na.rm = TRUE)
+    mean_years <- mean(totalyears_vec, na.rm = TRUE)
+    
+    if (mean_rows != floor(mean_rows)) mean_rows <- round(mean_rows, digits = 3)
+    if (mean_vars != floor(mean_vars)) mean_vars <- round(mean_vars, digits = 3)
+    if (mean_pops != floor(mean_pops)) mean_pops <- round(mean_pops, digits = 3)
+    if (mean_patches != floor(mean_patches)) mean_patches <- round(mean_patches, digits = 3)
+    if (mean_indivs != floor(mean_indivs)) mean_indivs <- round(mean_indivs, digits = 3)
+    if (mean_years != floor(mean_years)) mean_years <- round(mean_years, digits = 3)
+    
+    total_pops_across <- length(unique(pops_across))
+    total_patches_across <- length(unique(patches_across))
+    total_indivs_across <- length(unique(indivs_across))
+    total_years_across <- length(unique(years_across))
+   
+    grammar_rows_mean <- " rows, "
+    grammar_vars_mean <- " variables, "
+    grammar_pops_mean <- " populations, "
+    grammar_patches_mean <- " patches, "
+    grammar_indivs_mean <- " individuals, and "
+    grammar_years_mean <- " time steps."
+    if (mean_rows == 1) grammar_rows_mean <- " row, "
+    if (mean_vars == 1) grammar_vars_mean <- " variable, "
+    if (mean_pops == 1) grammar_pops_mean <- " population, "
+    if (mean_patches == 1) grammar_patches_mean <- " patch, "
+    if (mean_indivs == 1) grammar_indivs_mean <- " individual, and "
+    if (mean_years == 1) grammar_years_mean <- " time step."
+    
+    grammar_pops <- " unique populations, "
+    grammar_patches <- " unique patches, "
+    grammar_indivs <- " unique individuals, and "
+    grammar_years <- " unique time steps."
+    if (total_pops_across == 1) grammar_pops <- " unique population, "
+    if (total_patches_across == 1) grammar_patches <- " unique patch, "
+    if (total_indivs_across == 1) grammar_indivs <- " unique individual, and "
+    if (total_years_across == 1) grammar_years <- " unique time step."
+    
+    writeLines(paste0("\nThis hfvlist object contains ", hfvlist_length, " hfvdata demographic data frames."))
+    writeLines(paste0("Each data frame contains an average of ", mean_rows, grammar_rows_mean,
+      mean_vars, grammar_vars_mean, mean_pops, grammar_pops_mean))
+    writeLines(paste0(mean_patches, grammar_patches_mean, mean_indivs, grammar_indivs_mean,
+      mean_years, grammar_years_mean))
+    
+    writeLines(paste0("\nAcross all data frames, there are ", total_pops_across, grammar_pops, total_patches_across,
+      grammar_patches, total_indivs_across, grammar_indivs, total_years_across, grammar_years))
+    
+    if (full) {
+      for (i in c(1:hfvlist_length)) {
+        dethonthetoilet <- summary.data.frame(demodata)
+        print(dethonthetoilet, digits = 3)
+      }
+    }
+    
+    if (err_check & need_return) return(identified_problems)
   }
-  
-  if (full) {
-    dethonthetoilet <- summary.data.frame(demodata)
-    print(dethonthetoilet, digits = 3)
-  }
-  
-  if (err_check & need_return) return(identified_problems)
 }
 
