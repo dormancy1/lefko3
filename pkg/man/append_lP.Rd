@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{append_lP}
 \alias{append_lP}
-\title{Append Projections Into New lefkoProj Object}
+\title{Append Projections To Create New lefkoProj Object}
 \usage{
 append_lP(proj1 = NULL, proj2 = NULL)
 }

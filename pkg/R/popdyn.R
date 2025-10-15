@@ -3147,9 +3147,8 @@ sensitivity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
   }
   
   final_output <- list(mean = focused_frame, summaries = output_list)
+  
   return(final_output)
-
-  return(output)
 }
 
 #' Estimate Sensitivity of Population Growth Rate of a List of Matrices
@@ -4313,9 +4312,8 @@ elasticity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
   }
   
   final_output <- list(mean = focused_frame, summaries = output_list)
+  
   return(final_output)
-
-  return(output)
 }
 #' Estimate Elasticity of Population Growth Rate of a List of Matrices
 #' 

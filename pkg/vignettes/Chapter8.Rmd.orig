@@ -67,7 +67,7 @@ plot(density(c(lathyrus$lnVol88, lathyrus$lnVol89, lathyrus$lnVol90,
   
   <p style="text-indent: 20px">The raw volume distribution is highly skewed. This might cause difficulty if we used raw size untransformed and with a Gaussian distribution. A Gamma distribution might be justified. However, we will use the log volume here, which looks 'better' than the raw volume distribution in the sense that it is closer to some semblance of a Gaussian distribution, mostly through an increased level of symmetry. We will assume that log volume is Gaussian-distributed and that the mean bears no relationship to the variance.</p>
   
-  <p style="text-indent: 20px">We will now develop a stageframe that incorporates the log volume of size. We will build this with vectors of the values describing each stage, always in the same order. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5 (since all size bins are using this default, we do not include a `binhalfwidth` vector option in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead.</p>
+  <p style="text-indent: 20px">We will now develop a stageframe that incorporates the log volume of size. We will build this with vectors of the values describing each stage, always in the same order. Note that we will use the midpoint approach to determine size bins here, using the default bin half-widths of 0.5 (since all size bins use this default, we do not include a `binhalfwidth` vector option in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead.</p>
 ```{r Ch8.3}
 sizevector <- c(0, 4.6, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 stagevector <- c("Sd", "Sdl", "Dorm", "Sz1nr", "Sz2nr", "Sz3nr", "Sz4nr",
@@ -100,9 +100,9 @@ lathframeln <- sf_create(sizes = sizevector, stagenames = stagevector,
   
   <p style="text-indent: 20px">Now we will standardize the dataset into historically-formatted vertical (*hfv*) format. Here, we will use the `verticalize3()` function, which creates historically-formatted vertical datasets from horizontally structured raw data, as below. We will also replace NAs in size and fecundity variables with zeros for `modelsearch` to work properly when we build models of vital rates, so we will now set `NAas0 = TRUE`. Some care needs to be taken with this last step, since some authors give missing values extra meaning not present in a value of zero. In our case, a missing value indicates that a plant was dead (both size and fecundity are missing), was alive but not sprouting (size was missing), or was alive but did not produce seed (fecundity was missing). In all cases, these NA values may be replaced by 0, because other variables indicate those conditions.</p>
   
-  <p style="text-indent: 20px">We also have two choices for use as our reproductive status and fecundity variables. The first choice, `FCODE88` indicates whether a plant flowered. The second choice, `Intactseed88`, indicates the number of seed produced. Flowering plants typically have different demographic characteristics than non-flowering plants, either reflecting reproductive costs, or, conversely, because flowering plants might have more resources and hence higher survival than non-flowering plants. We should separate transitions among these two groups. So, let's use `FCODE88` to indicate reproductive status, and `Intactseed88` to indicate fecundity.</p>
+  <p style="text-indent: 20px">We also have two choices for reproductive status and fecundity. The first choice, `FCODE88` indicates whether a plant flowered. The second choice, `Intactseed88`, indicates the number of seed produced. Flowering plants typically have different demographic characteristics than non-flowering plants, either reflecting reproductive costs, or, conversely, because flowering plants might have more resources and hence higher survival than non-flowering plants. We should separate transitions among these two groups. So, let's use `FCODE88` to indicate reproductive status, and `Intactseed88` to indicate fecundity.</p>
   
-  <p style="text-indent: 20px">Finally, note that in the input to the following function, we utilize a strictly repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and no gaps or shuffles appear in the dataset. The data management functions that we have created for `lefko3` do not require such repeating patterns, but they do make the required input in the function much shorter and more succinct. To see a detailed summary of the resulting hfv dataset, remove `full = FALSE` from the `summary_hfv()` call. Note that prior to standardizing the dataset, we will create a new variable to code individual identity, since different plants in different subpopulations use the same identifiers.</p>
+  <p style="text-indent: 20px">Finally, note that in the input to the following function, we utilize a strictly repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and no gaps or shuffles appear in the dataset. The data management functions that we have created for `lefko3` do not require such repeating patterns, but they do make the required input in the function much shorter and more succinct. To see a detailed summary of the resulting hfv dataset, add `full = TRUE` to the `summary_hfv()` call. Note that prior to standardizing the dataset, we will create a new variable to code individual identity, since different plants in different subpopulations use the same identifiers.</p>
 ```{r Ch8.4}
 lathyrus$indiv_id <- paste(lathyrus$SUBPLOT, lathyrus$GENET)
 
@@ -113,11 +113,10 @@ lathvertln <- verticalize3(lathyrus, noyears = 4, firstyear = 1988,
   nonobsacol = "Dormant1988", stageassign = lathframeln,
   stagesize = "sizea", censorcol = "Missing1988", censorkeep = NA,
   NAas0 = TRUE, censorRepeat = TRUE, censor = TRUE)
-
-summary_hfv(lathvertln, full = FALSE)
+summary_hfv(lathvertln)
 ```
   
-  <p style="text-indent: 20px">Before we move on to the next key steps in analysis, let's take a closer look at fecundity. In this dataset, fecundity is mostly a count of intact seeds, and only differs in six cases where the seed output was estimated based on other models. To see this, try the following code.</p>
+  <p style="text-indent: 20px">Before we move on to the next key steps in analysis, let's take a closer look at fecundity. In this dataset, fecundity is mostly a count of intact seeds, and only differs in 6 cases where the seed output was estimated based on other models.</p>
 ```{r Ch8.5}
 # Length of fecundity vaiable in t:
 length(lathvertln$feca2)
@@ -144,12 +143,13 @@ hfv_qc(data = lathvertln, vitalrates = c("surv", "obs", "size", "repst", "fec"),
   
 #### Step 2b. Provide supplemental information for matrix estimation  
   
-  <p style="text-indent: 20px">Matrix estimation functions in package `lefko3` are made to work with **supplement tables**, which provide extra data for matrix estimation that is not included in the main demographic dataset. The `supplemental()` function provides a means of incorporating four additional kinds of data into MPM construction:</p>
+  <p style="text-indent: 20px">Matrix estimation functions in package `lefko3` are made to work with **supplement tables**, which provide extra data for matrix estimation that is not included in the main demographic dataset. The `supplemental()` function provides a means of inputting five kinds of data into MPM construction:</p>
   
-  1. fixed transition values derived from other studies and added as constants to matrices,
-  2. proxy transition values when data for particular transitions do not exist and other, estimable transitions need to be used as proxies,
-  3. reproductive multipliers indicating which stages lead to the production of which stages, and at what level relative to estimated fecundity, as well as multipliers for proxy transitions, and
-  4. survival multipliers, in cases in which proxy survival transitions are used but must be set at elevated or reduced levels relative to the original transition.
+  1. *fixed transition values* derived from other studies and added as constants to matrices;
+  2. *proxy transition values* when data for particular transitions do not exist and other, estimable transitions will be used in their place;
+  3. *reproductive multipliers* to indicate which stages lead to the production of which stages, and at what level relative to estimated fecundity;
+  4. *survival multipliers*, in cases in which proxy survival transitions are used but must be set at elevated or reduced levels relative to the original transition; and
+  5. *additive offsets* to survival and fecundity transitions.
   
   <p style="text-indent: 20px">Here, we will create an ahistorical supplemental table organizing some of these sorts of data. Each row refers to a specific transition. The first two of these transitions are set to specific probabilities, which are the probabilities of germination and seed dormancy, estimated from a separate study. The final two terms are fecundity multipliers, which mark which transitions correspond to fecundity and provide information on what multiple of fecundity estimated via linear modeling applies to each case. Note that `type = 3` multipliers cannot be age-specific, while fecundity multipliers incorporated as `type = 2` may be set to specific ages.</p>
 ```{r Ch8.8}
@@ -255,8 +255,36 @@ legend("bottomleft", c("patch det mean", "pop det mean", "pop sto"), lty = c(1, 
   
   <p style="text-indent: 20px">Deterministic and stochastic analyses suggest that the population and all patches are slightly declining, with years and patches generally associated with $\lambda < 1$ and $a = \text{log} \lambda _{S} < 0$. Qualitatively, they agree with the $\lambda$ and $a = \text{log} \lambda _{S}$ estimates from our other *Lathyrus* vignettes.</p>
   
+  <p style="text-indent: 20px">We may wish some standard errors for some of these values. Here, we bootstrap the data in order to estimate standard errors for the mean matrix lambda and stochastic lambda. To prevent this exercise from taking too long, we will only conduct 10 bootstrapped replicates.</p>
+```{r Ch8.15}
+set.seed(42)
+lathboot <- bootstrap3(lathvertln, reps = 10)
+
+lathmodelsln2_boot <- modelsearch(lathboot, historical = FALSE,
+  approach = "mixed", suite = "main",
+  vitalrates = c("surv", "obs", "size", "repst", "fec"), juvestimate = "Sdl",
+  bestfit = "AICc&k", sizedist = "gaussian", fecdist = "negbin",
+  indiv = "individ", year = "year2", age = "obsage", test.age = TRUE,
+  year.as.random = TRUE, patch.as.random = TRUE, show.model.tables = TRUE,
+  fec.zero = TRUE, quiet = "partial")
+
+lathmat2age_boot <- aflefko2(year = "all", stageframe = lathframeln,
+  modelsuite = lathmodelsln2_boot, data = lathboot, supplement = lathsupp2,
+  final_age = 3, continue = TRUE, reduce = FALSE)
+lathmat2mean_boot <- lmean(lathmat2age_boot)
+
+lambda2_boot <- lambda3(lathmat2age_boot)
+sl2_boot <- slambda3(lathmat2age_boot)
+
+# Standard error of deterministic lambda
+sd(lambda2_boot$lambdas) / sqrt(10)
+
+# Standard error of stochastic lambda
+sd(sl2_boot$a) / sqrt(10)
+```
+
   <p style="text-indent: 20px">Now let's look at the stable stage distribution, using the population matrices rather than the patch matrices. The output for the ahistorical MPM is a data frame with matrix of origin, stage name, and stable stage proportion in each row. Because the default output for the `stablestage3()` function will give us the stable distribution of age-stages, we will collapse the output across age to produce a true stable stage distribution.</p>
-```{r Ch8.15, fig.cap = "Figure 8.5. Stable and long-run stage distribution"}
+```{r Ch8.16, fig.cap = "Figure 8.5. Stable and long-run stage distribution"}
 ehrlen2ss <- stablestage3(lathmat2mean)
 ehrlen2ss_s <- stablestage3(lathmat2age, stochastic = TRUE, seed = 42)
 
@@ -284,7 +312,7 @@ legend("topright", c("deterministic", "stochastic"), col = c("black", "red"),
   <p style="text-indent: 20px">The stable stage distribution shows high levels of dormant seeds and mid-sized adults. Small-sized adults comprise the smallest part of the stable age-stage structure. Deterministic and stochastic analyses show more or less the same results.</p>
   
   <p style="text-indent: 20px">Now let's take look at the reproductive values. We'll go straight to the plots, as with the stable stage distribution.</p>
-```{r Ch8.16, fig.cap = "Figure 8.6. Age-stage reproductive values"}
+```{r Ch8.17, fig.cap = "Figure 8.6. Age-stage reproductive values"}
 ehrlen2rv <- repvalue3(lathmat2mean)
 ehrlen2rv_s <- repvalue3(lathmat2age, stochastic = TRUE, seed = 42)
 
@@ -300,7 +328,7 @@ legend("topleft", c("deterministic", "stochastic"), col = c("black", "red"),
   <p style="text-indent: 20px">We see reproductive values above 0 starting with dormant adults, and generally staying roughly equivalent with minor changes in ages 2 and 3. These patterns hold in both deterministic and stochastic analyses.</p>
   
   <p style="text-indent: 20px">We will next assess to which matrix elements $\lambda$ and $\lambda_S$ are most sensitive to changes in via deterministic and stochastic sensitivity analysis.</p>
-```{r Ch8.17}
+```{r Ch8.18}
 lathmat2msens <- sensitivity3(lathmat2mean)
 lathmat2msens_s <- sensitivity3(lathmat2age, stochastic = TRUE, seed = 42)
 
@@ -320,7 +348,7 @@ which(as.matrix(lathmat2msens_s$ah_sensmats[[1]]) ==
   <p style="text-indent: 20px">The highest deterministic value appears to be associated with the transition from flowering size 6 adults in age 3 or higher to dormant adult (element 3762, in column 45, row 60). The stochastic sensitivity analysis suggests element 3888, which is associated with the transition from three year old flowering size 8 adults to dormant adult (column 62, row 45). Inspecting the sensitivity matrix (type `lathmat2msens$ah_sensmats[[1]]` to view the full deterministic sensitivity matrix, or `lathmat2msens_s$ah_sensmats[[1]]` to view the full stochastic sensitivity matrix) also shows that transitions near these elements are associated with rather high sensitivities.</p>
   
   <p style="text-indent: 20px">Let's now assess the elasticity of $\lambda$ or $\lambda_S$ to matrix elements.</p>
-```{r Ch8.18}
+```{r Ch8.19}
 lathmat2melas <- elasticity3(lathmat2mean)
 lathmat2melas_s <- elasticity3(lathmat2age, stochastic = TRUE, seed = 42)
 
@@ -337,14 +365,15 @@ which(as.matrix(lathmat2melas_s$ah_elasmats[[1]]) == max(lathmat2melas_s$ah_elas
   <p style="text-indent: 20px">The deterministic analysis shows the highest elasticity associated with element 3201 (col 51, row 51, stasis as a size 6 non-reproductive 3yr old or older adult), while the stochastic analysis show that population growth rate is most elastic to element 3905, which is in column 62 and row 62 (transition from three year old or older size 8 reproductive adult to the same stage).</p>
   
   <p style="text-indent: 20px">Elasticity values can be treated as additive and sum to 1.0 within single matrices. This allows us to make interesting comparisons, such as to compare the elasticity of population growth rate to changes in transitions associated with specific stages. Let's conduct such an analysis, and plot the results.</p>
-```{r Ch8.19, fig.cap = "Figure 8.7. Elasticities by age-stage"}
+```{r Ch8.20, fig.cap = "Figure 8.7. Elasticities by age-stage"}
 elas_put_together <- cbind.data.frame(colSums(lathmat2melas$ah_elasmats[[1]]),
   Matrix::colSums(lathmat2melas_s$ah_elasmats[[1]]))
 names(elas_put_together) <- c("det", "sto")
 rownames(elas_put_together) <- apply(as.matrix(c(1:dim(lathmat2melas$agestages)[1])), 
   1, function(X) {
     paste(lathmat2melas$agestages$stage[X], lathmat2melas$agestages$age[X])
-  })
+  }
+)
 
 barplot(t(elas_put_together), beside=T, names.arg = rep(NA,
     length(rownames(elas_put_together))), ylab = "Elasticity", xlab = "Stage",
@@ -358,7 +387,7 @@ legend("topleft", c("deterministic", "stochastic"), col = c("black", "orangered"
   <p style="text-indent: 20px">We see in the analysis above that in the deterministic case, the population growth rate is most elastic to changes in flowering and non-flowering mid-sized older adults. In the stochastic case, the population growth rate is most elastic to changes in the oldest and largest flowering adults. So, the differences are quite notable, and we would infer that environmental stochasticity makes a big impact here.</p>
   
   <p style="text-indent: 20px">Our estimated elasticities can also be summarized by transition type. Let's take a look at a plot, using the `summary.lefkoElas()` function to help us assess these transition types.</p>
-```{r Ch8.20, fig.cap = "Figure 8.8. Elasticities by transition type"}
+```{r Ch8.21, fig.cap = "Figure 8.8. Elasticities by transition type"}
 lathmat2m_sums <- summary(lathmat2melas)
 lathmat2m_s_sums <- summary(lathmat2melas_s)
 
@@ -376,19 +405,19 @@ legend("topright", c("deterministic", "stochastic"), col = c("black", "orangered
   <p style="text-indent: 20px">We see in the plot above that deterministic and stochastic analyses generally agree about the importance and influence of transition types to population growth rate. Specifically, the population growth rate is most strongly elastic in response to changes in growth transitions, and almost completely inelastic to changes in fecundity. Shrinkage is almost as influential as growth, and stasis is almost as important in stochastic analysis.</p>
   
   <p style="text-indent: 20px">In addition to sensitivity and elasticity analyses, we can use package `lefko3` to assess the actual impacts of demographic shifts or differences on the population growth rate. Two tools for this purpose are the life table response experiment (LTRE), and its stochastic versions the stochastic life table response experiment (sLTRE) and the small noise approximation LTRE (SNA-LTRE). All three are available via the `ltre3()` function. Below, we perform a standard deterministic LTRE to assess the impact of space on the population growth rate. This is done via a comparison of patch-level demography to the grand mean matrix, which is the default comparison if no reference matrices are provided. Remove the hashtag from the second line to see the full structure of the resulting object. Particularly, you will notice that the first element, `ltre_det`, is a list of six matrices. These matrices show the actual impact of the difference in elements between the respective patch-level matrix and the reference matrix (here, the grand population mean matrix) on the population growth rate $\lambda$. After this, we see similar structure to the input `lefkoMat` object, including the stageframe and order of matrices.</p>
-```{r Ch8.21}
+```{r Ch8.22}
 lathmat2m_ltre <- ltre3(lathmat2pmean)
 #lathmat2m_ltre
 ```
   
   <p style="text-indent: 20px">The sLTRE produces output that is a bit different. Here, we see two lists of matrices prior to the MPM metadata. The first, `ltre_mean`, is a list of matrices showing the impact of differences in mean elements between the patch-level temporal mean matrices and the reference temporal mean matrix. The second, `ltre_sd`, is a list of matrices showing the impact of differences in the temporal standard deviation of each element between the patch-level and reference matrix sets. In other words, while a standard LTRE shows the impact of changes in matrix elements on $\lambda$, the sLTRE shows the impacts of changes in the mean and the variability of matrix elements on $\text{log} \lambda$.</p>
-```{r Ch8.22}
+```{r Ch8.23}
 lathmat2m_sltre <- ltre3(lathmat2agep, stochastic = TRUE, seed = 42)
 #lathmat2m_sltre
 ```
   
   <p style="text-indent: 20px">Let's identify which age-stages exert the strongest impact on the population growth rate.</p>
-```{r Ch8.23, fig.cap = "Figure 8.9. LTRE contributions by age-stage"}
+```{r Ch8.24, fig.cap = "Figure 8.9. LTRE contributions by age-stage"}
 ltre_pos <- lathmat2m_ltre$cont_mean[[1]]
 ltre_neg <- lathmat2m_ltre$cont_mean[[1]]
 ltre_pos[(ltre_pos < 0)] <- 0
@@ -425,7 +454,7 @@ legend("topleft", c("deterministic", "stochastic mean", "stochastic SD"),
   <p style="text-indent: 20px">The output above shows that mid-sized non-flowering and flowering adults and seedlings exert strong influences on both $\lambda$ and $\text{log} \lambda$. This appears to be primarily through changes to the mean transition values, with only a small contribution due to changes in the variability of transition values in the stochastic case.</p>
   
   <p style="text-indent: 20px">Finally, we will assess what transition types exert the greatest impact on population growth rate.</p>
-```{r Ch8.24, fig.cap = "Figure 8.10. LTRE contributions by transition type"}
+```{r Ch8.25, fig.cap = "Figure 8.10. LTRE contributions by transition type"}
 lathmat2m_ltre_summary <- summary(lathmat2m_ltre)
 lathmat2m_sltre_summary <- summary(lathmat2m_sltre)
 

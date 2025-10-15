@@ -13,7 +13,8 @@ slambda3(
 )
 }
 \arguments{
-\item{mpm}{A matrix projection model of class \code{lefkoMat}, or a list of
+\item{mpm}{A matrix projection model of class \code{lefkoMat}, a 
+bootstrapped MPM object of class \code{lefkoMatList}, or a simple list of
 full matrix projection matrices.}
 
 \item{times}{Number of occasions to iterate. Defaults to \code{10000}.}
@@ -39,6 +40,8 @@ more than 50\% of elements with values greater than zero.}
 }
 \value{
 A data frame with the following variables:
+\item{replicate}{The bootstrapped replicate. Only provided if a
+\code{lefkoMatList} object is entered in argument \code{mpm}.}
 \item{pop}{The identity of the population.}
 \item{patch}{The identity of the patch.}
 \item{a}{Estimate of stochastic growth rate, estimated as the arithmetic
@@ -50,8 +53,9 @@ mean of the log population growth rate across simulated occasions.}
 \description{
 Function \code{slambda3()} estimates the stochastic population growth rate,
 \eqn{a}, defined as the long-term arithmetic mean of the log population 
-growth rate estimated per simulated occasion. This function can handle both
-lefkoMat objects and lists of full A matrices as input.
+growth rate estimated per simulated occasion. This function can handle
+lefkoMat objects, lefkoMatList objects, and lists of full A matrices as
+input.
 }
 \section{Notes}{
 
@@ -101,6 +105,8 @@ cypraw_v1 <- verticalize3(data = cypdata, noyears = 6, firstyear = 2004,
   stageassign = cypframe_raw, stagesize = "sizeadded", NAas0 = TRUE, 
   NRasRep = TRUE)
 
+cypraw_boot <- bootstrap3(cypraw_v1, reps = 3)
+
 cypsupp3r <- supplemental(stage3 = c("SD", "SD", "P1", "P1", "P2", "P3", "SL",
     "D", "XSm", "Sm", "D", "XSm", "Sm", "mat", "mat", "mat", "SD", "P1"),
   stage2 = c("SD", "SD", "SD", "SD", "P1", "P2", "P3", "SL", "SL", "SL", "SL",
@@ -128,5 +134,13 @@ cypmatrix3r <- rlefko3(data = cypraw_v1, stageframe = cypframe_raw,
   patchcol = "patchid", indivcol = "individ")
 
 cypstoch <- slambda3(cypmatrix3r)
+
+cypmatrix3r_boot <- rlefko3(data = cypraw_boot, stageframe = cypframe_raw, 
+year = "all", patch = "all", stages = c("stage3", "stage2", "stage1"),
+  size = c("size3added", "size2added", "size1added"), 
+  supplement = cypsupp3r, yearcol = "year2", 
+  patchcol = "patchid", indivcol = "individ")
+
+cypstoch_boot <- slambda3(cypmatrix3r_boot)
 
 }

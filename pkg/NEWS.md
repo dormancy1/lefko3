@@ -8,10 +8,21 @@
 
 * Function summary_hfv() can now summarize hfvlist objects.
 
-* Functions lmean(), lambda3(), stablestage3(), repvalue3(), sensitivity3(), and
-  elasticity3() can now handle lefkoMatList objects.
-  
+* Functions lmean(), lambda3(), slambda3(), stablestage3(), repvalue3(),
+  sensitivity3(), and elasticity3() can now handle lefkoMatList objects.
+
 * Function summary.lefkoMatList() created to summarize lefkoMatList objects.
+
+* Function stage_weight() created to provide stage weight vector for density
+  dependent projection.
+
+## USER VISIBLE CHANGES
+
+* Vignettes have been updated for bootstrap3() and new versions of related
+  functions.
+  
+* Functions projection3() and f_projection3() now throw errors when a density
+  frame is entered with stages undefined in the associated stage frame.
 
 ## BUG FIXES
 

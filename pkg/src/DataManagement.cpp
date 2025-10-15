@@ -6177,7 +6177,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                 for (int k = 0; k < current_poppatch_sample_limit; k++) {
                   arma::uvec rows_identified_arma (total_rows, fill::zeros);
                   for (int l = 0; l < total_rows; l++) {
-                    if (individuals_allrows_str(l) == sampled_individuals(k) && poppatch_by_row(l) == j) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && static_cast<int>(poppatch_by_row(l)) == j) {
                       rows_identified_arma(l) = 1;
                     }
                   }
@@ -6228,7 +6228,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                 for (int k = 0; k < current_pop_sample_limit; k++) {
                   arma::uvec rows_identified_arma (total_rows, fill::zeros);
                   for (int l = 0; l < total_rows; l++) {
-                    if (individuals_allrows_str(l) == sampled_individuals(k) && pop_by_row(l) == j) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && static_cast<int>(pop_by_row(l)) == j) {
                       rows_identified_arma(l) = 1;
                     }
                   }
@@ -6324,7 +6324,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                 for (int k = 0; k < current_poppatch_sample_limit; k++) {
                   arma::uvec rows_identified_arma (total_rows, fill::zeros);
                   for (int l = 0; l < total_rows; l++) {
-                    if (individuals_allrows_str(l) == sampled_individuals(k) && poppatch_by_row(l) == j) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && static_cast<int>(poppatch_by_row(l)) == j) {
                       rows_identified_arma(l) = 1;
                     }
                   }
@@ -6376,7 +6376,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                 for (int k = 0; k < current_pop_sample_limit; k++) {
                   arma::uvec rows_identified_arma (total_rows, fill::zeros);
                   for (int l = 0; l < total_rows; l++) {
-                    if (individuals_allrows_str(l) == sampled_individuals(k) && pop_by_row(l) == j) {
+                    if (individuals_allrows_str(l) == sampled_individuals(k) && static_cast<int>(pop_by_row(l)) == j) {
                       rows_identified_arma(l) = 1;
                     }
                   }

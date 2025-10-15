@@ -84,13 +84,13 @@ lathvert <- verticalize3(lathyrus, noyears = 4, firstyear = 1988,
   stageassign = lathframe, stagesize = "sizea", censorcol = "Missing1988", 
   censorkeep = NA, censorRepeat = TRUE, censor = TRUE, NAas0 = TRUE)
 
-summary_hfv(lathvert, full = FALSE)
+summary_hfv(lathvert)
 #> 
 #> This hfv dataset contains 2527 rows, 54 variables, 1 population, 
 #> 6 patches, 1053 individuals, and 3 time steps.
 ```
   
-  <p style="text-indent: 20px">The resulting reorganization has dramatically changed the dimensions of the dataset, which started with 1119 rows and 38 variables, and now has 2527 rows and 54 variables. The `verticalize3()` function includes error-checking measures designed to find instances where individual characteristics do not match those assigned to stages in the associated stageframe. In those instances, warning messages will be displayed and the instances will be marked `NoMatch` in `stage1`, `stage2`, or `stage3`. The `summary_hfv()` function allows us to quickly summarize the main characteristics of our resulting *hfv* dataset, and we can see a longer summary by removing `full = FALSE`.</p>
+  <p style="text-indent: 20px">The resulting reorganization has dramatically changed the dimensions of the dataset, which started with 1119 rows and 38 variables, and now has 2527 rows and 54 variables. The `verticalize3()` function includes error-checking measures designed to find instances where individual characteristics do not match those assigned to stages in the associated stageframe. In those instances, warning messages will be displayed and the instances will be marked `NoMatch` in `stage1`, `stage2`, or `stage3`. The `summary_hfv()` function allows us to quickly summarize the main characteristics of our resulting *hfv* dataset, and we can see a longer summary by adding `full = TRUE`.</p>
   
   <p style="text-indent: 20px">If we remove `full = FALSE` from the `summary_hfv()` call, then the extended portion of our summary will reveal that the `verticalize3()` function has automatically subset the data to only those instances in which the individual is alive in occasion *t* (please look at the variable `alive2`). Knowing this can help us interpret other variables. For example, the mean value for `alive3` suggests very high survival to occasion *t*+1 (92.2%). Further, the minimum values for all size variables are zero, suggesting that unobservable stages occur within the dataset (these are instances of vegetative dormancy).</p>
   
@@ -99,22 +99,22 @@ summary_hfv(lathvert, full = FALSE)
   <p style="text-indent: 20px">A data subset summary can teach us how reproduction is handled here. The reproductive status of flowering adults is set as reproductive in `lathframe`, and a subset summary of just those individuals flowering in occasion *t* shows all of those individuals set to reproductive (see the distribution of values for `repstatus2` in the output below). However, fecundity ranges from 0 to 66 (see `feca2`, which codes for fecundity in occasion *t*), meaning that some flowering adults do not actually produce any offspring. In fact, only 44.2% of flowering plants produced seed in occasion *t*. This happened because our reproductive status variable, `FCODE88`, notes whether these individuals flowered but not whether they produced seed. Since this plant must be pollinated by an insect vector, some flowers should yield no seed. This issue does not cause problems in the creation of raw matrices, but it might cause difficulties in the creation of function-based matrices under some conditions. It helps to consider whether the definitions used for stages are appropriate, and so whether reproductive status must necessarily be associated with *successful* reproduction or merely the attempt. Here, we associate it with the latter, but in other vignettes we will reconsider this assumption.</p>
 
 ``` r
-summary(lathvert[which(lathvert$stage2 == "Flo"),c(22:27)])
-#>      alive1         stage1           stage1index        sizea2         size2added        repstra2
-#>  Min.   :0.000   Length:599         Min.   :0.000   Min.   :  98.4   Min.   :  98.4   Min.   :1  
-#>  1st Qu.:0.000   Class :character   1st Qu.:0.000   1st Qu.: 732.5   1st Qu.: 732.5   1st Qu.:1  
-#>  Median :1.000   Mode  :character   Median :5.000   Median :1141.8   Median :1141.8   Median :1  
-#>  Mean   :0.576                      Mean   :3.297   Mean   :1388.5   Mean   :1388.5   Mean   :1  
-#>  3rd Qu.:1.000                      3rd Qu.:6.000   3rd Qu.:1758.0   3rd Qu.:1758.0   3rd Qu.:1  
-#>  Max.   :1.000                      Max.   :7.000   Max.   :7032.0   Max.   :7032.0   Max.   :1
-summary(lathvert[which(lathvert$stage2 == "Flo"),c(28:33)])
-#>   repstr2added     feca2          fec2added         censor2    juvgiven2   obsstatus2
-#>  Min.   :1     Min.   : 0.000   Min.   : 0.000   Min.   :0   Min.   :0   Min.   :1   
-#>  1st Qu.:1     1st Qu.: 0.000   1st Qu.: 0.000   1st Qu.:0   1st Qu.:0   1st Qu.:1   
-#>  Median :1     Median : 0.000   Median : 0.000   Median :0   Median :0   Median :1   
-#>  Mean   :1     Mean   : 4.793   Mean   : 4.793   Mean   :0   Mean   :0   Mean   :1   
-#>  3rd Qu.:1     3rd Qu.: 6.000   3rd Qu.: 6.000   3rd Qu.:0   3rd Qu.:0   3rd Qu.:1   
-#>  Max.   :1     Max.   :66.000   Max.   :66.000   Max.   :0   Max.   :0   Max.   :1
+summary(lathvert[which(lathvert$stage2 == "Flo"),c(25:30)])
+#>      sizea2         size2added        repstra2  repstr2added     feca2          fec2added     
+#>  Min.   :  98.4   Min.   :  98.4   Min.   :1   Min.   :1     Min.   : 0.000   Min.   : 0.000  
+#>  1st Qu.: 732.5   1st Qu.: 732.5   1st Qu.:1   1st Qu.:1     1st Qu.: 0.000   1st Qu.: 0.000  
+#>  Median :1141.8   Median :1141.8   Median :1   Median :1     Median : 0.000   Median : 0.000  
+#>  Mean   :1388.5   Mean   :1388.5   Mean   :1   Mean   :1     Mean   : 4.793   Mean   : 4.793  
+#>  3rd Qu.:1758.0   3rd Qu.:1758.0   3rd Qu.:1   3rd Qu.:1     3rd Qu.: 6.000   3rd Qu.: 6.000  
+#>  Max.   :7032.0   Max.   :7032.0   Max.   :1   Max.   :1     Max.   :66.000   Max.   :66.000
+summary(lathvert[which(lathvert$stage2 == "Flo"),c(31:36)])
+#>     censor2    juvgiven2   obsstatus2   repstatus2   fecstatus2       matstatus2
+#>  Min.   :0   Min.   :0   Min.   :1    Min.   :1    Min.   :0.0000   Min.   :1   
+#>  1st Qu.:0   1st Qu.:0   1st Qu.:1    1st Qu.:1    1st Qu.:0.0000   1st Qu.:1   
+#>  Median :0   Median :0   Median :1    Median :1    Median :0.0000   Median :1   
+#>  Mean   :0   Mean   :0   Mean   :1    Mean   :1    Mean   :0.4424   Mean   :1   
+#>  3rd Qu.:0   3rd Qu.:0   3rd Qu.:1    3rd Qu.:1    3rd Qu.:1.0000   3rd Qu.:1   
+#>  Max.   :0   Max.   :0   Max.   :1    Max.   :1    Max.   :1.0000   Max.   :1
 ```
   
 #### Step 2b. Provide supplemental information for matrix estimation  
@@ -360,6 +360,23 @@ slambda3(ehrlen2)
 #> 1   1     1 -0.04490197 0.03154986 0.1776228 0.001776228
 ```
   
+  <p style="text-indent: 20px">We can also estimate standard errors using bootstrapped data. Package `lefko3` makes this relatively easy, using the `bootstrap3()` function with the previously used functions.</p>
+
+``` r
+lathboot <- bootstrap3(lathvert, reps = 100)
+
+ehrlen2_boot <- rlefko2(data = lathboot, stageframe = lathframe, year = "all", 
+  stages = c("stage3", "stage2"), supplement = lathsupp2, yearcol = "year2",
+  indivcol = "individ")
+ehrlen2_boot_means <- lmean(ehrlen2_boot)
+
+e2bm_lambdas <- lambda3(ehrlen2_boot_means)
+
+lambda_se <- sd(e2bm_lambdas$lambdas) / sqrt(100)
+lambda_se
+#> [1] 0.0007775337
+```
+  
   <p style="text-indent: 20px">We will now analyze the historical MPM. There are several differences in the output in addition to the lower growth rate estimates. First, because there are four years of data, there are three ahistorical transitions possible for estimation: year 1 to 2, year 2 to 3, and year 3 to 4. However, in the historical case, only two are possible: from years 1 and 2 to 3 (technically, from years 1 [*t*-1] and 2 [*t*] to years 2 [*t*] and 3 [*t*+1]), and from years 2 and 3 to 4. Second, historical matrices cover more of the individual heterogeneity in a population by splitting ahistorical transitions by stage in occasion *t*-1. This heterogeneity may reflect many sources, for example the impacts of trade-offs operating across years [@shefferson_longitudinal_2010]. One particularly common trade-off is the cost of growth: an individual that grows a great deal in one time step due to great environmental conditions in that year might pay a large cost of survival, growth, or reproduction in the next if those environmental conditions deteriorate [@shefferson_life_2014; @shefferson_drivers_2018].</p>
 
 ``` r
@@ -444,7 +461,7 @@ legend("topright", c("det ahistorical", "det historical", "sto ahistorical",
   pt.bg = c("black", "orangered", "grey", "darkred"), bty = "n")
 ```
 
-![Figure 2.3. Deterministic and stochastic ahistorical vs. historically-corrected stable stage distributions](Ch2.25-1.png)
+![Figure 2.3. Deterministic and stochastic ahistorical vs. historically-corrected stable stage distributions](Ch2.26-1.png)
   
   <p style="text-indent: 20px">Let's take the deterministic portion first. Accounting for individual history increased the prevalence of tiny and small adults, but decreased the prevalence of dormant seeds, and dormant, large, and flowering adults. Now when we also take in the impact of temporal stochasticity, we can see differences in the proportion of dormant seeds, seedlings, and all adult stages, with the greatest differences in dormant seeds and tiny adults.</p>
   
@@ -470,7 +487,7 @@ legend("topleft", c("det ahistorical", "det historical", "sto ahistorical",
   pt.bg = c("black", "orangered", "grey", "darkred"), bty = "n")
 ```
 
-![Figure 2.4. Ahistorical vs. historically-corrected reproductive values](Ch2.26-1.png)
+![Figure 2.4. Ahistorical vs. historically-corrected reproductive values](Ch2.27-1.png)
   
   <p style="text-indent: 20px">Both deterministic and stochastic analyses show that flowering adults have the greatest reproductive value in both ahistorical and historical analysis, while dormant seeds have the least. Historical MPMs suggest lower contributions of seedlings and vegetative dormancy, but larger contributions of flowering adults.</p>
   
@@ -634,7 +651,7 @@ legend("topleft", c("det ahistorical", "det historical", "sto ahistorical",
   pt.bg = c("black", "orangered", "grey", "darkred"), bty = "n")
 ```
 
-![Figure 2.5. Ahistorical vs. historically-corrected deterministic and stochastic elasticity to stages](Ch2.35-1.png)
+![Figure 2.5. Ahistorical vs. historically-corrected deterministic and stochastic elasticity to stages](Ch2.36-1.png)
   
   <p style="text-indent: 20px">Historical analyses generally find that population growth rate is less elastic in response to seedlings, and flowering adults, and more elastic to tiny and dormant adults than in ahistorical analyses. Stochastic and deterministic population growth rates are barely elastic in response to dormant seeds and seedlings. Note the dramatic impact of environmental stochasticity and individual history combined on the impact of tiny adults.</p>
   
@@ -659,7 +676,7 @@ legend("topright", c("det ahistorical", "det historical", "sto ahistorical",
   pt.bg = c("black", "orangered", "grey", "darkred"), bty = "n")
 ```
 
-![Figure 2.6. Ahistorical vs. historically-corrected deterministic and stochastic elasticity to transitions](Ch2.36-1.png)
+![Figure 2.6. Ahistorical vs. historically-corrected deterministic and stochastic elasticity to transitions](Ch2.37-1.png)
   
   <p style="text-indent: 20px">We see similar patterns across types of elasticity analysis. Particularly, population growth rate is most elastic in response to changes in stasis transitions, and least elastic to changes in fecundity. Environmental stochasticity appears to exacerbate these differences.</p>
   

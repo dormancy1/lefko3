@@ -61,6 +61,7 @@ f_projection3(
   tweights = NULL,
   density = NULL,
   density_vr = NULL,
+  stage_weights = NULL,
   sparse = NULL
 )
 }
@@ -367,6 +368,14 @@ object of class \code{lefkoDens}, which is the output from function
 relationships in vital rates, if such relationships are to be assumed. The
 data frame must be of class \code{lefkoDensVR}, which is the output from the
 function \code{\link{density_vr}()}.}
+
+\item{stage_weights}{An optional object of class \code{lefkoEq} giving the
+degree to which individuals in each stage are equivalent to one another.
+May also be a numeric vector, in which case the vector must have the same
+number of elements as the number of rows in the associated MPM, with each
+element giving the effect of an individual of that age, stage, age-stage, or
+stage-pair, depending on whether the MPM is age-based, ahistorical
+stage-based, age-by-stage, or historical stage-based, respectively.}
 
 \item{sparse}{A text string indicating whether to use sparse matrix encoding
 (\code{"yes"}) or dense matrix encoding (\code{"no"}). Defaults to

@@ -22,6 +22,7 @@ projection3(
   start_frame = NULL,
   tweights = NULL,
   density = NULL,
+  stage_weights = NULL,
   sparse = NULL
 )
 }
@@ -105,6 +106,14 @@ dependence that they will be subject to. The data frame used should be an
 object of class \code{lefkoDens}, which is the output from function
 \code{\link{density_input}()}.}
 
+\item{stage_weights}{An optional object of class \code{lefkoEq} giving the
+degree to which individuals in each stage are equivalent to one another.
+May also be a numeric vector, in which case the vector must have the same
+number of elements as the number of rows in the associated MPM, with each
+element giving the effect of an individual of that age, stage, age-stage, or
+stage-pair, depending on whether the MPM is age-based, ahistorical
+stage-based, age-by-stage, or historical stage-based, respectively.}
+
 \item{sparse}{A text string indicating whether to use sparse matrix encoding
 (\code{"yes"}) or dense matrix encoding (\code{"no"}), if the
 \code{lefkoMat} object input as \code{mpm} is composed of standard matrices.
@@ -152,6 +161,11 @@ matrices will be shuffled within patches and populations. Also produces
 replicates if set.
 }
 \section{Notes}{
+
+Density dependent projections require \code{lefkoMat} objects as inputs.
+Users using simple lists of matrices cannot set density dependence without
+first setting a life history model and importing their matrices using
+function \code{\link{create_lM}()}.
 
 Projections are run both at the patch level and at the population level.
 Population level estimates will be noted at the end of the data frame with

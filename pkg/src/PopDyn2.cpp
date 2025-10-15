@@ -17,7 +17,7 @@ using namespace LefkoMats;
 // 5. List .demolition3sp  Creates Summary Data for Elasticity Matrix Inputs
 // 6. RObject lambda3  Estimate Actual or Deterministic Population Growth Rate
 // 7. DataFrame matrix_interp  Arranges Matrix Elements in Order of Magnitude for Interpretation
-// 8. List append_lP  Append Projections Into New lefkoProj Object
+// 8. List append_lP  Append Projections To Create New lefkoProj Object
 
 
 //' Creates Size Index for Elasticity Summaries of hMPMs
@@ -2773,7 +2773,7 @@ Rcpp::DataFrame matrix_interp (RObject object, int mat_chosen = 1,
   return(out_table);
 }
 
-//' Append Projections Into New lefkoProj Object
+//' Append Projections To Create New lefkoProj Object
 //' 
 //' Function \code{append_lP()} combines two population projections. It takes
 //' two \code{lefkoProj} objects and appends them into a new \code{lefkoProj}

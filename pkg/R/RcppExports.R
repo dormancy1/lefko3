@@ -1877,6 +1877,7 @@ NULL
 #' @name proj3dens
 #' 
 #' @param start_vec The starting population vector for the projection.
+#' @param equivalence_vec A vector giving stage weights.
 #' @param core_list A list of full projection matrices, corresponding to the 
 #' \code{A} list within a \code{lefkoMat} object.
 #' @param mat_order A vector giving the order of matrices to use at each occasion.
@@ -2183,6 +2184,13 @@ NULL
 #' relationships in vital rates, if such relationships are to be assumed. The
 #' data frame must be of class \code{lefkoDensVR}, which is the output from the
 #' function \code{\link{density_vr}()}.
+#' @param stage_weights An optional object of class \code{lefkoEq} giving the
+#' degree to which individuals in each stage are equivalent to one another.
+#' May also be a numeric vector, in which case the vector must have the same
+#' number of elements as the number of rows in the associated MPM, with each
+#' element giving the effect of an individual of that age, stage, age-stage, or
+#' stage-pair, depending on whether the MPM is age-based, ahistorical
+#' stage-based, age-by-stage, or historical stage-based, respectively.
 #' @param sparse A text string indicating whether to use sparse matrix encoding
 #' (\code{"yes"}) or dense matrix encoding (\code{"no"}). Defaults to
 #' \code{"auto"}, in which case sparse matrix encoding is used with square
@@ -2423,8 +2431,8 @@ NULL
 #' }
 #' 
 #' @export f_projection3
-f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, last_age = NA_integer_, fecage_min = NA_integer_, fecage_max = NA_integer_, cont = TRUE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, repvalue = FALSE, integeronly = FALSE, substoch = 0L, ipm_cdf = TRUE, nreps = 1L, times = 10000L, repmod = 1.0, exp_tol = 700.0, theta_tol = 1e8, random_inda = FALSE, random_indb = FALSE, random_indc = FALSE, err_check = FALSE, quiet = FALSE, data = NULL, stageframe = NULL, supplement = NULL, repmatrix = NULL, overwrite = NULL, modelsuite = NULL, paramnames = NULL, year = NULL, patch = NULL, sp_density = NULL, ind_terms = NULL, ann_terms = NULL, dev_terms = NULL, surv_model = NULL, obs_model = NULL, size_model = NULL, sizeb_model = NULL, sizec_model = NULL, repst_model = NULL, fec_model = NULL, jsurv_model = NULL, jobs_model = NULL, jsize_model = NULL, jsizeb_model = NULL, jsizec_model = NULL, jrepst_model = NULL, jmatst_model = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, density_vr = NULL, sparse = NULL) {
-    .Call('_lefko3_f_projection3', PACKAGE = 'lefko3', format, prebreeding, start_age, last_age, fecage_min, fecage_max, cont, stochastic, standardize, growthonly, repvalue, integeronly, substoch, ipm_cdf, nreps, times, repmod, exp_tol, theta_tol, random_inda, random_indb, random_indc, err_check, quiet, data, stageframe, supplement, repmatrix, overwrite, modelsuite, paramnames, year, patch, sp_density, ind_terms, ann_terms, dev_terms, surv_model, obs_model, size_model, sizeb_model, sizec_model, repst_model, fec_model, jsurv_model, jobs_model, jsize_model, jsizeb_model, jsizec_model, jrepst_model, jmatst_model, start_vec, start_frame, tweights, density, density_vr, sparse)
+f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, last_age = NA_integer_, fecage_min = NA_integer_, fecage_max = NA_integer_, cont = TRUE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, repvalue = FALSE, integeronly = FALSE, substoch = 0L, ipm_cdf = TRUE, nreps = 1L, times = 10000L, repmod = 1.0, exp_tol = 700.0, theta_tol = 1e8, random_inda = FALSE, random_indb = FALSE, random_indc = FALSE, err_check = FALSE, quiet = FALSE, data = NULL, stageframe = NULL, supplement = NULL, repmatrix = NULL, overwrite = NULL, modelsuite = NULL, paramnames = NULL, year = NULL, patch = NULL, sp_density = NULL, ind_terms = NULL, ann_terms = NULL, dev_terms = NULL, surv_model = NULL, obs_model = NULL, size_model = NULL, sizeb_model = NULL, sizec_model = NULL, repst_model = NULL, fec_model = NULL, jsurv_model = NULL, jobs_model = NULL, jsize_model = NULL, jsizeb_model = NULL, jsizec_model = NULL, jrepst_model = NULL, jmatst_model = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, density_vr = NULL, stage_weights = NULL, sparse = NULL) {
+    .Call('_lefko3_f_projection3', PACKAGE = 'lefko3', format, prebreeding, start_age, last_age, fecage_min, fecage_max, cont, stochastic, standardize, growthonly, repvalue, integeronly, substoch, ipm_cdf, nreps, times, repmod, exp_tol, theta_tol, random_inda, random_indb, random_indc, err_check, quiet, data, stageframe, supplement, repmatrix, overwrite, modelsuite, paramnames, year, patch, sp_density, ind_terms, ann_terms, dev_terms, surv_model, obs_model, size_model, sizeb_model, sizec_model, repst_model, fec_model, jsurv_model, jobs_model, jsize_model, jsizeb_model, jsizec_model, jrepst_model, jmatst_model, start_vec, start_frame, tweights, density, density_vr, stage_weights, sparse)
 }
 
 #' General Matrix Projection Model and Bootstrapped MPM Creation
@@ -3348,6 +3356,13 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' dependence that they will be subject to. The data frame used should be an
 #' object of class \code{lefkoDens}, which is the output from function
 #' \code{\link{density_input}()}.
+#' @param stage_weights An optional object of class \code{lefkoEq} giving the
+#' degree to which individuals in each stage are equivalent to one another.
+#' May also be a numeric vector, in which case the vector must have the same
+#' number of elements as the number of rows in the associated MPM, with each
+#' element giving the effect of an individual of that age, stage, age-stage, or
+#' stage-pair, depending on whether the MPM is age-based, ahistorical
+#' stage-based, age-by-stage, or historical stage-based, respectively.
 #' @param sparse A text string indicating whether to use sparse matrix encoding
 #' (\code{"yes"}) or dense matrix encoding (\code{"no"}), if the
 #' \code{lefkoMat} object input as \code{mpm} is composed of standard matrices.
@@ -3383,6 +3398,11 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' if input by the user.}
 #' 
 #' @section Notes:
+#' Density dependent projections require \code{lefkoMat} objects as inputs.
+#' Users using simple lists of matrices cannot set density dependence without
+#' first setting a life history model and importing their matrices using
+#' function \code{\link{create_lM}()}.
+#' 
 #' Projections are run both at the patch level and at the population level.
 #' Population level estimates will be noted at the end of the data frame with
 #' \code{0} entries for patch designation.
@@ -3559,20 +3579,22 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' cypstoch <- projection3(cypmatrix3r, nreps = 5, stochastic = TRUE)
 #' 
 #' @export projection3
-projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, integeronly = FALSE, substoch = 0L, exp_tol = 700.0, sub_warnings = TRUE, quiet = FALSE, year = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, sparse = NULL) {
-    .Call('_lefko3_projection3', PACKAGE = 'lefko3', mpm, nreps, times, historical, stochastic, standardize, growthonly, integeronly, substoch, exp_tol, sub_warnings, quiet, year, start_vec, start_frame, tweights, density, sparse)
+projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, stochastic = FALSE, standardize = FALSE, growthonly = TRUE, integeronly = FALSE, substoch = 0L, exp_tol = 700.0, sub_warnings = TRUE, quiet = FALSE, year = NULL, start_vec = NULL, start_frame = NULL, tweights = NULL, density = NULL, stage_weights = NULL, sparse = NULL) {
+    .Call('_lefko3_projection3', PACKAGE = 'lefko3', mpm, nreps, times, historical, stochastic, standardize, growthonly, integeronly, substoch, exp_tol, sub_warnings, quiet, year, start_vec, start_frame, tweights, density, stage_weights, sparse)
 }
 
 #' Estimate Stochastic Population Growth Rate
 #' 
 #' Function \code{slambda3()} estimates the stochastic population growth rate,
 #' \eqn{a}, defined as the long-term arithmetic mean of the log population 
-#' growth rate estimated per simulated occasion. This function can handle both
-#' lefkoMat objects and lists of full A matrices as input. 
+#' growth rate estimated per simulated occasion. This function can handle
+#' lefkoMat objects, lefkoMatList objects, and lists of full A matrices as
+#' input. 
 #' 
 #' @name slambda3
 #' 
-#' @param mpm A matrix projection model of class \code{lefkoMat}, or a list of
+#' @param mpm A matrix projection model of class \code{lefkoMat}, a 
+#' bootstrapped MPM object of class \code{lefkoMatList}, or a simple list of
 #' full matrix projection matrices.
 #' @param times Number of occasions to iterate. Defaults to \code{10000}.
 #' @param historical An optional logical value only used if object \code{mpm}
@@ -3593,6 +3615,8 @@ projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, sto
 #' more than 50\% of elements with values greater than zero.
 #' 
 #' @return A data frame with the following variables:
+#' \item{replicate}{The bootstrapped replicate. Only provided if a
+#' \code{lefkoMatList} object is entered in argument \code{mpm}.}
 #' \item{pop}{The identity of the population.}
 #' \item{patch}{The identity of the patch.}
 #' \item{a}{Estimate of stochastic growth rate, estimated as the arithmetic
@@ -3647,6 +3671,8 @@ projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, sto
 #'   stageassign = cypframe_raw, stagesize = "sizeadded", NAas0 = TRUE, 
 #'   NRasRep = TRUE)
 #' 
+#' cypraw_boot <- bootstrap3(cypraw_v1, reps = 3)
+#' 
 #' cypsupp3r <- supplemental(stage3 = c("SD", "SD", "P1", "P1", "P2", "P3", "SL",
 #'     "D", "XSm", "Sm", "D", "XSm", "Sm", "mat", "mat", "mat", "SD", "P1"),
 #'   stage2 = c("SD", "SD", "SD", "SD", "P1", "P2", "P3", "SL", "SL", "SL", "SL",
@@ -3674,6 +3700,14 @@ projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, sto
 #'   patchcol = "patchid", indivcol = "individ")
 #' 
 #' cypstoch <- slambda3(cypmatrix3r)
+#' 
+#' cypmatrix3r_boot <- rlefko3(data = cypraw_boot, stageframe = cypframe_raw, 
+#' year = "all", patch = "all", stages = c("stage3", "stage2", "stage1"),
+#'   size = c("size3added", "size2added", "size1added"), 
+#'   supplement = cypsupp3r, yearcol = "year2", 
+#'   patchcol = "patchid", indivcol = "individ")
+#' 
+#' cypstoch_boot <- slambda3(cypmatrix3r_boot)
 #' 
 #' @export slambda3
 slambda3 <- function(mpm, times = 10000L, historical = FALSE, tweights = NULL, force_sparse = NULL) {
@@ -5660,7 +5694,7 @@ matrix_interp <- function(object, mat_chosen = 1L, part = 1L, type = 3L) {
     .Call('_lefko3_matrix_interp', PACKAGE = 'lefko3', object, mat_chosen, part, type)
 }
 
-#' Append Projections Into New lefkoProj Object
+#' Append Projections To Create New lefkoProj Object
 #' 
 #' Function \code{append_lP()} combines two population projections. It takes
 #' two \code{lefkoProj} objects and appends them into a new \code{lefkoProj}

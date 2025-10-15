@@ -40,7 +40,7 @@ dim(lathyrus)
   
 #### Step 1. Life history model development   
   
-  <p style="text-indent: 20px">To begin, we will create a **stageframe**. A stageframe is a data frame that describes all stages in the life history of the organism, in a way usable by the functions in this package and using stage names and classifications that completely match those used in the dataset. It must include complete descriptions of all stages that occur in the dataset, with each stage defined uniquely. Since this object can be used for automated classification of individuals, all sizes, reproductive states, and other characteristics defining each stage in the dataset need to be accounted for explicitly. This can be difficult if a few data points do not fit neatly into any stge description, so great care must be taken to include all relevant size values and values of other descriptor variables occurring within the dataset. The final description of each stage occurring in the dataset must not completely overlap with any other stage, although partial overlap is allowed. We will base our stageframe on the life history model provided in @ehrlen_dynamics_2000, but use a different size classification based on leaf volume to allow IPM construction and make all mature stages other than vegetative dormancy reproductive, as shown in Figure 6.1.</p>
+  <p style="text-indent: 20px">To begin, we will create a **stageframe**. A stageframe is a data frame that describes all stages in the life history of the organism, in a way usable by the functions in this package and using stage names and classifications that completely match those used in the dataset. It must include complete descriptions of all stages that occur in the dataset, with each stage defined uniquely. Since this object can be used for automated classification of individuals, all sizes, reproductive states, and other characteristics defining each stage in the dataset need to be accounted for explicitly. This can be difficult if a few data points do not fit neatly into any stage description, so great care must be taken to include all relevant size values and values of other descriptor variables occurring within the dataset. The final description of each stage occurring in the dataset must not completely overlap with any other stage, although partial overlap is allowed. We will base our stageframe on the life history model provided in @ehrlen_dynamics_2000, but use a different size classification based on leaf volume to allow IPM construction and make all mature stages other than vegetative dormancy reproductive, as shown in Figure 6.1.</p>
   
 <img src = "lathipm.png" width = "700"></img>  
   
@@ -71,7 +71,7 @@ lathframeipm <- sf_create(sizes = sizevector, stagenames = stagevector,
   
   <p style="text-indent: 20px">To work with this dataset, we first need to format the data into *vertical format*, in which each row corresponds to the state of a single individual in two (if ahistorical) or three (if historical) consecutive time intervals. In the input to `verticalize3()` below, we utilize a repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and the columns have no gaps or shuffles. The data management functions in `lefko3` do not require such repeating patterns, but they do make the required input in the function shorter and more succinct. Because this is an IPM, we will need to estimate linear models of vital rates. This will require us to avoid NAs in size and fecundity (fortunately, in this dataset, NA is equivalent to 0), so we will set `NAas0 = TRUE` to inform R to treat NAs as zeroes. We will also set `NRasRep = TRUE` because we will assume that all adult stages other than dormancy are reproductive, and there are mature individuals in the dataset that do not reproduce but need to be included in reproductive stages.</p>
   
-  <p style="text-indent: 20px">Note that prior to standardizing the dataset, we will create a new variable to code individual identity, since different plants in different subpopulations use the same identifiers. To see a more detailed summary of the standardized dataset, please remove `full = FALSE` from the `summary_hfv()` call.</p>
+  <p style="text-indent: 20px">Note that prior to standardizing the dataset, we will create a new variable to code individual identity, since different plants in different subpopulations use the same identifiers. To see a more detailed summary of the standardized dataset, please add `full = TRUE` to the `summary_hfv()` call.</p>
 ```{r Ch6.2}
 lathyrus$indiv_id <- paste(lathyrus$SUBPLOT, lathyrus$GENET)
 
@@ -81,7 +81,7 @@ lathvertipm <- verticalize3(lathyrus, noyears = 4, firstyear = 1988,
   deadacol = "Dead1988", nonobsacol = "Dormant1988", stageassign = lathframeipm,
   stagesize = "sizea", censorcol = "Missing1988", censorkeep = NA,
   censorRepeat = TRUE, censor = TRUE, NAas0 = TRUE, NRasRep = TRUE)
-summary_hfv(lathvertipm, full = FALSE)
+summary_hfv(lathvertipm)
 ```
   
   <p style="text-indent: 20px">Before we move on to the next steps in analysis, let's take a closer look at fecundity. In this dataset, fecundity is mostly a count of intact seeds, and only differs in six cases where the seed output was estimated based on other models. To see this, try the following code, which focuses on fecundity in time *t*.</p>
@@ -208,7 +208,7 @@ l3mcond <- cond_hmpm(lath3ipmmean)
   
 #### Step 5. MPM analysis 
   
-  <p style="text-indent: 20px">Now let's estimate and plot the deterministic population growth rate, $\lambda$, for each year. We find that the ahistorical and historical estimates of $\lambda$ are roughly in line with each other.</p>
+  <p style="text-indent: 20px">Now let's estimate and plot the deterministic population growth rate, $\lambda$, for each year. We find that the ahistorical and historical estimates of $\lambda$ are roughly in line with each other. Please note we may also estimate standard errors for lambda, and methods to do so are illustrated in other vignettes (see particularly the vignette on Cypripedium candidum function-based MPMs). We will not do so here because the historical IPM will be too large in bootstrapped form.</p>
 ```{r Ch6.16, fig.cap = "Figure 6.4. Ahistorical vs. historical lambda"}
 ipm2lambda <- lambda3(lathmat2ipm)
 ipm3lambda <- lambda3(lathmat3ipm)
