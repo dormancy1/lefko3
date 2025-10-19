@@ -13,7 +13,7 @@ using namespace LefkoUtils;
 // 3. DataFrame density_reassess - Check and Reorganize Density Input Table Into Usable Format
 // 4. DataFrame density_input - Set Density Dependence Relationships in Matrix Elements
 // 5. List supplemental - Create a Data Frame of Supplemental Data for MPM Development
-// 6. List edit_lM - Edit an MPM based on Supplemental Data
+// 6. List edit_lM - Edit MPM based on Supplemental Data
 
 
 //' Create Stageframe for Population Matrix Projection Analysis
@@ -7227,7 +7227,7 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
   return supplement;
 }
 
-//' Edit an MPM based on Supplemental Data
+//' Edit MPM based on Supplemental Data
 //' 
 //' Function \code{edit_lM()} edits existing \code{lefkoMat} objects with
 //' external data supplied by the user. The effects are similar to function
@@ -7275,6 +7275,9 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
 //' estimated transition, and only in age-based and age-by-stage MPMs.
 //' @param givenrate A fixed rate or probability to replace for the transition
 //' described by \code{stage3}, \code{stage2}, and \code{stage1}.
+//' @param offset A numeric vector of fixed numeric values to add to the
+//' transitions described by \code{stage3}, \code{stage2}, \code{stage1}, and/or
+//' \code{age2}.
 //' @param multiplier A vector of numeric multipliers for fecundity or for proxy
 //' transitions. Defaults to \code{1}.
 //' @param type A vector denoting the kind of transition between occasions
@@ -7335,13 +7338,11 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   Nullable<RObject> patch = R_NilValue, Nullable<RObject> year2 = R_NilValue,
   Nullable<RObject> stage3 = R_NilValue, Nullable<RObject> stage2 = R_NilValue,
   Nullable<RObject> stage1 = R_NilValue, Nullable<RObject> age2 = R_NilValue,
-  Nullable<RObject> eststage3 = R_NilValue,
-  Nullable<RObject> eststage2 = R_NilValue,
-  Nullable<RObject> eststage1 = R_NilValue,
-  Nullable<RObject> estage2 = R_NilValue,
-  Nullable<RObject> givenrate = R_NilValue,
-  Nullable<RObject> multiplier = R_NilValue,
-  Nullable<RObject> type = R_NilValue, Nullable<RObject> type_t12 = R_NilValue) {
+  Nullable<RObject> eststage3 = R_NilValue, Nullable<RObject> eststage2 = R_NilValue,
+  Nullable<RObject> eststage1 = R_NilValue, Nullable<RObject> estage2 = R_NilValue,
+  Nullable<RObject> givenrate = R_NilValue, Nullable<RObject> offset = R_NilValue,
+  Nullable<RObject> multiplier = R_NilValue, Nullable<RObject> type = R_NilValue,
+  Nullable<RObject> type_t12 = R_NilValue) {
   
   List mpm_list;
   
@@ -7387,6 +7388,7 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   StringVector eststage1_;
   IntegerVector estage2_;
   NumericVector givenrate_;
+  NumericVector offset_;
   NumericVector multiplier_;
   IntegerVector type_;
   IntegerVector type_t12_;
@@ -7793,6 +7795,31 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     }
   }
   
+  if (offset.isNotNull()) {
+    if (is<NumericVector>(offset)) {
+      offset_ = as<NumericVector>(offset);
+    } else if (is<LogicalVector>(offset)) {
+      if (age2_length != 0) {
+        NumericVector offset_temp (age2_length, NA_REAL);
+        offset_ = offset_temp;
+      } else if (stage2_length != 0) {
+        NumericVector offset_temp (stage2_length, NA_REAL);
+        offset_ = offset_temp;
+      }
+    } else {
+      throw Rcpp::exception("Please enter offset information (offset) in numeric format.",
+        false);
+    }
+  } else {
+    if (age2_length != 0) {
+      NumericVector offset_temp (age2_length, NA_REAL);
+      offset_ = offset_temp;
+    } else if (stage2_length != 0) {
+      NumericVector offset_temp (stage2_length, NA_REAL);
+      offset_ = offset_temp;
+    }
+  }
+  
   if (multiplier.isNotNull()) {
     if (is<NumericVector>(multiplier)) {
       multiplier_ = as<NumericVector>(multiplier);
@@ -7999,9 +8026,10 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     _["stage2"] = stage2_, _["stage1"] = stage1_, _["age2"] = age2_,
     _["eststage3"] = eststage3_, _["eststage2"] = eststage2_,
     _["eststage1"] = eststage1_, _["estage2"] = estage2_,
-    _["givenrate"] = givenrate_, _["multiplier"] = multiplier_,
-    _["convtype"] = type_ , _["convtype_t12"] = type_t12_,
-    _["pop"] = pop_, _["patch"] = patch_, _["year2"] = year2_);
+    _["givenrate"] = givenrate_, _["offset"] = offset_,
+    _["multiplier"] = multiplier_, _["convtype"] = type_ ,
+    _["convtype_t12"] = type_t12_, _["pop"] = pop_, _["patch"] = patch_,
+    _["year2"] = year2_);
   
   DataFrame newsupplement;
   DataFrame noage_supplement;
@@ -8041,6 +8069,7 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     IntegerVector newsupp_age2 (newsupp_length);
     IntegerVector newsupp_estage2 (newsupp_length);
     NumericVector newsupp_givenrate (newsupp_length);
+    NumericVector newsupp_offset (newsupp_length);
     NumericVector newsupp_multiplier (newsupp_length);
     IntegerVector newsupp_convtype (newsupp_length);
     StringVector newsupp_pop (newsupp_length);
@@ -8058,6 +8087,7 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
         
         newsupp_estage2(newsupp_counter) = estage2_(i);
         newsupp_givenrate(newsupp_counter) = givenrate_(i);
+        newsupp_offset(newsupp_counter) = offset_(i);
         newsupp_multiplier(newsupp_counter) = multiplier_(i);
         newsupp_convtype(newsupp_counter) = type_(i);
         newsupp_pop(newsupp_counter) = pop_(i);
@@ -8070,9 +8100,9 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     
     DataFrame newsupp = DataFrame::create(_["age2"] = newsupp_age2,
       _["estage2"] = newsupp_estage2, _["givenrate"] = newsupp_givenrate,
-      _["multiplier"] = newsupp_multiplier, _["convtype"] = newsupp_convtype,
-      _["pop"] = newsupp_pop, _["patch"] = newsupp_patch,
-      _["year2"] = newsupp_year2);
+      _["offset"] = newsupp_offset, _["multiplier"] = newsupp_multiplier,
+      _["convtype"] = newsupp_convtype, _["pop"] = newsupp_pop,
+      _["patch"] = newsupp_patch, _["year2"] = newsupp_year2);
     newsupplement = newsupp;
   }
   
@@ -8083,11 +8113,13 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   IntegerVector new_est_col_index_;
   IntegerVector new_est_row_index_;
   NumericVector new_givenrate_;
+  NumericVector new_offset_;
   NumericVector new_multiplier_;
   IntegerVector new_convtype_;
   
   if (wtf == 0) { // Historical
     NumericVector new_givenrate = as<NumericVector>(newsupplement["givenrate"]);
+    NumericVector new_offset = as<NumericVector>(newsupplement["offset"]);
     NumericVector new_multiplier = as<NumericVector>(newsupplement["multiplier"]);
     IntegerVector new_convtype = as<IntegerVector>(newsupplement["convtype"]);
     
@@ -8178,11 +8210,13 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     new_est_col_index_ = new_est_col_index;
     new_est_row_index_ = new_est_row_index;
     new_givenrate_ = new_givenrate;
+    new_offset_ = new_offset;
     new_multiplier_ = new_multiplier;
     new_convtype_ = new_convtype;
     
   } else if (wtf == 1) { // Ahistorical
     NumericVector new_givenrate = as<NumericVector>(newsupplement["givenrate"]);
+    NumericVector new_offset = as<NumericVector>(newsupplement["offset"]);
     NumericVector new_multiplier = as<NumericVector>(newsupplement["multiplier"]);
     IntegerVector new_convtype = as<IntegerVector>(newsupplement["convtype"]);
     
@@ -8261,6 +8295,7 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     new_est_col_index_ = new_est_col_index;
     new_est_row_index_ = new_est_row_index;
     new_givenrate_ = new_givenrate;
+    new_offset_ = new_offset;
     new_multiplier_ = new_multiplier;
     new_convtype_ = new_convtype;
     
@@ -8276,6 +8311,7 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     newsupplement = LefkoMats::age_expanded(noage_supplement, min_age, max_age);
     
     NumericVector new_givenrate = as<NumericVector>(newsupplement["givenrate"]);
+    NumericVector new_offset = as<NumericVector>(newsupplement["offset"]);
     NumericVector new_multiplier = as<NumericVector>(newsupplement["multiplier"]);
     IntegerVector new_convtype = as<IntegerVector>(newsupplement["convtype"]);
     
@@ -8370,11 +8406,13 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     new_est_col_index_ = new_est_col_index;
     new_est_row_index_ = new_est_row_index;
     new_givenrate_ = new_givenrate;
+    new_offset_ = new_offset;
     new_multiplier_ = new_multiplier;
     new_convtype_ = new_convtype;
     
   } else { // Leslie matrix
     NumericVector new_givenrate = as<NumericVector>(newsupplement["givenrate"]);
+    NumericVector new_offset = as<NumericVector>(newsupplement["offset"]);
     NumericVector new_multiplier = as<NumericVector>(newsupplement["multiplier"]);
     IntegerVector new_convtype = as<IntegerVector>(newsupplement["convtype"]);
     
@@ -8451,6 +8489,7 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     new_est_col_index_ = new_est_col_index;
     new_est_row_index_ = new_est_row_index;
     new_givenrate_ = new_givenrate;
+    new_offset_ = new_offset;
     new_multiplier_ = new_multiplier;
     new_convtype_ = new_convtype;
   }
@@ -8582,6 +8621,17 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
               
               chosen_U(new_row_index_(i), new_col_index_(i)) = new_givenrate_(i);
             }
+            if (!NumericVector::is_na(new_offset_(i))) {
+              if (new_offset_(i) != 0.0) {
+                chosen_U(new_row_index_(i), new_col_index_(i)) += new_offset_(i);
+                U_adjustment += 1;
+                
+                if (chosen_U(new_row_index_(i), new_col_index_(i)) < 0.0) {
+                  Rf_warningcall(R_NilValue,
+                    "Some numeric offsets have produced negative matrix elements (survival-transition).");
+                }
+              }
+            }
             if (new_use_est_(i) == 1) {
               chosen_U(new_row_index_(i), new_col_index_(i)) =
                 chosen_U(new_est_row_index_(i), new_est_col_index_(i));
@@ -8602,6 +8652,17 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
                 F_adjustment -= 1;
               }
               chosen_F(new_row_index_(i), new_col_index_(i)) = new_givenrate_(i);
+            }
+            if (!NumericVector::is_na(new_offset_(i))) {
+              if (new_offset_(i) != 0.0) {
+                chosen_F(new_row_index_(i), new_col_index_(i)) += new_offset_(i);
+                F_adjustment += 1;
+                
+                if (chosen_F(new_row_index_(i), new_col_index_(i)) < 0.0) {
+                  Rf_warningcall(R_NilValue,
+                    "Some numeric offsets have produced negative matrix elements (fecundity).");
+                }
+              }
             }
             if (new_use_est_(i) == 1) {
               chosen_F(new_row_index_(i), new_col_index_(i)) =
@@ -8638,6 +8699,17 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
               }
               chosen_U(new_row_index_(i), new_col_index_(i)) = new_givenrate_(i);
             }
+            if (!NumericVector::is_na(new_offset_(i))) {
+              if (new_offset_(i) != 0.0) {
+                chosen_U(new_row_index_(i), new_col_index_(i)) += new_offset_(i);
+                U_adjustment += 1;
+                
+                if (chosen_U(new_row_index_(i), new_col_index_(i)) < 0.0) {
+                  Rf_warningcall(R_NilValue,
+                    "Some numeric offsets have produced negative matrix elements (survival-transition).");
+                }
+              }
+            }
             if (new_use_est_(i) == 1) {
               chosen_U(new_row_index_(i), new_col_index_(i)) =
                 chosen_U(new_est_row_index_(i), new_est_col_index_(i));
@@ -8658,6 +8730,17 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
                 F_adjustment -= 1;
               }
               chosen_F(new_row_index_(i), new_col_index_(i)) = new_givenrate_(i);
+            }
+            if (!NumericVector::is_na(new_offset_(i))) {
+              if (new_offset_(i) != 0.0) {
+                chosen_F(new_row_index_(i), new_col_index_(i)) += new_offset_(i);
+                F_adjustment += 1;
+                
+                if (chosen_F(new_row_index_(i), new_col_index_(i)) < 0.0) {
+                  Rf_warningcall(R_NilValue,
+                    "Some numeric offsets have produced negative matrix elements (fecundity).");
+                }
+              }
             }
             if (new_use_est_(i) == 1) {
               chosen_F(new_row_index_(i), new_col_index_(i)) =
@@ -8691,6 +8774,17 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
             }
             chosen_A(new_row_index_(i), new_col_index_(i)) = new_givenrate_(i);
           }
+          if (!NumericVector::is_na(new_offset_(i))) {
+            if (new_offset_(i) != 0.0) {
+              chosen_A(new_row_index_(i), new_col_index_(i)) += new_offset_(i);
+              U_adjustment += 1;
+              
+              if (chosen_A(new_row_index_(i), new_col_index_(i)) < 0.0) {
+                Rf_warningcall(R_NilValue,
+                  "Some numeric offsets have produced negative matrix elements.");
+              }
+            }
+          }
           if (new_use_est_(i) == 1) {
             chosen_A(new_row_index_(i), new_col_index_(i)) =
               chosen_A(new_est_row_index_(i), new_est_col_index_(i));
@@ -8713,6 +8807,17 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
               U_adjustment -= 1;
             }
             chosen_A(new_row_index_(i), new_col_index_(i)) = new_givenrate_(i);
+          }
+          if (!NumericVector::is_na(new_offset_(i))) {
+            if (new_offset_(i) != 0.0) {
+              chosen_A(new_row_index_(i), new_col_index_(i)) += new_offset_(i);
+              U_adjustment += 1;
+              
+              if (chosen_A(new_row_index_(i), new_col_index_(i)) < 0.0) {
+                Rf_warningcall(R_NilValue,
+                  "Some numeric offsets have produced negative matrix elements.");
+              }
+            }
           }
           if (new_use_est_(i) == 1) {
             chosen_A(new_row_index_(i), new_col_index_(i)) =

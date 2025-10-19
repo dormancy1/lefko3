@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{edit_lM}
 \alias{edit_lM}
-\title{Edit an MPM based on Supplemental Data}
+\title{Edit MPM based on Supplemental Data}
 \usage{
 edit_lM(
   mpm,
@@ -18,6 +18,7 @@ edit_lM(
   eststage1 = NULL,
   estage2 = NULL,
   givenrate = NULL,
+  offset = NULL,
   multiplier = NULL,
   type = NULL,
   type_t12 = NULL
@@ -73,6 +74,10 @@ estimated transition, and only in age-based and age-by-stage MPMs.}
 
 \item{givenrate}{A fixed rate or probability to replace for the transition
 described by \code{stage3}, \code{stage2}, and \code{stage1}.}
+
+\item{offset}{A numeric vector of fixed numeric values to add to the
+transitions described by \code{stage3}, \code{stage2}, \code{stage1}, and/or
+\code{age2}.}
 
 \item{multiplier}{A vector of numeric multipliers for fecundity or for proxy
 transitions. Defaults to \code{1}.}

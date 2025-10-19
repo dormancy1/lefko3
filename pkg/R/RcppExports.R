@@ -5189,7 +5189,7 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
     .Call('_lefko3_supplemental', PACKAGE = 'lefko3', historical, stagebased, agebased, stageframe, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12)
 }
 
-#' Edit an MPM based on Supplemental Data
+#' Edit MPM based on Supplemental Data
 #' 
 #' Function \code{edit_lM()} edits existing \code{lefkoMat} objects with
 #' external data supplied by the user. The effects are similar to function
@@ -5237,6 +5237,9 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
 #' estimated transition, and only in age-based and age-by-stage MPMs.
 #' @param givenrate A fixed rate or probability to replace for the transition
 #' described by \code{stage3}, \code{stage2}, and \code{stage1}.
+#' @param offset A numeric vector of fixed numeric values to add to the
+#' transitions described by \code{stage3}, \code{stage2}, \code{stage1}, and/or
+#' \code{age2}.
 #' @param multiplier A vector of numeric multipliers for fecundity or for proxy
 #' transitions. Defaults to \code{1}.
 #' @param type A vector denoting the kind of transition between occasions
@@ -5292,8 +5295,8 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
 #'   year2 = "2005")
 #' 
 #' @export edit_lM
-edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2 = NULL, eststage3 = NULL, eststage2 = NULL, eststage1 = NULL, estage2 = NULL, givenrate = NULL, multiplier = NULL, type = NULL, type_t12 = NULL) {
-    .Call('_lefko3_edit_lM', PACKAGE = 'lefko3', mpm, pop, patch, year2, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, multiplier, type, type_t12)
+edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2 = NULL, eststage3 = NULL, eststage2 = NULL, eststage1 = NULL, estage2 = NULL, givenrate = NULL, offset = NULL, multiplier = NULL, type = NULL, type_t12 = NULL) {
+    .Call('_lefko3_edit_lM', PACKAGE = 'lefko3', mpm, pop, patch, year2, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12)
 }
 
 #' Creates Size Index for Elasticity Summaries of hMPMs

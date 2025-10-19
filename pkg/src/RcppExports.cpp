@@ -1047,8 +1047,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // edit_lM
-Rcpp::List edit_lM(const RObject mpm, Nullable<RObject> pop, Nullable<RObject> patch, Nullable<RObject> year2, Nullable<RObject> stage3, Nullable<RObject> stage2, Nullable<RObject> stage1, Nullable<RObject> age2, Nullable<RObject> eststage3, Nullable<RObject> eststage2, Nullable<RObject> eststage1, Nullable<RObject> estage2, Nullable<RObject> givenrate, Nullable<RObject> multiplier, Nullable<RObject> type, Nullable<RObject> type_t12);
-RcppExport SEXP _lefko3_edit_lM(SEXP mpmSEXP, SEXP popSEXP, SEXP patchSEXP, SEXP year2SEXP, SEXP stage3SEXP, SEXP stage2SEXP, SEXP stage1SEXP, SEXP age2SEXP, SEXP eststage3SEXP, SEXP eststage2SEXP, SEXP eststage1SEXP, SEXP estage2SEXP, SEXP givenrateSEXP, SEXP multiplierSEXP, SEXP typeSEXP, SEXP type_t12SEXP) {
+Rcpp::List edit_lM(const RObject mpm, Nullable<RObject> pop, Nullable<RObject> patch, Nullable<RObject> year2, Nullable<RObject> stage3, Nullable<RObject> stage2, Nullable<RObject> stage1, Nullable<RObject> age2, Nullable<RObject> eststage3, Nullable<RObject> eststage2, Nullable<RObject> eststage1, Nullable<RObject> estage2, Nullable<RObject> givenrate, Nullable<RObject> offset, Nullable<RObject> multiplier, Nullable<RObject> type, Nullable<RObject> type_t12);
+RcppExport SEXP _lefko3_edit_lM(SEXP mpmSEXP, SEXP popSEXP, SEXP patchSEXP, SEXP year2SEXP, SEXP stage3SEXP, SEXP stage2SEXP, SEXP stage1SEXP, SEXP age2SEXP, SEXP eststage3SEXP, SEXP eststage2SEXP, SEXP eststage1SEXP, SEXP estage2SEXP, SEXP givenrateSEXP, SEXP offsetSEXP, SEXP multiplierSEXP, SEXP typeSEXP, SEXP type_t12SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1065,10 +1065,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Nullable<RObject> >::type eststage1(eststage1SEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type estage2(estage2SEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type givenrate(givenrateSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type offset(offsetSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type multiplier(multiplierSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type type(typeSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type type_t12(type_t12SEXP);
-    rcpp_result_gen = Rcpp::wrap(edit_lM(mpm, pop, patch, year2, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, multiplier, type, type_t12));
+    rcpp_result_gen = Rcpp::wrap(edit_lM(mpm, pop, patch, year2, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1225,7 +1226,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_actualstage3", (DL_FUNC) &_lefko3_actualstage3, 10},
     {"_lefko3_density_input", (DL_FUNC) &_lefko3_density_input, 11},
     {"_lefko3_supplemental", (DL_FUNC) &_lefko3_supplemental, 17},
-    {"_lefko3_edit_lM", (DL_FUNC) &_lefko3_edit_lM, 16},
+    {"_lefko3_edit_lM", (DL_FUNC) &_lefko3_edit_lM, 17},
     {"_lefko3_bambi3", (DL_FUNC) &_lefko3_bambi3, 2},
     {"_lefko3_bambi2", (DL_FUNC) &_lefko3_bambi2, 1},
     {"_lefko3_demolition4", (DL_FUNC) &_lefko3_demolition4, 1},

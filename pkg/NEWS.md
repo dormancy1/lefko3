@@ -29,6 +29,8 @@
 * Function historicalize3() no longer crashes when string-based individual
   covariates are entered, and no longer gives botches row order of individual
   covariates under numeric and integer entries.
+  
+* Function edit_lM() now handles offset values without yielding fatal errors.
 
 # lefko3 6.5.1 (2025-08-27)
 
