@@ -968,6 +968,34 @@ NULL
 #' @noRd
 NULL
 
+#' Add a New Stage to a Single lefkoMat
+#' 
+#' Function \code{add_stage_single()} adds a new stage to an existing
+#' \code{lefkoMat} object. It is the workhorse function behind
+#' \code{add_stage()}.
+#' 
+#' @name add_stage_single
+#' 
+#' @param final_output A reference to the final list to modify.
+#' @param mpm The \code{lefkoMat} object to add a stage to.
+#' @param add_before The index of the stage to insert a new stage before. This
+#' index should be derived from the \code{ahstages} of the input \code{mpm}.
+#' Cannot be set if \code{add_after} is to be used.
+#' @param add_after The index of the stage to insert a new stage after. This
+#' index should be derived from the \code{ahstages} of the input \code{mpm}.
+#' Cannot be set if \code{add_before} is to be used.
+#' @param stage_name The name of the new stage to add. Defaults to
+#' \code{new_stage}. 
+#' 
+#' @return Creates a new copy of the original MPM edited to include new rows
+#' and columns in the associated matrices, and with \code{ahstages},
+#' \code{agestages}, and \code{hstages} objects edited to include the new
+#' stage, and makes it accessible by reference.
+#' 
+#' @keywords internal
+#' @noRd
+NULL
+
 #' Standardize Stageframe For MPM Analysis
 #' 
 #' Function \code{sf_reassess()} takes a stageframe as input, and uses
@@ -1191,17 +1219,19 @@ lmean <- function(mats, matsout = NULL, force_sparse = FALSE) {
     .Call('_lefko3_lmean', PACKAGE = 'lefko3', mats, matsout, force_sparse)
 }
 
-#' Add a New Stage to an Existing LefkoMat Object
+#' Add a New Stage to an Existing lefkoMat or lefkoMatList Object
 #' 
 #' Function \code{add_stage()} adds a new stage to an existing \code{lefkoMat}
-#' object. In addition to altering the \code{ahstages} object within the MPM,
-#' it alters the \code{hstages} and \code{agestages} objects and adds the
-#' appropriate number of new rows and columns depending on the kind of MPM
-#' input.
+#' or \code{lefkoMatList} object. In addition to altering the \code{ahstages}
+#' object within the MPM, it alters the \code{hstages} and \code{agestages}
+#' objects and adds the appropriate number of new rows and columns depending on
+#' the kind of MPM input. Note that, if entering a \code{lefkoMatList} object,
+#' then a stage will be added to all \code{lefkoMat} objects contained therein.
 #' 
 #' @name add_stage
 #' 
-#' @param mpm The \code{lefkoMat} object to add a stage to.
+#' @param mpm The \code{lefkoMat} or \code{lefkoMatList} object to add a stage
+#' to.
 #' @param add_before The index of the stage to insert a new stage before. This
 #' index should be derived from the \code{ahstages} of the input \code{mpm}.
 #' Cannot be set if \code{add_after} is to be used.
@@ -4389,6 +4419,81 @@ miniMod <- function(lMod, hfv_data = NULL, stageframe = NULL, all_years = NULL, 
 #' @noRd
 NULL
 
+#' Edit Single lefkoMat Object based on Supplemental Data
+#' 
+#' Function \code{edit_lM_single()} edits a single existing \code{lefkoMat}
+#' objects with external data supplied by the user. This is the workhorse
+#' function for function \code{edit_lM}.
+#' 
+#' @name edit_lM_single
+#' 
+#' @param final_output The final list structure to be modified.
+#' @param mpm The \code{lefkoMat} object to be edited.
+#' @param pop A string vector denoting the populations to be edited. Defaults
+#' to \code{NULL}, in which case all populations are edited.
+#' @param patch A string vector denoting the patches to be edited. Defaults
+#' to \code{NULL}, in which case all patches are edited.
+#' @param year2 A string vector denoting the years to be edited. Defaults
+#' to \code{NULL}, in which case all years are edited.
+#' @param stage3 The name of the stage in occasion \emph{t}+1 in the transition
+#' to be replaced. Abbreviations for groups of stages are also usable (see
+#' \code{Notes}). Required in all stage-based and age-by-stage MPMs.
+#' @param stage2 The name of the stage in occasion \emph{t} in the transition
+#' to be replaced. Abbreviations for groups of stages are also usable (see
+#' \code{Notes}). Required in all stage-based and age-by-stage MPMs.
+#' @param stage1 The name of the stage in occasion \emph{t}-1 in the transition
+#' to be replaced. Only needed if a historical matrix is to be produced.
+#' Abbreviations for groups of stages are also usable (see \code{Notes}).
+#' Required for historical stage-based MPMs.
+#' @param age2 An integer vector of the ages in occasion \emph{t} to use in
+#' transitions to be changed or replaced. Required for all age- and
+#' age-by-stage MPMs.
+#' @param eststage3 The name of the stage to replace \code{stage3} in a proxy
+#' transition. Only needed if a transition will be replaced by another
+#' estimated transition, and only in stage-based and age-by-stage MPMs.
+#' @param eststage2 The name of the stage to replace \code{stage2} in a proxy
+#' transition. Only needed if a transition will be replaced by another
+#' estimated transition, and only in stage-based and age-by-stage MPMs.
+#' @param eststage1 The name of the stage to replace \code{stage1} in a proxy
+#' historical transition. Only needed if a transition will be replaced by
+#' another estimated transition, and the matrix to be estimated is historical
+#' and stage-based. Stage \code{NotAlive} is also possible for raw hMPMs as a
+#' means of handling the prior stage for individuals entering the population in
+#' occasion \emph{t}.
+#' @param estage2 The age at time \emph{t} to replace \code{age2} in a proxy
+#' transition. Only needed if a transition will be replaced by another
+#' estimated transition, and only in age-based and age-by-stage MPMs.
+#' @param givenrate A fixed rate or probability to replace for the transition
+#' described by \code{stage3}, \code{stage2}, and \code{stage1}.
+#' @param offset A numeric vector of fixed numeric values to add to the
+#' transitions described by \code{stage3}, \code{stage2}, \code{stage1}, and/or
+#' \code{age2}.
+#' @param multiplier A vector of numeric multipliers for fecundity or for proxy
+#' transitions. Defaults to \code{1}.
+#' @param type A vector denoting the kind of transition between occasions
+#' \emph{t} and \emph{t}+1 to be replaced. This should be entered as \code{1},
+#' \code{S}, or \code{s} for the replacement of a survival transition;
+#' \code{2}, \code{F}, or \code{f} for the replacement of a fecundity
+#' transition; or \code{3}, \code{R}, or \code{r} for a fecundity multiplier.
+#' If empty or not provided, then defaults to \code{1} for survival transition.
+#' @param type_t12 An optional vector denoting the kind of transition between
+#' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
+#' deVries format is desired. This should be entered as \code{1}, \code{S}, or
+#' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
+#' fecundity transitions. Defaults to \code{1} for survival transition, with
+#' impacts only on the construction of deVries-format hMPMs.
+#' @param target_mpm If modifying a \code{lefkoMatList} object, then this
+#' allows the user to specify which MPMs to modify. To modify, enter a vector
+#' with the number of each MPM to modify, or enter \code{"all"} to modify all
+#' MPMs. Defaults to \code{"all"}.
+#' 
+#' @return This creates a modified \code{lefkoMat} object, and places it at
+#' the reference for object \code{final_output}.
+#' 
+#' @keywords internal
+#' @noRd
+NULL
+
 #' Create Stageframe for Population Matrix Projection Analysis
 #' 
 #' Function \code{sf_create()} returns a data frame describing each ahistorical
@@ -5189,18 +5294,20 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
     .Call('_lefko3_supplemental', PACKAGE = 'lefko3', historical, stagebased, agebased, stageframe, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12)
 }
 
-#' Edit MPM based on Supplemental Data
+#' Edit lefkoMat or lefkoMatList Object based on Supplemental Data
 #' 
-#' Function \code{edit_lM()} edits existing \code{lefkoMat} objects with
-#' external data supplied by the user. The effects are similar to function
-#' \code{\link{supplemental}()}, though function \code{edit_lM()} allows
-#' individuals matrices within \code{lefkoMat} objects to be edited after
-#' creation, while \code{\link{supplemental}()} provides external data that
-#' modifies all matrices within a \code{lefkoMat} object.
+#' Function \code{edit_lM()} edits existing \code{lefkoMat} and
+#' \code{lefkoMatList} objects with external data supplied by the user. The
+#' effects are similar to function \code{\link{supplemental}()}, though
+#' function \code{edit_lM()} allows individuals matrices within \code{lefkoMat}
+#' objects to be edited after creation, while \code{\link{supplemental}()}
+#' provides external data that modifies all matrices within a \code{lefkoMat}
+#' object, or within all the \code{lefkoMat} objects within a
+#' \code{lefkoMatList} object.
 #' 
 #' @name edit_lM
 #' 
-#' @param mpm The \code{lefkoMat} object to be edited.
+#' @param mpm The \code{lefkoMat} and \code{lefkoMatList} object to be edited.
 #' @param pop A string vector denoting the populations to be edited. Defaults
 #' to \code{NULL}, in which case all populations are edited.
 #' @param patch A string vector denoting the patches to be edited. Defaults
@@ -5254,6 +5361,10 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
 #' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
 #' fecundity transitions. Defaults to \code{1} for survival transition, with
 #' impacts only on the construction of deVries-format hMPMs.
+#' @param target_mpm If modifying a \code{lefkoMatList} object, then this
+#' allows the user to specify which MPMs to modify. To modify, enter a vector
+#' with the number of each MPM to modify, or enter \code{"all"} to modify all
+#' MPMs. Defaults to \code{"all"}.
 #' 
 #' @return An edited copy of the original MPM is returned, also as a
 #' \code{lefkoMat} object.
@@ -5295,8 +5406,8 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
 #'   year2 = "2005")
 #' 
 #' @export edit_lM
-edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2 = NULL, eststage3 = NULL, eststage2 = NULL, eststage1 = NULL, estage2 = NULL, givenrate = NULL, offset = NULL, multiplier = NULL, type = NULL, type_t12 = NULL) {
-    .Call('_lefko3_edit_lM', PACKAGE = 'lefko3', mpm, pop, patch, year2, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12)
+edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2 = NULL, eststage3 = NULL, eststage2 = NULL, eststage1 = NULL, estage2 = NULL, givenrate = NULL, offset = NULL, multiplier = NULL, type = NULL, type_t12 = NULL, target_mpm = NULL) {
+    .Call('_lefko3_edit_lM', PACKAGE = 'lefko3', mpm, pop, patch, year2, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12, target_mpm)
 }
 
 #' Creates Size Index for Elasticity Summaries of hMPMs

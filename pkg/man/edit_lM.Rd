@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{edit_lM}
 \alias{edit_lM}
-\title{Edit MPM based on Supplemental Data}
+\title{Edit lefkoMat or lefkoMatList Object based on Supplemental Data}
 \usage{
 edit_lM(
   mpm,
@@ -21,11 +21,12 @@ edit_lM(
   offset = NULL,
   multiplier = NULL,
   type = NULL,
-  type_t12 = NULL
+  type_t12 = NULL,
+  target_mpm = NULL
 )
 }
 \arguments{
-\item{mpm}{The \code{lefkoMat} object to be edited.}
+\item{mpm}{The \code{lefkoMat} and \code{lefkoMatList} object to be edited.}
 
 \item{pop}{A string vector denoting the populations to be edited. Defaults
 to \code{NULL}, in which case all populations are edited.}
@@ -95,18 +96,25 @@ deVries format is desired. This should be entered as \code{1}, \code{S}, or
 \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
 fecundity transitions. Defaults to \code{1} for survival transition, with
 impacts only on the construction of deVries-format hMPMs.}
+
+\item{target_mpm}{If modifying a \code{lefkoMatList} object, then this
+allows the user to specify which MPMs to modify. To modify, enter a vector
+with the number of each MPM to modify, or enter \code{"all"} to modify all
+MPMs. Defaults to \code{"all"}.}
 }
 \value{
 An edited copy of the original MPM is returned, also as a
 \code{lefkoMat} object.
 }
 \description{
-Function \code{edit_lM()} edits existing \code{lefkoMat} objects with
-external data supplied by the user. The effects are similar to function
-\code{\link{supplemental}()}, though function \code{edit_lM()} allows
-individuals matrices within \code{lefkoMat} objects to be edited after
-creation, while \code{\link{supplemental}()} provides external data that
-modifies all matrices within a \code{lefkoMat} object.
+Function \code{edit_lM()} edits existing \code{lefkoMat} and
+\code{lefkoMatList} objects with external data supplied by the user. The
+effects are similar to function \code{\link{supplemental}()}, though
+function \code{edit_lM()} allows individuals matrices within \code{lefkoMat}
+objects to be edited after creation, while \code{\link{supplemental}()}
+provides external data that modifies all matrices within a \code{lefkoMat}
+object, or within all the \code{lefkoMat} objects within a
+\code{lefkoMatList} object.
 }
 \section{Notes}{
 

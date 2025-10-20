@@ -985,15 +985,21 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
   const bool loy_pop_used, const bool loy_patch_used, bool simplicity = false,
   bool sparse = false) {
   
+  //Rcout << "minorpatrolgroup 1" << endl;
+  
   arma::ivec dataage = as<arma::ivec>(MainData["usedage"]);
   arma::uvec dataalive2 = as<arma::uvec>(MainData["alive2"]);
   arma::uvec dataalive3 = as<arma::uvec>(MainData["alive3"]);
   arma::vec datausedfec = as<arma::vec>(MainData["usedfec"]);
   
+  //Rcout << "minorpatrolgroup 2" << endl;
+  
   IntegerVector sf_minage = StageFrame["min_age"];
   IntegerVector sf_repstatus = StageFrame["repstatus"];
   int noages = sf_minage.length();
   bool small_subset {false};
+  
+  //Rcout << "minorpatrolgroup 3" << endl;
   
   IntegerVector ov_age2;
   IntegerVector ov_estage2;
@@ -1002,6 +1008,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
   NumericVector ov_multiplier;
   IntegerVector ov_convtype;
   int supp_length {0};
+  
+  //Rcout << "minorpatrolgroup 4" << endl;
   
   if (supplement.containsElementNamed("age2")) {
     ov_age2 = as<IntegerVector>(supplement["age2"]);
@@ -1022,6 +1030,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
     }
   }
   
+  //Rcout << "minorpatrolgroup 5" << endl;
+  
   int loy_length = yearorder.length();
   List A_output (loy_length);
   List U_output (loy_length);
@@ -1035,18 +1045,26 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
   if (loy_patch_used) data_patch_ = as<StringVector>(MainData[patch_var_int]);
   StringVector data_year_ = as<StringVector>(MainData[year_var_int]);
   
+  //Rcout << "minorpatrolgroup 6" << endl;
+  
   for (int i = 0; i < loy_length; i++) {
     arma::uvec data_current_index = as<arma::uvec>(LefkoUtils::index_l3(data_year_, loyyear2(i)));
+    
+    //Rcout << "minorpatrolgroup 7" << endl;
     
     if (loy_pop_used) {
       arma::uvec data_current_pop = as<arma::uvec>(LefkoUtils::index_l3(data_pop_, loypop(i)));
       data_current_index = intersect(data_current_index, data_current_pop);
     }
     
+    //Rcout << "minorpatrolgroup 8" << endl;
+    
     if (loy_patch_used) {
       arma::uvec data_current_patch = as<arma::uvec>(LefkoUtils::index_l3(data_patch_, loypatch(i)));
       data_current_index = intersect(data_current_index, data_current_patch);
     }
+    
+    //Rcout << "minorpatrolgroup 9" << endl;
     
     int data_subset_rows = static_cast<int>(data_current_index.n_elem);
     if (data_subset_rows < 10 && !small_subset) {
@@ -1055,6 +1073,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
         "Extremely small data subsets used to populate matrices.");
     }
     if (data_subset_rows == 0) continue;
+    
+    //Rcout << "minorpatrolgroup 10" << endl;
     
     arma::ivec dataagei = dataage.elem(data_current_index);
     arma::uvec dataalive2i = dataalive2.elem(data_current_index);
@@ -1065,6 +1085,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
     dataalive2i.resize(data_subset_rows);
     dataalive3i.resize(data_subset_rows);
     datausedfeci.resize(data_subset_rows);
+    
+    //Rcout << "minorpatrolgroup 11" << endl;
     
     arma::vec probsrates0(noages, fill::zeros); // total indivs in t
     arma::vec probsrates1(noages, fill::zeros); // total indivs alive in t+1
@@ -1088,6 +1110,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
       tmatrix_sp = tmatrix_chuck;
       fmatrix_sp = fmatrix_chuck;
     }
+    
+    //Rcout << "minorpatrolgroup 12" << endl;
     
     // Count individuals in transitions, calculate survival and fecundity
     arma::uvec data_allalivei = find(dataalive2i);
@@ -1148,6 +1172,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
       fecsum = 0.0;
     }
     
+    //Rcout << "minorpatrolgroup 13" << endl;
+    
     // Supplement replacement portion
     int target_col {0};
     int target_row {0};
@@ -1160,7 +1186,7 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
         target_col = noages - 1;
       }
       
-      if (ov_convtype(l) == 1) {
+      if (ov_convtype(l) == 1 && target_col >= 0) {
         if (target_col >= (noages - 1) && cont) {
           target_row = target_col;
         } else {
@@ -1196,7 +1222,7 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
         if (!NumericVector::is_na(ov_multiplier(l))) {
           tmatrix(target_row, target_col) *= ov_multiplier(l);
         }
-      } else if (ov_convtype(l) == 2) {
+      } else if (ov_convtype(l) == 2 && target_col >= 0) {
         target_row = 0;
         
         if (!NumericVector::is_na(ov_givenrate(l))) {
@@ -1224,7 +1250,7 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
         if (!NumericVector::is_na(ov_multiplier(l))) {
           fmatrix(target_row, target_col) *= ov_multiplier(l);
         }
-      } else {
+      } else if (target_col >= 0) {
         target_row = 0;
         
         if (!NumericVector::is_na(ov_multiplier(l))) {
@@ -1232,6 +1258,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
         }
       }
     }
+    
+    //Rcout << "minorpatrolgroup 14" << endl;
     
     if (!sparse) {
       tmatrix(find_nonfinite(tmatrix)).zeros();
@@ -1271,6 +1299,8 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
       conc_err(i) = concatenated_crap;
     }
   }
+  
+  //Rcout << "minorpatrolgroup 15" << endl;
   
   List final_output;
   

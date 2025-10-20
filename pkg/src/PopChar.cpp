@@ -8,12 +8,13 @@ using namespace LefkoUtils;
 
 
 // Index of functions
-// 1. List sf_create - Create Stageframe for Population Matrix Projection Analysis
-// 2. List actualstage3 - Calculate Actual Stage, Age, Stage-Pair, or Age-Stage Distributions
-// 3. DataFrame density_reassess - Check and Reorganize Density Input Table Into Usable Format
-// 4. DataFrame density_input - Set Density Dependence Relationships in Matrix Elements
-// 5. List supplemental - Create a Data Frame of Supplemental Data for MPM Development
-// 6. List edit_lM - Edit MPM based on Supplemental Data
+// 1. List sf_create  Create Stageframe for Population Matrix Projection Analysis
+// 2. List actualstage3  Calculate Actual Stage, Age, Stage-Pair, or Age-Stage Distributions
+// 3. DataFrame density_reassess  Check and Reorganize Density Input Table Into Usable Format
+// 4. DataFrame density_input  Set Density Dependence Relationships in Matrix Elements
+// 5. List supplemental  Create a Data Frame of Supplemental Data for MPM Development
+// 6. void edit_lM_single  Edit Single lefkoMat Object based on Supplemental Data
+// 7. List edit_lM  Edit lefkoMat or lefkoMatList Object based on Supplemental Data
 
 
 //' Create Stageframe for Population Matrix Projection Analysis
@@ -7227,17 +7228,15 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
   return supplement;
 }
 
-//' Edit MPM based on Supplemental Data
+//' Edit Single lefkoMat Object based on Supplemental Data
 //' 
-//' Function \code{edit_lM()} edits existing \code{lefkoMat} objects with
-//' external data supplied by the user. The effects are similar to function
-//' \code{\link{supplemental}()}, though function \code{edit_lM()} allows
-//' individuals matrices within \code{lefkoMat} objects to be edited after
-//' creation, while \code{\link{supplemental}()} provides external data that
-//' modifies all matrices within a \code{lefkoMat} object.
+//' Function \code{edit_lM_single()} edits a single existing \code{lefkoMat}
+//' objects with external data supplied by the user. This is the workhorse
+//' function for function \code{edit_lM}.
 //' 
-//' @name edit_lM
+//' @name edit_lM_single
 //' 
+//' @param final_output The final list structure to be modified.
 //' @param mpm The \code{lefkoMat} object to be edited.
 //' @param pop A string vector denoting the populations to be edited. Defaults
 //' to \code{NULL}, in which case all populations are edited.
@@ -7292,49 +7291,17 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
 //' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
 //' fecundity transitions. Defaults to \code{1} for survival transition, with
 //' impacts only on the construction of deVries-format hMPMs.
+//' @param target_mpm If modifying a \code{lefkoMatList} object, then this
+//' allows the user to specify which MPMs to modify. To modify, enter a vector
+//' with the number of each MPM to modify, or enter \code{"all"} to modify all
+//' MPMs. Defaults to \code{"all"}.
 //' 
-//' @return An edited copy of the original MPM is returned, also as a
-//' \code{lefkoMat} object.
+//' @return This creates a modified \code{lefkoMat} object, and places it at
+//' the reference for object \code{final_output}.
 //' 
-//' @section Notes:
-//' Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
-//' abbreviations for groups of stages. Use \code{rep} if all reproductive
-//' stages are to be used, \code{nrep} if all mature but non-reproductive stages
-//' are to be used, \code{mat} if all mature stages are to be used, \code{immat}
-//' if all immature stages are to be used, \code{prop} if all propagule stages
-//' are to be used, \code{npr} if all non-propagule stages are to be used,
-//' \code{obs} if all observable stages are to be used, \code{nobs} if all
-//' unobservable stages are to be used, and leave empty or use \code{all} if all
-//' stages in stageframe are to be used. Also use \code{groupX} to denote all
-//' stages in group X (e.g. \code{group1} will use all stages in the respective
-//' stageframe's group 1).
-//' 
-//' @seealso \code{\link{supplemental}()}
-//' 
-//' @examples
-//' data(cypdata)
-//' 
-//' cypraw_v1 <- verticalize3(data = cypdata, noyears = 6, firstyear = 2004,
-//'   patchidcol = "patch", individcol = "plantid", blocksize = 4,
-//'   sizeacol = "Inf2.04", sizebcol = "Inf.04", sizeccol = "Veg.04",
-//'   repstracol = "Inf.04", repstrbcol = "Inf2.04", fecacol = "Pod.04",
-//'   age_offset = 3, NAas0 = TRUE, NRasRep = TRUE)
-//' 
-//' cyp_rl <- rleslie(data = cypraw_v1, start_age = 0, last_age = 6, continue = TRUE,
-//'   fecage_min = 3, year = "all", pop = NA, patch = "all", yearcol = "year2",
-//'   patchcol = "patchid", indivcol = "individ")
-//' 
-//' ddd1 <- edit_lM(cyp_rl, age2 = c(0, 1, 2, 3, 4, 5, 6),
-//'   givenrate = c(0.25, 0.25, 0.4, 0.4, NA, NA, NA),
-//'   multiplier = c(NA, NA, NA, NA, 2000, 2000, 2000),
-//'   type = c(1, 1, 1, 1, 3, 3, 3))
-//'   
-//' ddd1 <- edit_lM(ddd1, age2 = 6, multiplier = 1.5, type = 3, patch = "B",
-//'   year2 = "2005")
-//' 
-//' @export edit_lM
-// [[Rcpp::export(edit_lM)]]
-Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
+//' @keywords internal
+//' @noRd
+void edit_lM_single (List& final_output, const List& mpm, Nullable<RObject> pop = R_NilValue,
   Nullable<RObject> patch = R_NilValue, Nullable<RObject> year2 = R_NilValue,
   Nullable<RObject> stage3 = R_NilValue, Nullable<RObject> stage2 = R_NilValue,
   Nullable<RObject> stage1 = R_NilValue, Nullable<RObject> age2 = R_NilValue,
@@ -7344,35 +7311,23 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   Nullable<RObject> multiplier = R_NilValue, Nullable<RObject> type = R_NilValue,
   Nullable<RObject> type_t12 = R_NilValue) {
   
-  List mpm_list;
-  
-  if (is<List>(mpm)) mpm_list = mpm;
-  StringVector mpm_class = mpm_list.attr("class");
-  
-  String mpm_error = "Please enter a lefkoMat object as input.";
-  bool mpm_yes {false};
-  
-  if (!mpm_list.containsElementNamed("ahstages")) {
+  String mpm_error = "Please enter a lefkoMat or lefkoMatList object as input.";
+  if (!mpm.containsElementNamed("ahstages")) {
     throw Rcpp::exception(mpm_error.get_cstring(), false);
   }
-  if (!mpm_list.containsElementNamed("hstages")) {
+  if (!mpm.containsElementNamed("hstages")) {
     throw Rcpp::exception(mpm_error.get_cstring(), false);
   }
-  if (!mpm_list.containsElementNamed("agestages")) {
+  if (!mpm.containsElementNamed("agestages")) {
     throw Rcpp::exception(mpm_error.get_cstring(), false);
   }
-  if (!mpm_list.containsElementNamed("labels")) {
+  if (!mpm.containsElementNamed("labels")) {
     throw Rcpp::exception(mpm_error.get_cstring(), false);
   }
-  for (int i = 0; i < static_cast<int>(mpm_class.length()); i++) {
-    if (mpm_class(i) == "lefkoMat") mpm_yes = true;
-  }
-  if (!mpm_yes) throw Rcpp::exception(mpm_error.get_cstring(), false);
-  
-  Rcpp::DataFrame ahstages = as<DataFrame>(mpm_list["ahstages"]);
-  Rcpp::DataFrame hstages = as<DataFrame>(mpm_list["hstages"]);
-  Rcpp::DataFrame agestages = as<DataFrame>(mpm_list["agestages"]);
-  Rcpp::DataFrame labels = as<DataFrame>(mpm_list["labels"]);
+  Rcpp::DataFrame ahstages = as<DataFrame>(mpm["ahstages"]);
+  Rcpp::DataFrame hstages = as<DataFrame>(mpm["hstages"]);
+  Rcpp::DataFrame agestages = as<DataFrame>(mpm["agestages"]);
+  Rcpp::DataFrame labels = as<DataFrame>(mpm["labels"]);
   
   int wtf = LefkoUtils::whichbrew(ahstages, hstages, agestages);
   
@@ -8506,25 +8461,25 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   bool mat_sparse {false};
   int mat_num {0};
   
-  if (mpm_list.containsElementNamed("A")) {
-    if (is<List>(mpm_list["A"])) {
-      List new_A_mats = as<List>(mpm_list["A"]);
+  if (mpm.containsElementNamed("A")) {
+    if (is<List>(mpm["A"])) {
+      List new_A_mats = as<List>(mpm["A"]);
       A_mats = clone(new_A_mats);
       A_used = true;
       mat_num = static_cast<int>(A_mats.length());
       
       if (is<S4>(A_mats(0))) mat_sparse = true;
     }
-    if (is<List>(mpm_list["U"])) {
-      List new_U_mats = as<List>(mpm_list["U"]);
+    if (is<List>(mpm["U"])) {
+      List new_U_mats = as<List>(mpm["U"]);
       U_mats = clone(new_U_mats);
       U_used = true;
       mat_num = static_cast<int>(U_mats.length());
       
       if (is<S4>(U_mats(0))) mat_sparse = true;
     }
-    if (is<List>(mpm_list["F"])) {
-      List new_F_mats = as<List>(mpm_list["F"]);
+    if (is<List>(mpm["F"])) {
+      List new_F_mats = as<List>(mpm["F"]);
       F_mats = clone(new_F_mats);
       F_used = true;
       mat_num = static_cast<int>(F_mats.length());
@@ -8850,14 +8805,14 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   }
   
   IntegerVector dataqc;
-  if (mpm_list.containsElementNamed("dataqc")) {
-    dataqc = as<IntegerVector>(mpm_list["dataqc"]);
+  if (mpm.containsElementNamed("dataqc")) {
+    dataqc = as<IntegerVector>(mpm["dataqc"]);
   } else {
     IntegerVector mayhem_highway = {NA_INTEGER, NA_INTEGER};
     dataqc = mayhem_highway;
   }
   
-  IntegerVector matrixqc = as<IntegerVector>(mpm_list["matrixqc"]);
+  IntegerVector matrixqc = as<IntegerVector>(mpm["matrixqc"]);
   
   int total_Us = static_cast<int>(matrixqc(0)) + U_adjustment;
   int total_Fs = static_cast<int>(matrixqc(1)) + F_adjustment;
@@ -8866,8 +8821,8 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
   
   List true_output;
   
-  if (mpm_list.containsElementNamed("modelqc")) {
-    DataFrame modelqc = as<DataFrame>(mpm_list["modelqc"]);
+  if (mpm.containsElementNamed("modelqc")) {
+    DataFrame modelqc = as<DataFrame>(mpm["modelqc"]);
     
     List new_mpm (10);
     new_mpm(0) = A_mats;
@@ -8881,13 +8836,13 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     new_mpm(8) = new_matrixqc;
     new_mpm(9) = modelqc;
     
-    true_output = new_mpm;
+    final_output = new_mpm;
     
     StringVector new_mpm_names = {"A", "U", "F", "ahstages", "hstages",
       "agestages", "labels", "dataqc", "matrixqc", "modelqc"};
     StringVector new_mpm_class = {"lefkoMat"};
-    true_output.attr("class") = new_mpm_class;
-    true_output.attr("names") = new_mpm_names;
+    final_output.attr("class") = new_mpm_class;
+    final_output.attr("names") = new_mpm_names;
     
   } else {
     List new_mpm (9);
@@ -8901,14 +8856,177 @@ Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
     new_mpm(7) = dataqc;
     new_mpm(8) = new_matrixqc;
     
-    true_output = new_mpm;
+    final_output = new_mpm;
     
     StringVector new_mpm_names = {"A", "U", "F", "ahstages", "hstages",
       "agestages", "labels", "dataqc", "matrixqc"};
     StringVector new_mpm_class = {"lefkoMat"};
-    true_output.attr("class") = new_mpm_class;
-    true_output.attr("names") = new_mpm_names;
+    final_output.attr("class") = new_mpm_class;
+    final_output.attr("names") = new_mpm_names;
   }
+}
+
+//' Edit lefkoMat or lefkoMatList Object based on Supplemental Data
+//' 
+//' Function \code{edit_lM()} edits existing \code{lefkoMat} and
+//' \code{lefkoMatList} objects with external data supplied by the user. The
+//' effects are similar to function \code{\link{supplemental}()}, though
+//' function \code{edit_lM()} allows individuals matrices within \code{lefkoMat}
+//' objects to be edited after creation, while \code{\link{supplemental}()}
+//' provides external data that modifies all matrices within a \code{lefkoMat}
+//' object, or within all the \code{lefkoMat} objects within a
+//' \code{lefkoMatList} object.
+//' 
+//' @name edit_lM
+//' 
+//' @param mpm The \code{lefkoMat} and \code{lefkoMatList} object to be edited.
+//' @param pop A string vector denoting the populations to be edited. Defaults
+//' to \code{NULL}, in which case all populations are edited.
+//' @param patch A string vector denoting the patches to be edited. Defaults
+//' to \code{NULL}, in which case all patches are edited.
+//' @param year2 A string vector denoting the years to be edited. Defaults
+//' to \code{NULL}, in which case all years are edited.
+//' @param stage3 The name of the stage in occasion \emph{t}+1 in the transition
+//' to be replaced. Abbreviations for groups of stages are also usable (see
+//' \code{Notes}). Required in all stage-based and age-by-stage MPMs.
+//' @param stage2 The name of the stage in occasion \emph{t} in the transition
+//' to be replaced. Abbreviations for groups of stages are also usable (see
+//' \code{Notes}). Required in all stage-based and age-by-stage MPMs.
+//' @param stage1 The name of the stage in occasion \emph{t}-1 in the transition
+//' to be replaced. Only needed if a historical matrix is to be produced.
+//' Abbreviations for groups of stages are also usable (see \code{Notes}).
+//' Required for historical stage-based MPMs.
+//' @param age2 An integer vector of the ages in occasion \emph{t} to use in
+//' transitions to be changed or replaced. Required for all age- and
+//' age-by-stage MPMs.
+//' @param eststage3 The name of the stage to replace \code{stage3} in a proxy
+//' transition. Only needed if a transition will be replaced by another
+//' estimated transition, and only in stage-based and age-by-stage MPMs.
+//' @param eststage2 The name of the stage to replace \code{stage2} in a proxy
+//' transition. Only needed if a transition will be replaced by another
+//' estimated transition, and only in stage-based and age-by-stage MPMs.
+//' @param eststage1 The name of the stage to replace \code{stage1} in a proxy
+//' historical transition. Only needed if a transition will be replaced by
+//' another estimated transition, and the matrix to be estimated is historical
+//' and stage-based. Stage \code{NotAlive} is also possible for raw hMPMs as a
+//' means of handling the prior stage for individuals entering the population in
+//' occasion \emph{t}.
+//' @param estage2 The age at time \emph{t} to replace \code{age2} in a proxy
+//' transition. Only needed if a transition will be replaced by another
+//' estimated transition, and only in age-based and age-by-stage MPMs.
+//' @param givenrate A fixed rate or probability to replace for the transition
+//' described by \code{stage3}, \code{stage2}, and \code{stage1}.
+//' @param offset A numeric vector of fixed numeric values to add to the
+//' transitions described by \code{stage3}, \code{stage2}, \code{stage1}, and/or
+//' \code{age2}.
+//' @param multiplier A vector of numeric multipliers for fecundity or for proxy
+//' transitions. Defaults to \code{1}.
+//' @param type A vector denoting the kind of transition between occasions
+//' \emph{t} and \emph{t}+1 to be replaced. This should be entered as \code{1},
+//' \code{S}, or \code{s} for the replacement of a survival transition;
+//' \code{2}, \code{F}, or \code{f} for the replacement of a fecundity
+//' transition; or \code{3}, \code{R}, or \code{r} for a fecundity multiplier.
+//' If empty or not provided, then defaults to \code{1} for survival transition.
+//' @param type_t12 An optional vector denoting the kind of transition between
+//' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
+//' deVries format is desired. This should be entered as \code{1}, \code{S}, or
+//' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
+//' fecundity transitions. Defaults to \code{1} for survival transition, with
+//' impacts only on the construction of deVries-format hMPMs.
+//' @param target_mpm If modifying a \code{lefkoMatList} object, then this
+//' allows the user to specify which MPMs to modify. To modify, enter a vector
+//' with the number of each MPM to modify, or enter \code{"all"} to modify all
+//' MPMs. Defaults to \code{"all"}.
+//' 
+//' @return An edited copy of the original MPM is returned, also as a
+//' \code{lefkoMat} object.
+//' 
+//' @section Notes:
+//' Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
+//' abbreviations for groups of stages. Use \code{rep} if all reproductive
+//' stages are to be used, \code{nrep} if all mature but non-reproductive stages
+//' are to be used, \code{mat} if all mature stages are to be used, \code{immat}
+//' if all immature stages are to be used, \code{prop} if all propagule stages
+//' are to be used, \code{npr} if all non-propagule stages are to be used,
+//' \code{obs} if all observable stages are to be used, \code{nobs} if all
+//' unobservable stages are to be used, and leave empty or use \code{all} if all
+//' stages in stageframe are to be used. Also use \code{groupX} to denote all
+//' stages in group X (e.g. \code{group1} will use all stages in the respective
+//' stageframe's group 1).
+//' 
+//' @seealso \code{\link{supplemental}()}
+//' 
+//' @examples
+//' data(cypdata)
+//' 
+//' cypraw_v1 <- verticalize3(data = cypdata, noyears = 6, firstyear = 2004,
+//'   patchidcol = "patch", individcol = "plantid", blocksize = 4,
+//'   sizeacol = "Inf2.04", sizebcol = "Inf.04", sizeccol = "Veg.04",
+//'   repstracol = "Inf.04", repstrbcol = "Inf2.04", fecacol = "Pod.04",
+//'   age_offset = 3, NAas0 = TRUE, NRasRep = TRUE)
+//' 
+//' cyp_rl <- rleslie(data = cypraw_v1, start_age = 0, last_age = 6, continue = TRUE,
+//'   fecage_min = 3, year = "all", pop = NA, patch = "all", yearcol = "year2",
+//'   patchcol = "patchid", indivcol = "individ")
+//' 
+//' ddd1 <- edit_lM(cyp_rl, age2 = c(0, 1, 2, 3, 4, 5, 6),
+//'   givenrate = c(0.25, 0.25, 0.4, 0.4, NA, NA, NA),
+//'   multiplier = c(NA, NA, NA, NA, 2000, 2000, 2000),
+//'   type = c(1, 1, 1, 1, 3, 3, 3))
+//'   
+//' ddd1 <- edit_lM(ddd1, age2 = 6, multiplier = 1.5, type = 3, patch = "B",
+//'   year2 = "2005")
+//' 
+//' @export edit_lM
+// [[Rcpp::export(edit_lM)]]
+Rcpp::List edit_lM (const RObject mpm, Nullable<RObject> pop = R_NilValue,
+  Nullable<RObject> patch = R_NilValue, Nullable<RObject> year2 = R_NilValue,
+  Nullable<RObject> stage3 = R_NilValue, Nullable<RObject> stage2 = R_NilValue,
+  Nullable<RObject> stage1 = R_NilValue, Nullable<RObject> age2 = R_NilValue,
+  Nullable<RObject> eststage3 = R_NilValue, Nullable<RObject> eststage2 = R_NilValue,
+  Nullable<RObject> eststage1 = R_NilValue, Nullable<RObject> estage2 = R_NilValue,
+  Nullable<RObject> givenrate = R_NilValue, Nullable<RObject> offset = R_NilValue,
+  Nullable<RObject> multiplier = R_NilValue, Nullable<RObject> type = R_NilValue,
+  Nullable<RObject> type_t12 = R_NilValue, Nullable<RObject> target_mpm = R_NilValue) {
+  
+  List mpm_list;
+  List true_output;
+  
+  if (is<List>(mpm)) mpm_list = as<List>(mpm);
+  StringVector mpm_class = mpm_list.attr("class");
+  
+  String mpm_error = "Please enter a lefkoMat or lefkoMatList object as input.";
+  bool mpm_yes {false};
+  bool mpmlist_yes {false};
+  
+  for (int i = 0; i < static_cast<int>(mpm_class.length()); i++) {
+    if (mpm_class(i) == "lefkoMat") mpm_yes = true;
+    if (mpm_class(i) == "lefkoMatList") mpmlist_yes = true;
+  }
+  if (!mpm_yes && !mpmlist_yes) throw Rcpp::exception(mpm_error.get_cstring(), false);
+  
+  
+  if (mpm_yes && !mpmlist_yes) {
+    edit_lM_single(true_output, mpm_list, pop, patch, year2, stage3, stage2,
+      stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset,
+      multiplier, type, type_t12);
+  } else if (mpmlist_yes) {
+    int mpmlist_length = static_cast<int>(mpm_list.length());
+    List semifinal_output (mpmlist_length);
+    
+    for (int i = 0; i < mpmlist_length; i++) {
+      List single_elem_output;
+      List current_mpm = as<List>(mpm_list(i));
+      edit_lM_single(single_elem_output, current_mpm, pop, patch, year2, stage3,
+        stage2, stage1, age2, eststage3, eststage2, eststage1, estage2,
+        givenrate, offset, multiplier, type, type_t12);
+      semifinal_output(i) = single_elem_output;
+    }
+    
+    CharacterVector out_class = "lefkoMatList";
+    semifinal_output.attr("class") = out_class;
+    true_output = semifinal_output;
+  } else throw Rcpp::exception(mpm_error.get_cstring(), false);
   
   return true_output;
 }

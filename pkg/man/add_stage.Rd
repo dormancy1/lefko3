@@ -2,12 +2,13 @@
 % Please edit documentation in R/RcppExports.R
 \name{add_stage}
 \alias{add_stage}
-\title{Add a New Stage to an Existing LefkoMat Object}
+\title{Add a New Stage to an Existing lefkoMat or lefkoMatList Object}
 \usage{
 add_stage(mpm, add_before = 0L, add_after = 0L, stage_name = NULL)
 }
 \arguments{
-\item{mpm}{The \code{lefkoMat} object to add a stage to.}
+\item{mpm}{The \code{lefkoMat} or \code{lefkoMatList} object to add a stage
+to.}
 
 \item{add_before}{The index of the stage to insert a new stage before. This
 index should be derived from the \code{ahstages} of the input \code{mpm}.
@@ -28,10 +29,11 @@ stage.
 }
 \description{
 Function \code{add_stage()} adds a new stage to an existing \code{lefkoMat}
-object. In addition to altering the \code{ahstages} object within the MPM,
-it alters the \code{hstages} and \code{agestages} objects and adds the
-appropriate number of new rows and columns depending on the kind of MPM
-input.
+or \code{lefkoMatList} object. In addition to altering the \code{ahstages}
+object within the MPM, it alters the \code{hstages} and \code{agestages}
+objects and adds the appropriate number of new rows and columns depending on
+the kind of MPM input. Note that, if entering a \code{lefkoMatList} object,
+then a stage will be added to all \code{lefkoMat} objects contained therein.
 }
 \examples{
 data(cypdata)

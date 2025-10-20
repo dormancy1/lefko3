@@ -9,7 +9,8 @@
 * Function summary_hfv() can now summarize hfvlist objects.
 
 * Functions lmean(), lambda3(), slambda3(), stablestage3(), repvalue3(),
-  sensitivity3(), and elasticity3() can now handle lefkoMatList objects.
+  sensitivity3(), elasticity3(), add_stage(), and edit_lM() can now handle
+  lefkoMatList objects.
 
 * Function summary.lefkoMatList() created to summarize lefkoMatList objects.
 
