@@ -1900,73 +1900,15 @@ NULL
 #' @noRd
 NULL
 
-#' Core Time-based Density-Dependent Population Matrix Projection Function
+#' Project Single Function-based Matrix Projection Model
 #' 
-#' Function \code{proj3dens()} runs density-dependent matrix projections.
+#' Function \code{f_projection3_single()} develops and projects single
+#' function-based matrix models. It is the workhorse function behind
+#' \code{f_projection3()}.
 #' 
-#' @name proj3dens
+#' @name f_projection3_single
 #' 
-#' @param start_vec The starting population vector for the projection.
-#' @param equivalence_vec A vector giving stage weights.
-#' @param core_list A list of full projection matrices, corresponding to the 
-#' \code{A} list within a \code{lefkoMat} object.
-#' @param mat_order A vector giving the order of matrices to use at each occasion.
-#' @param growthonly A logical value stating whether to output only a matrix
-#' showing the change in population size from one year to the next for use in
-#' stochastic population growth rate estimation (TRUE), or a larger matrix also
-#' containing the w and v projections for stochastic perturbation analysis,
-#' stage distribution estimation, and reproductive value estimation.
-#' @param integeronly A logical value indicating whether to round all projected
-#' numbers of individuals to the nearest integer.
-#' @param substoch An integer value indicating whether to force survival-
-#' transition matrices to be substochastic in density dependent simulations.
-#' Defaults to \code{0}, which does not force substochasticity. Alternatively,
-#' \code{1} forces all survival-transition elements to range from 0.0 to 1.0
-#' and fecundity to be non-negative, and \code{2} forces all column rows to
-#' total no more than 1.0.
-#' @param dens_input The original \code{lefkoDens} data frame supplied through
-#' the \code{\link{density_input}()} function.
-#' @param dens_index A list giving the indices of elements in object
-#' \code{dens_input}.
-#' @param sparse_auto A logical value indicating whether to determine whether
-#' to use sparse matrix encoding automatically.
-#' @param sparse A logical value indicating whether to use sparse matrix
-#' encoding if \code{sparse_auto = FALSE}.
-#' @param sparse_input A logical value indicating whether matrices in the input
-#' MPM are in sparse format (class \code{dgCMatrix}). If so, then all
-#' projection will be handled in sparse format. Defaults to \code{FALSE}.
-#' @param allow_warnings A logical value indicating whether the function should
-#' send warnings if estimated values fall outside of the realm of possibility.
-#' 
-#' @return A matrix in which, if \code{growthonly = TRUE}, each row is the
-#' population vector at each projected occasion, and if \code{growthonly =
-#' FALSE}, the top third of the matrix is the actual number of individuals in
-#' each stage across time, the second third is the w projection (stage
-#' distribution), and the bottom third is the v projection (reproductive
-#' values) for use in estimation of stochastic sensitivities and elasticities
-#' (in addition, a further row is appended to the bottom, corresponding to the
-#' \emph{R} vector, which is the sum of the unstandardized \emph{w} vector
-#' resulting from each occasion's projection).
-#' 
-#' @section Notes:
-#' There is no option to standardize population vectors here, because density
-#' dependence requires the full population size to be tracked.
-#' 
-#' @keywords internal
-#' @noRd
-NULL
-
-#' Project Function-based Matrix Projection Model
-#' 
-#' Function \code{f_projection3()} develops and projects function-based matrix
-#' models. Unlike \code{\link{projection3}()}, which uses matrices provided as
-#' input via already created \code{lefkoMat} objects, function
-#' \code{f_projection3()} creates matrices at each time step from vital rate
-#' models and parameter inputs provided. Projections may be stochastic or not,
-#' and may be density dependent in either case. Also handles replication.
-#' 
-#' @name f_projection3
-#' 
+#' @param fin_out The output list to be modified by reference.
 #' @param data The historical vertical demographic data frame used to estimate
 #' vital rates (class \code{hfvdata}), which is required to initialize times and
 #' patches properly. Variable names should correspond to the naming conventions
@@ -2260,6 +2202,495 @@ NULL
 #' if input by the user.}
 #' \item{density_vr}{The data frame input under the density_vr option. Only
 #' provided if input by the user.}
+#' 
+#' @keywords internal
+#' @noRd
+NULL
+
+#' Core Time-based Density-Dependent Population Matrix Projection Function
+#' 
+#' Function \code{proj3dens()} runs density-dependent matrix projections.
+#' 
+#' @name proj3dens
+#' 
+#' @param start_vec The starting population vector for the projection.
+#' @param equivalence_vec A vector giving stage weights.
+#' @param core_list A list of full projection matrices, corresponding to the 
+#' \code{A} list within a \code{lefkoMat} object.
+#' @param mat_order A vector giving the order of matrices to use at each occasion.
+#' @param growthonly A logical value stating whether to output only a matrix
+#' showing the change in population size from one year to the next for use in
+#' stochastic population growth rate estimation (TRUE), or a larger matrix also
+#' containing the w and v projections for stochastic perturbation analysis,
+#' stage distribution estimation, and reproductive value estimation.
+#' @param integeronly A logical value indicating whether to round all projected
+#' numbers of individuals to the nearest integer.
+#' @param substoch An integer value indicating whether to force survival-
+#' transition matrices to be substochastic in density dependent simulations.
+#' Defaults to \code{0}, which does not force substochasticity. Alternatively,
+#' \code{1} forces all survival-transition elements to range from 0.0 to 1.0
+#' and fecundity to be non-negative, and \code{2} forces all column rows to
+#' total no more than 1.0.
+#' @param dens_input The original \code{lefkoDens} data frame supplied through
+#' the \code{\link{density_input}()} function.
+#' @param dens_index A list giving the indices of elements in object
+#' \code{dens_input}.
+#' @param sparse_auto A logical value indicating whether to determine whether
+#' to use sparse matrix encoding automatically.
+#' @param sparse A logical value indicating whether to use sparse matrix
+#' encoding if \code{sparse_auto = FALSE}.
+#' @param sparse_input A logical value indicating whether matrices in the input
+#' MPM are in sparse format (class \code{dgCMatrix}). If so, then all
+#' projection will be handled in sparse format. Defaults to \code{FALSE}.
+#' @param allow_warnings A logical value indicating whether the function should
+#' send warnings if estimated values fall outside of the realm of possibility.
+#' 
+#' @return A matrix in which, if \code{growthonly = TRUE}, each row is the
+#' population vector at each projected occasion, and if \code{growthonly =
+#' FALSE}, the top third of the matrix is the actual number of individuals in
+#' each stage across time, the second third is the w projection (stage
+#' distribution), and the bottom third is the v projection (reproductive
+#' values) for use in estimation of stochastic sensitivities and elasticities
+#' (in addition, a further row is appended to the bottom, corresponding to the
+#' \emph{R} vector, which is the sum of the unstandardized \emph{w} vector
+#' resulting from each occasion's projection).
+#' 
+#' @section Notes:
+#' There is no option to standardize population vectors here, because density
+#' dependence requires the full population size to be tracked.
+#' 
+#' @keywords internal
+#' @noRd
+NULL
+
+#' Conduct Single Population Projection Simulations
+#' 
+#' Function \code{projection3_single()} runs single projection simulations. It
+#' is the workhorse function behind \code{projection3()}.
+#' 
+#' @name projection3_single
+#' 
+#' @param fin_out The resulting List, built by reference.
+#' @param mpm A matrix projection model of class \code{lefkoMat}, or a list of
+#' full matrix projection matrices.
+#' @param nreps The number of replicate projections.
+#' @param times Number of occasions to iterate per replicate. Defaults to
+#' 10,000.
+#' @param historical An optional logical value only used if object \code{mpm}
+#' is a list of matrices, rather than a \code{lefkoMat} object. Defaults to
+#' \code{FALSE} for the former case, and overridden by information supplied in
+#' the \code{lefkoMat} object for the latter case.
+#' @param stochastic A logical value denoting whether to conduct a stochastic
+#' projection or a deterministic / cyclical projection.
+#' @param standardize A logical value denoting whether to re-standardize the
+#' population size to 1.0 at each occasion. Defaults to \code{FALSE}.
+#' @param growthonly A logical value indicating whether to produce only the
+#' projected population size at each occasion, or a vector showing the stage
+#' distribution followed by the reproductive value vector followed by the full
+#' population size at each occasion. Defaults to \code{TRUE}.
+#' @param integeronly A logical value indicating whether to round the number of
+#' individuals projected in each stage at each occasion to the nearest
+#' integer. Defaults to \code{FALSE}.
+#' @param substoch An integer value indicating whether to force survival-
+#' transition matrices to be substochastic in density dependent simulations.
+#' Defaults to \code{0}, which does not force substochasticity. Alternatively,
+#' \code{1} forces all survival-transition elements to range from 0.0 to 1.0,
+#' and forces fecundity to be non-negative; and \code{2} forces all column rows
+#' in the survival-transition matrices to total no more than 1.0, in addition
+#' to the actions outlined for option \code{1}.
+#' @param exp_tol A numeric value used to indicate a maximum value to set
+#' exponents to in the core kernel to prevent numerical overflow. Defaults to
+#' \code{700}.
+#' @param sub_warnings A logical value indicating whether to warn the user if
+#' density dependence yields matrix values outside of the realm of possibility.
+#' Generally, this means that survival-transition elements altered to values
+#' outside of the interval [0, 1], and negative fecundity values, will both
+#' yield warnings. Defaults to \code{TRUE}, but becomes \code{FALSE} if
+#' \code{quiet = TRUE}.
+#' @param quiet A logical value indicating whether to suppress warnings.
+#' Defaults to \code{FALSE}.
+#' @param year Either a single integer value corresponding to the year to
+#' project, or a vector of \code{times} elements with the year to use at each
+#' time step. If a vector shorter than \code{times} is supplied, then this
+#' vector will be cycled. If not provided, then all annual matrices will be
+#' cycled within patches or populations.
+#' @param start_vec An optional numeric vector denoting the starting stage
+#' distribution for the projection. Defaults to a single individual of each
+#' stage.
+#' @param start_frame An optional data frame characterizing stages, age-stages,
+#' or stage-pairs that should be set to non-zero values in the starting vector,
+#' and what those values should be. Can only be used with \code{lefkoMat}
+#' objects.
+#' @param tweights An optional numeric vector or matrix denoting the
+#' probabilities of choosing each matrix in a stochastic projection. If a
+#' matrix is input, then a first-order Markovian environment is assumed, in
+#' which the probability of choosing a specific annual matrix depends on which
+#' annual matrix is currently chosen. If a vector is input, then the choice of
+#' annual matrix is assumed to be independent of the current matrix. Defaults
+#' to equal weighting among matrices.
+#' @param density An optional data frame describing the matrix elements that
+#' will be subject to density dependence, and the exact kind of density
+#' dependence that they will be subject to. The data frame used should be an
+#' object of class \code{lefkoDens}, which is the output from function
+#' \code{\link{density_input}()}.
+#' @param stage_weights An optional object of class \code{lefkoEq} giving the
+#' degree to which individuals in each stage are equivalent to one another.
+#' May also be a numeric vector, in which case the vector must have the same
+#' number of elements as the number of rows in the associated MPM, with each
+#' element giving the effect of an individual of that age, stage, age-stage, or
+#' stage-pair, depending on whether the MPM is age-based, ahistorical
+#' stage-based, age-by-stage, or historical stage-based, respectively.
+#' @param sparse A text string indicating whether to use sparse matrix encoding
+#' (\code{"yes"}) or dense matrix encoding (\code{"no"}), if the
+#' \code{lefkoMat} object input as \code{mpm} is composed of standard matrices.
+#' Defaults to \code{"auto"}, in which case sparse matrix encoding is used with
+#' standard, square matrices with at least 50 rows and no more than 50\% of
+#' elements with values greater than zero, or when input \code{lefkoMat}
+#' objects include matrices of class \code{dgCMatrix}.
+#' 
+#' @return A list of class \code{lefkoProj}, which always includes the first
+#' three elements of the following, and also includes the remaining elements
+#' below when a \code{lefkoMat} object is used as input:
+#' \item{projection}{A list of lists of matrices showing the total number of
+#' individuals per stage per occasion. The first list corresponds to each
+#' pop-patch followed by each population. The inner list corresponds to
+#' replicates within each pop-patch or population.}
+#' \item{stage_dist}{A list of lists of the actual stage distribution in each
+#' occasion in each replicate in each pop-patch or population. The list order
+#' is the same as in \code{projection}.}
+#' \item{rep_value}{A list of lists of the actual reproductive value in each
+#' occasion in each replicate in each pop-patch or population. The list order
+#' is the same as in \code{projection}.}
+#' \item{pop_size}{A list of matrices showing the total population size in
+#' each occasion per replicate (row within matrix) per pop-patch or
+#' population (list element).}
+#' \item{labels}{A data frame showing the order of populations and patches in
+#' item \code{projection}.}
+#' \item{ahstages}{The original stageframe used in the study.}
+#' \item{hstages}{A data frame showing the order of historical stage pairs.}
+#' \item{agestages}{A data frame showing the order of age-stage pairs.}
+#' \item{control}{A short vector indicating the number of replicates and the
+#' number of occasions projected per replicate.}
+#' \item{density}{The data frame input under the density option. Only provided
+#' if input by the user.}
+#' 
+#' @keywords internal
+#' @noRd
+NULL
+
+#' Project Function-based Matrix Projection Model
+#' 
+#' Function \code{f_projection3()} develops and projects function-based matrix
+#' models. Unlike \code{\link{projection3}()}, which uses matrices provided as
+#' input via already created \code{lefkoMat} objects, function
+#' \code{f_projection3()} creates matrices at each time step from vital rate
+#' models and parameter inputs provided. Projections may be stochastic or not,
+#' and may be density dependent in either case. Also handles replication.
+#' 
+#' @name f_projection3
+#' 
+#' @param data The historical vertical demographic data frame used to estimate
+#' vital rates (class \code{hfvdata}), which is required to initialize times and
+#' patches properly. Variable names should correspond to the naming conventions
+#' in \code{\link{verticalize3}()} and \code{\link{historicalize3}()}. If
+#' attempting bootstrapped projection, then an object of class \code{hfvlist}
+#' is required.
+#' @param format An integer indicating the kind of function-based MPM to create.
+#' Possible choices include: \code{1}, Ehrlen-format historical MPM; \code{2},
+#' deVries-format historical MPM; \code{3}, ahistorical MPM; \code{4},
+#' age-by-stage MPM; and \code{5}, Leslie (age-based) MPM.
+#' @param prebreeding A logical value indicating whether the life history model
+#' is a pre-breeding model. Only used in Leslie and age-by-stage MPMs. Defaults
+#' to \code{TRUE}.
+#' @param start_age The age from which to start the matrix. Defaults to
+#' \code{NA}, in which case age \code{1} is used if \code{prebreeding = TRUE},
+#' and age \code{0} is used if \code{prebreeding = FALSE}.
+#' @param last_age The final age to use in the matrix. Defaults to \code{NA}, in
+#' which case the highest age in the dataset is used.
+#' @param fecage_min The minimum age at which reproduction is possible. Defaults
+#' to \code{NA}, which is interpreted to mean that fecundity should be assessed
+#' starting in the minimum age observed in the dataset.
+#' @param fecage_max The maximum age at which reproduction is possible. Defaults
+#' to \code{NA}, which is interpreted to mean that fecundity should be assessed
+#' until the final observed age.
+#' @param cont A logical value designating whether to allow continued survival
+#' of individuals past the final age noted in the stageframe, using the 
+#' demographic characteristics of the final age. Defaults to \code{TRUE}.
+#' @param stochastic A logical value denoting whether to conduct a stochastic
+#' projection or a deterministic / cyclical projection.
+#' @param standardize A logical value denoting whether to re-standardize the
+#' population size to \code{1.0} at each occasion. Used in density-independent
+#' simulations in which it is more important to know the general trend in
+#' population growth than the explicit growth rate. Defaults to \code{FALSE}.
+#' @param growthonly A logical value indicating whether to produce only the
+#' projected population size at each occasion (\code{TRUE}), or also to produce
+#' vectors showing the stage distribution at each occasion (\code{FALSE}).
+#' Defaults to \code{TRUE}.
+#' @param repvalue A logical value indicating whether to calculate reproductive
+#' value vectors at each time step. Can only be set to \code{TRUE} if 
+#' \code{growthonly = FALSE}. Setting to \code{TRUE} may dramatically increase
+#' the duration of calculations. Defaults to \code{FALSE}.
+#' @param integeronly A logical value indicating whether to round the number of
+#' individuals projected in each stage at each occasion to the nearest
+#' integer. Defaults to \code{FALSE}.
+#' @param substoch An integer value indicating whether to force survival-
+#' transition matrices to be substochastic in density dependent and density
+#' independent simulations. Defaults to \code{0}, which does not enforce
+#' substochasticity. Alternatively, \code{1} forces all survival-transition
+#' elements to range from 0.0 to 1.0, and forces fecundity to be non-negative;
+#' and \code{2} forces all column rows in the survival-transition matrices to
+#' total no more than 1.0, in addition to the actions outlined for option
+#' \code{1}. Both settings \code{1} and \code{2} change negative fecundity
+#' elements to \code{0.0}.
+#' @param ipm_cdf A logical value indicating whether to estimate size
+#' transitions using the cumulative density function in cases with continuous
+#' distributions. Defaults to \code{TRUE}, with the midpoint method used if
+#' \code{FALSE}.
+#' @param nreps The number of replicate projections. Defaults to \code{1}.
+#' @param times Number of occasions to iterate per replicate. Defaults to
+#' \code{10000}.
+#' @param repmod A scalar multiplier of fecundity. Defaults to \code{1}.
+#' @param exp_tol A numeric value used to indicate a maximum value to set
+#' exponents to in the core kernel to prevent numerical overflow. Defaults to
+#' \code{700}.
+#' @param theta_tol A numeric value used to indicate a maximum value to theta as
+#' used in the negative binomial probability density kernel. Defaults to
+#' \code{100000000}, but can be reset to other values during error checking.
+#' @param random_inda A logical value denoting whether to treat individual
+#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' a fixed, numeric variable. Defaults to \code{FALSE}.
+#' @param random_indb A logical value denoting whether to treat individual
+#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' a fixed, numeric variable. Defaults to \code{FALSE}.
+#' @param random_indc A logical value denoting whether to treat individual
+#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' a fixed, numeric variable. Defaults to \code{FALSE}.
+#' @param err_check A logical value indicating whether to append extra output
+#' for debugging purposes. Defaults to \code{FALSE}.
+#' @param quiet A logical value indicating whether warning messages should be
+#' suppressed. Defaults to \code{FALSE}.
+#' @param stageframe An object of class \code{stageframe}. These objects are
+#' generated by function \code{\link{sf_create}()}, and include information on
+#' the size, observation status, propagule status, reproduction status,
+#' immaturity status, maturity status, stage group, size bin widths, and other
+#' key characteristics of each ahistorical stage. Required for all MPM formats
+#' except Leslie MPMs.
+#' @param supplement An optional data frame of class \code{lefkoSD} that
+#' provides supplemental data that should be incorporated into the MPM. Three
+#' kinds of data may be integrated this way: transitions to be estimated via the
+#' use of proxy transitions, transition overwrites from the literature or
+#' supplemental studies, and transition multipliers for survival and fecundity.
+#' This data frame should be produced using the \code{\link{supplemental}()}
+#' function. Can be used in place of or in addition to an overwrite table (see 
+#' \code{overwrite} below) and a reproduction matrix (see \code{repmatrix}
+#' below).
+#' @param repmatrix An optional reproduction matrix. This matrix is composed
+#' mostly of \code{0}s, with non-zero entries acting as element identifiers and
+#' multipliers for fecundity (with \code{1} equaling full fecundity). If left
+#' blank, and no \code{supplement} is provided, then \code{flefko3()} will
+#' assume that all stages marked as reproductive produce offspring at 1x that of
+#' estimated fecundity, and that offspring production will yield the first stage
+#' noted as propagule or immature. May be the dimensions of either a historical
+#' or an ahistorical matrix. If the latter, then all stages will be used in
+#' occasion \emph{t}-1 for each suggested ahistorical transition.
+#' @param overwrite An optional data frame developed with the
+#' \code{\link{overwrite}()} function describing transitions to be overwritten
+#' either with given values or with other estimated transitions. Note that this
+#' function supplements overwrite data provided in \code{supplement}.
+#' @param modelsuite A \code{lefkoMod} object, at minimum with all required
+#' best-fit vital rate models and a \code{paramnames} data frame, and following
+#' the naming conventions used in this package. If given, then
+#' \code{surv_model}, \code{obs_model}, \code{size_model}, \code{sizeb_model},
+#' \code{sizec_model}, \code{repst_model}, \code{fec_model}, \code{jsurv_model},
+#' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
+#' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model},
+#' \code{paramnames}, \code{yearcol}, and \code{patchcol} are not required.
+#' Although this is optional input, it is recommended, and without it separate
+#' vital rate model inputs (named \code{XX_model}) are required. If conducting
+#' bootstrapped projection, then an object of \code{lefkoModList} is required.
+#' @param paramnames A data frame with three columns, the first describing all
+#' terms used in linear modeling, the second (must be called \code{mainparams})
+#' giving the general model terms that will be used in matrix creation, and the
+#' third showing the equivalent terms used in modeling (must be named
+#' \code{modelparams}). Function \code{\link{create_pm}()} can be used to
+#' create a skeleton \code{paramnames} object, which can then be edited. Only
+#' required if \code{modelsuite} is not supplied.
+#' @param year Either a single integer value corresponding to the year to
+#' project, or a vector of \code{times} elements with the year to use at each
+#' time step. Defaults to \code{NA}, in which the first year in the set of years
+#' in the dataset is projected. If a vector shorter than \code{times} is
+#' supplied, then this vector will be cycled.
+#' @param patch A value of \code{NA}, a single string value corresponding to the
+#' patch to project, or a vector of \code{times} elements with the patch to use
+#' at each time step. If a vector shorter than \code{times} is supplied, then
+#' this vector will be cycled. Note that this function currently does not
+#' handle multiple projections for different patches in the same run.
+#' @param sp_density Either a single numeric value of spatial density to use in
+#' vital rate models in all time steps, or a vector of \code{times} elements of
+#' such numeric values. Defaults to \code{NA}.
+#' @param ind_terms An optional data frame with 3 columns and \code{times} rows
+#' giving the values of individual covariates a, b, and c, respectively, for
+#' each projected time. Unused terms must be set to \code{0} (use of \code{NA}
+#' will produce errors.)
+#' @param ann_terms An optional data frame with 3 columns and \code{times} rows
+#' giving the values of annual covariates a, b, and c, respectively, for each
+#' projected time. Unused terms must be set to \code{0} (use of \code{NA} will
+#' produce errors.)
+#' @param dev_terms An optional data frame with 14 columns and \code{times}
+#' rows showing the values of the deviation terms to be added to each linear
+#' vital rate. The column order should be: 1: survival, 2: observation, 3:
+#' primary size, 4: secondary size, 5: tertiary size, 6: reproduction, 7:
+#' fecundity, 8: juvenile survival, 9: juvenile observation, 10: juvenile
+#' primary size, 11: juvenile secondary size, 12: juvenile tertiary size, 13:
+#' juvenile reproduction, and 14: juvenile maturity transition.  Unused terms
+#' must be set to \code{0} (use of \code{NA} will produce errors.)
+#' @param surv_model A linear model predicting survival probability. This can 
+#' be a model of class \code{glm} or \code{glmer}, and requires a predicted
+#' binomial variable under a logit link. Ignored if \code{modelsuite} is
+#' provided. This model must have been developed in a modeling exercise testing
+#' the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param obs_model A linear model predicting sprouting or observation
+#' probability. This can be a model of class \code{glm} or \code{glmer}, and
+#' requires a predicted binomial variable under a logit link. Ignored if
+#' \code{modelsuite} is provided. This model must have been developed in a
+#' modeling exercise testing the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param size_model A linear model predicting primary size. This can be a model
+#' of class \code{glm}, \code{glmer}, \code{glmmTMB}, \code{zeroinfl},
+#' \code{vglm}, \code{lm}, or \code{lmer}. Ignored if \code{modelsuite} is
+#' provided. This model must have been developed in a modeling exercise testing
+#' the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param sizeb_model A linear model predicting secondary size. This can be a
+#' model of class \code{glm}, \code{glmer}, \code{glmmTMB}, \code{zeroinfl},
+#' \code{vglm}, \code{lm}, or \code{lmer}. Ignored if \code{modelsuite} is
+#' provided. This model must have been developed in a modeling exercise testing
+#' the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param sizec_model A linear model predicting tertiary size. This can be a
+#' model of class \code{glm}, \code{glmer}, \code{glmmTMB}, \code{zeroinfl},
+#' \code{vglm}, \code{lm}, or \code{lmer}. Ignored if \code{modelsuite} is
+#' provided. This model must have been developed in a modeling exercise testing
+#' the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param repst_model A linear model predicting reproduction probability. This 
+#' can be a model of class \code{glm} or \code{glmer}, and requires a predicted
+#' binomial variable under a logit link. Ignored if \code{modelsuite} is
+#' provided. This model must have been developed in a modeling exercise testing
+#' the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param fec_model A linear model predicting fecundity. This can be a model of
+#' class \code{glm}, \code{glmer}, \code{glmmTMB}, \code{zeroinfl}, \code{vglm},
+#' \code{lm}, or \code{lmer}. Ignored if \code{modelsuite} is provided. This
+#' model must have been developed in a modeling exercise testing the impacts of
+#' occasions \emph{t} and \emph{t}-1.
+#' @param jsurv_model A linear model predicting juvenile survival probability.
+#' This can be a model of class \code{glm} or \code{glmer}, and requires a
+#' predicted binomial variable under a logit link. Ignored if \code{modelsuite}
+#' is provided. This model must have been developed in a modeling exercise
+#' testing the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param jobs_model A linear model predicting juvenile sprouting or observation
+#' probability. This can be a model of class \code{glm} or \code{glmer}, and
+#' requires a predicted binomial variable under a logit link. Ignored if
+#' \code{modelsuite} is provided. This model must have been developed in a
+#' modeling exercise testing the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param jsize_model A linear model predicting juvenile primary size. This
+#' can be a model of class \code{glm}, \code{glmer}, \code{glmmTMB},
+#' \code{zeroinfl}, \code{vglm}, \code{lm}, or \code{lmer}. Ignored if
+#' \code{modelsuite} is provided. This model must have been developed in a
+#' modeling exercise testing the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param jsizeb_model A linear model predicting juvenile secondary size. This
+#' can be a model of class \code{glm}, \code{glmer}, \code{glmmTMB},
+#' \code{zeroinfl}, \code{vglm}, \code{lm}, or \code{lmer}. Ignored if
+#' \code{modelsuite} is provided. This model must have been developed in a
+#' modeling exercise testing the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param jsizec_model A linear model predicting juvenile tertiary size. This
+#' can be a model of class \code{glm}, \code{glmer}, \code{glmmTMB},
+#' \code{zeroinfl}, \code{vglm}, \code{lm}, or \code{lmer}. Ignored if
+#' \code{modelsuite} is provided. This model must have been developed in a
+#' modeling exercise testing the impacts of occasions \emph{t} and \emph{t}-1.
+#' @param jrepst_model A linear model predicting reproduction probability of a 
+#' mature individual that was immature in time \emph{t}. This can be a model
+#' of class \code{glm} or \code{glmer}, and requires a predicted binomial
+#' variable under a logit link. Ignored if \code{modelsuite} is provided. This
+#' model must have been developed in a modeling exercise testing the impacts of
+#' occasions \emph{t} and \emph{t}-1.
+#' @param jmatst_model A linear model predicting maturity probability of an 
+#' individual that was immature in time \emph{t}. This can be a model of class
+#' \code{glm} or \code{glmer}, and requires a predicted binomial variable under
+#' a logit link. Ignored if \code{modelsuite} is provided. This model must have
+#' been developed in a modeling exercise testing the impacts of occasions
+#' \emph{t} and \emph{t}-1.
+#' @param start_vec An optional numeric vector denoting the starting stage
+#' distribution for the projection. Defaults to a single individual of each
+#' stage.
+#' @param start_frame An optional data frame characterizing stages, age-stages,
+#' or stage-pairs that should be set to non-zero values in the starting vector,
+#' and what those values should be. Can only be used with \code{lefkoMat}
+#' objects.
+#' @param tweights An optional numeric vector or matrix denoting the
+#' probabilities of choosing each matrix in a stochastic projection. If a
+#' matrix is input, then a first-order Markovian environment is assumed, in
+#' which the probability of choosing a specific annual matrix depends on which
+#' annual matrix is currently chosen. If a vector is input, then the choice of
+#' annual matrix is assumed to be independent of the current matrix. Defaults
+#' to equal weighting among matrices.
+#' @param density An optional data frame describing the matrix elements that
+#' will be subject to density dependence, and the exact kind of density
+#' dependence that they will be subject to. The data frame used should be an
+#' object of class \code{lefkoDens}, which is the output from function
+#' \code{\link{density_input}()}.
+#' @param density_vr An optional data frame describing density dependence
+#' relationships in vital rates, if such relationships are to be assumed. The
+#' data frame must be of class \code{lefkoDensVR}, which is the output from the
+#' function \code{\link{density_vr}()}.
+#' @param stage_weights An optional object of class \code{lefkoEq} giving the
+#' degree to which individuals in each stage are equivalent to one another.
+#' May also be a numeric vector, in which case the vector must have the same
+#' number of elements as the number of rows in the associated MPM, with each
+#' element giving the effect of an individual of that age, stage, age-stage, or
+#' stage-pair, depending on whether the MPM is age-based, ahistorical
+#' stage-based, age-by-stage, or historical stage-based, respectively.
+#' @param sparse A text string indicating whether to use sparse matrix encoding
+#' (\code{"yes"}) or dense matrix encoding (\code{"no"}). Defaults to
+#' \code{"auto"}, in which case sparse matrix encoding is used with square
+#' matrices with at least 50 rows and no more than 50\% of elements with values
+#' greater than zero. Can also be entered as a logical value if forced sparse
+#' (\code{TRUE}) or forced dense (\code{FALSE}) projection is desired.
+#' 
+#' @return If running a single (including replicated) projection, then the
+#' output is a list of class \code{lefkoProj}, which always includes the first
+#' three elements of the following, and also includes the remaining elements
+#' below when a \code{lefkoMat} object is used as input:
+#' \item{projection}{A list of lists of matrices showing the total number of
+#' individuals per stage per occasion. The first list corresponds to each
+#' pop-patch followed by each population (this top-level list is a single
+#' element in \code{f_projection3()}). The inner list corresponds to
+#' replicates within each pop-patch or population.}
+#' \item{stage_dist}{A list of lists of the actual stage distribution in each
+#' occasion in each replicate in each pop-patch or population. The list
+#' structure is the same as in \code{\link{projection3}()}.}
+#' \item{rep_value}{A list of lists of the actual reproductive value in each
+#' occasion in each replicate in each pop-patch or population. The list
+#' structure is the same as in \code{\link{projection3}()}.}
+#' \item{pop_size}{A list of matrices showing the total population size in each
+#' occasion per replicate (row within matrix) per pop-patch or population
+#' (list element). Only a single pop-patch or population is allowed in
+#' \code{f_projection3()}.}
+#' \item{labels}{A data frame showing the order of populations and patches in
+#' item \code{projection}.}
+#' \item{ahstages}{The original stageframe used in the study.}
+#' \item{hstages}{A data frame showing the order of historical stage pairs.}
+#' \item{agestages}{A data frame showing the order of age-stage pairs.}
+#' \item{labels}{A short data frame indicating the population (always \code{1}),
+#' and patch (either the numeric index of the single chosen patch, or \code{1}
+#' in all other cases).}
+#' \item{control}{A short vector indicating the number of replicates and the
+#' number of occasions projected per replicate.}
+#' \item{density}{The data frame input under the density option. Only provided
+#' if input by the user.}
+#' \item{density_vr}{The data frame input under the density_vr option. Only
+#' provided if input by the user.}
+#' 
+#' If running bootstrapped projections (i.e. using \code{hfvlist} and
+#' \code{lefkoModList} input), then will output an object of class
+#' \code{lefkoProjList}, which is just a simple list of \code{lefkoProj}
+#' objects.
 #' 
 #' @section Notes:
 #' Population projection can be a very time-consuming activity, and it is most
@@ -3324,8 +3755,9 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' 
 #' @name projection3
 #' 
-#' @param mpm A matrix projection model of class \code{lefkoMat}, or a list of
-#' full matrix projection matrices.
+#' @param mpm A matrix projection model of class \code{lefkoMat}, a list of
+#' class \code{lefkoMatList} including bootstrapped MPMs, or a list of full
+#' matrix projection matrices.
 #' @param nreps The number of replicate projections.
 #' @param times Number of occasions to iterate per replicate. Defaults to
 #' 10,000.
@@ -3401,9 +3833,11 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' elements with values greater than zero, or when input \code{lefkoMat}
 #' objects include matrices of class \code{dgCMatrix}.
 #' 
-#' @return A list of class \code{lefkoProj}, which always includes the first
-#' three elements of the following, and also includes the remaining elements
-#' below when a \code{lefkoMat} object is used as input:
+#' @return If a \code{lefkoMat} object or a simple list of matrices is used as
+#' input, then this function will produce a list of class \code{lefkoProj},
+#' which always includes the first three elements of the following, and also
+#' includes the remaining elements below when a \code{lefkoMat} object is used
+#' as input:
 #' \item{projection}{A list of lists of matrices showing the total number of
 #' individuals per stage per occasion. The first list corresponds to each
 #' pop-patch followed by each population. The inner list corresponds to
@@ -3426,6 +3860,10 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' number of occasions projected per replicate.}
 #' \item{density}{The data frame input under the density option. Only provided
 #' if input by the user.}
+#' 
+#' If a \code{lefkoMatList} object is entered, then this function will produce
+#' a list of class \code{lefkoProjList}, in which each element is an object of
+#' class \code{lefkoProj}.
 #' 
 #' @section Notes:
 #' Density dependent projections require \code{lefkoMat} objects as inputs.

@@ -27,8 +27,9 @@ projection3(
 )
 }
 \arguments{
-\item{mpm}{A matrix projection model of class \code{lefkoMat}, or a list of
-full matrix projection matrices.}
+\item{mpm}{A matrix projection model of class \code{lefkoMat}, a list of
+class \code{lefkoMatList} including bootstrapped MPMs, or a list of full
+matrix projection matrices.}
 
 \item{nreps}{The number of replicate projections.}
 
@@ -123,9 +124,11 @@ elements with values greater than zero, or when input \code{lefkoMat}
 objects include matrices of class \code{dgCMatrix}.}
 }
 \value{
-A list of class \code{lefkoProj}, which always includes the first
-three elements of the following, and also includes the remaining elements
-below when a \code{lefkoMat} object is used as input:
+If a \code{lefkoMat} object or a simple list of matrices is used as
+input, then this function will produce a list of class \code{lefkoProj},
+which always includes the first three elements of the following, and also
+includes the remaining elements below when a \code{lefkoMat} object is used
+as input:
 \item{projection}{A list of lists of matrices showing the total number of
 individuals per stage per occasion. The first list corresponds to each
 pop-patch followed by each population. The inner list corresponds to
@@ -148,6 +151,10 @@ item \code{projection}.}
 number of occasions projected per replicate.}
 \item{density}{The data frame input under the density option. Only provided
 if input by the user.}
+
+If a \code{lefkoMatList} object is entered, then this function will produce
+a list of class \code{lefkoProjList}, in which each element is an object of
+class \code{lefkoProj}.
 }
 \description{
 Function \code{projection3()} runs projection simulations. It projects the

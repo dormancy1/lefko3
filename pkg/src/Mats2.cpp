@@ -2696,6 +2696,8 @@ List cycle_check(RObject mpm, Nullable<RObject> quiet = R_NilValue) {
         int num_cols = current_mat.n_cols;
         
         for (int current_col = 0; current_col < num_cols; current_col++) {
+          if (current_col % 5 == 0) Rcpp::checkUserInterrupt();
+          
           arma::vec check_col = current_mat.col(current_col);
           arma::uvec nonzeros_vec = find(check_col);
           
@@ -2724,6 +2726,8 @@ List cycle_check(RObject mpm, Nullable<RObject> quiet = R_NilValue) {
         }
         
         for (int current_col = 0; current_col < num_cols; current_col++) {
+          if (current_col % 5 == 0) Rcpp::checkUserInterrupt();
+          
           arma::vec check_col = arma::vec(current_mat.col(current_col));
           arma::uvec nonzeros_vec = find(check_col);
           
@@ -2798,6 +2802,8 @@ List cycle_check(RObject mpm, Nullable<RObject> quiet = R_NilValue) {
     int num_cols = current_mat.n_cols;
     
     for (int current_col = 0; current_col < num_cols; current_col++) {
+      if (current_col % 5 == 0) Rcpp::checkUserInterrupt();
+      
       arma::vec check_col = current_mat.col(current_col);
       arma::uvec nonzeros_vec = find(check_col);
       
@@ -2855,6 +2861,8 @@ List cycle_check(RObject mpm, Nullable<RObject> quiet = R_NilValue) {
     arma::uvec problem_vector (num_stages, fill::zeros); // Stages without outward transitions (as 1)
     
     for (int current_col = 0; current_col < num_cols; current_col++) {
+      if (current_col % 5 == 0) Rcpp::checkUserInterrupt();
+      
       arma::vec check_col = arma::vec(current_mat.col(current_col));
       arma::uvec nonzeros_vec = find(check_col);
       

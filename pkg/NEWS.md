@@ -4,13 +4,14 @@
 
 * Function bootstrap3() now adds hfvdata bootstrapping capability.
 
-* All MPM creation functions can now create bootstrapped MPMs.
+* All MPM creation functions can now create bootstrapped MPMs, and all
+  projection functions can run bootstrapped projections.
 
 * Function summary_hfv() can now summarize hfvlist objects.
 
-* Functions lmean(), lambda3(), slambda3(), stablestage3(), repvalue3(),
-  sensitivity3(), elasticity3(), add_stage(), and edit_lM() can now handle
-  lefkoMatList objects.
+* Functions add_stage(), edit_lM(), elasticity3(), f_projection3(), lambda3(),
+  lmean(), projection3(), repvalue3(), sensitivity3(), slambda3(), and
+  stablestage3() can now handle lefkoMatList objects.
 
 * Function summary.lefkoMatList() created to summarize lefkoMatList objects.
 
@@ -24,6 +25,8 @@
   
 * Functions projection3() and f_projection3() now throw errors when a density
   frame is entered with stages undefined in the associated stage frame.
+  
+* User interrupt added to function cycle_check().
 
 ## BUG FIXES
 
