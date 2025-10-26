@@ -1842,6 +1842,11 @@ historicalize3 <- function(data, popidcol = 0, patchidcol = 0, individcol,
     labels <- data.frame(pop = pops, patch = patches, year2 = years)
     
     new_sf <- sf_skeleton(stages_num)
+    if (!is.element("stage_id", names(new_sf$ahstages))) {
+      no_cols <- length(new_sf)
+      new_sf$stage_id <- c(1:length(new_sf$stage))
+      new_sf <- new_sf[, c((no_cols+1), 1:no_cols)]
+    }
     new_sf$repstatus <- reprod_stages
     new_sf$immstatus <- entry_stages
     new_sf$matstatus <- mature_stages

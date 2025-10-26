@@ -36,6 +36,9 @@
   
 * Function edit_lM() now handles offset values without yielding fatal errors.
 
+* Fixed fatal error with stage_id occurring when importing matrices from
+  COMPADRE or COMADRE with create_lM().
+
 # lefko3 6.5.1 (2025-08-27)
 
 ## USER VISIBLE CHANGES
