@@ -211,6 +211,7 @@ the naming conventions used in this package. If given, then
 \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model},
 \code{paramnames}, \code{yearcol}, and \code{patchcol} are not required.
+Alternatively, an object of class \code{vrm_input}, serving the same role.
 Although this is optional input, it is recommended, and without it separate
 vital rate model inputs (named \code{XX_model}) are required. If conducting
 bootstrapped projection, then an object of \code{lefkoModList} is required.}

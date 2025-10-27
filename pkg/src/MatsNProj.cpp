@@ -4009,8 +4009,10 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
 //' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 //' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model},
 //' \code{paramnames}, \code{yearcol}, and \code{patchcol} are not required.
+//' Alternatively, an object of class \code{vrm_input}, serving the same role.
 //' Although this is optional input, it is recommended, and without it separate
-//' vital rate model inputs (named \code{XX_model}) are required.
+//' vital rate model inputs (named \code{XX_model}) are required. If conducting
+//' bootstrapped projection, then an object of \code{lefkoModList} is required.
 //' @param paramnames A data frame with three columns, the first describing all
 //' terms used in linear modeling, the second (must be called \code{mainparams})
 //' giving the general model terms that will be used in matrix creation, and the
@@ -8000,6 +8002,7 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
 //' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 //' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model},
 //' \code{paramnames}, \code{yearcol}, and \code{patchcol} are not required.
+//' Alternatively, an object of class \code{vrm_input}, serving the same role.
 //' Although this is optional input, it is recommended, and without it separate
 //' vital rate model inputs (named \code{XX_model}) are required. If conducting
 //' bootstrapped projection, then an object of \code{lefkoModList} is required.
@@ -8419,7 +8422,7 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
   Nullable<DataFrame> data_df;
   List final_output;
   
-  bool hfvdata_true {false};
+  //bool hfvdata_true {false};
   bool hfvlist_true {false};
   //bool modelsuite_true {false};
   bool modelsuitelist_true {false};
@@ -8444,14 +8447,16 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
         StringVector data_class = as<StringVector>(data_.attr("class"));
         
         for (int i = 0; i < static_cast<int>(data_class.length()); i++) {
-          if (data_class(i) == "hfvdata") hfvdata_true = true;
+          //if (data_class(i) == "hfvdata") hfvdata_true = true;
           if (data_class(i) == "hfvlist") hfvlist_true = true;
         }
       }
     } else {
       data_df = as<Nullable<DataFrame>>(data_RO);
-      hfvdata_true = true;
+      //hfvdata_true = true;
     }
+  } else {
+    data_df = as<Nullable<DataFrame>>(data);
   }
   
   if (hfvlist_true && modelsuitelist_true) {
@@ -8489,7 +8494,7 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
   } else if (hfvlist_true && !modelsuitelist_true) {
     throw Rcpp::exception("Bootstrapped demographic data can only be run with modelsuite lists of class lefkoModList", false);
     
-  } else if (hfvdata_true) {
+  } else { // if (hfvdata_true) 
     f_projection3_single(final_output, format, prebreeding, start_age, last_age,
       fecage_min, fecage_max, cont, stochastic, standardize, growthonly,
       repvalue, integeronly, substoch, ipm_cdf, nreps, times, repmod, exp_tol,

@@ -2023,8 +2023,10 @@ NULL
 #' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 #' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model},
 #' \code{paramnames}, \code{yearcol}, and \code{patchcol} are not required.
+#' Alternatively, an object of class \code{vrm_input}, serving the same role.
 #' Although this is optional input, it is recommended, and without it separate
-#' vital rate model inputs (named \code{XX_model}) are required.
+#' vital rate model inputs (named \code{XX_model}) are required. If conducting
+#' bootstrapped projection, then an object of \code{lefkoModList} is required.
 #' @param paramnames A data frame with three columns, the first describing all
 #' terms used in linear modeling, the second (must be called \code{mainparams})
 #' giving the general model terms that will be used in matrix creation, and the
@@ -2505,6 +2507,7 @@ NULL
 #' \code{jobs_model}, \code{jsize_model}, \code{jsizeb_model},
 #' \code{jsizec_model}, \code{jrepst_model}, \code{jmatst_model},
 #' \code{paramnames}, \code{yearcol}, and \code{patchcol} are not required.
+#' Alternatively, an object of class \code{vrm_input}, serving the same role.
 #' Although this is optional input, it is recommended, and without it separate
 #' vital rate model inputs (named \code{XX_model}) are required. If conducting
 #' bootstrapped projection, then an object of \code{lefkoModList} is required.
