@@ -2,12 +2,13 @@
 % Please edit documentation in R/datamanag.R
 \name{subset_lM}
 \alias{subset_lM}
-\title{Create New lefkoMat Object as Subset of Another lefkoMat Object}
+\title{Create New lefkoMat or lefkoMatList Object as Subset of Another}
 \usage{
 subset_lM(lM, mat_num = NA, pop = NA, patch = NA, year = NA)
 }
 \arguments{
-\item{lM}{The \code{lefkoMat} object to select matrices from.}
+\item{lM}{The \code{lefkoMat} or \code{lefkoMatList} object to select
+matrices from.}
 
 \item{mat_num}{Either a single integer corresponding to the matrix to select
 within the \code{labels} element of \code{lM}, or a vector of such integers.}
@@ -22,12 +23,15 @@ within the \code{labels} element of \code{lM}, or a vector of such integers.}
 if \code{mat_num} is not given.}
 }
 \value{
-A \code{lefkoMat} object composed of the matrices specified in the
-options.
+A \code{lefkoMat} or \code{lefkoMatList} object composed of the
+matrices specified in the options. Note that, when applied to a
+\code{lefkoMatList} object, subsetting happens equivalently across all
+composite \code{lefkoMat} objects.
 }
 \description{
-Function \code{subset_lM()} creates a new \code{lefkoMat} object from a
-subset of matrices in another \code{lefkoMat} object.
+Function \code{subset_lM()} creates a new \code{lefkoMat} or
+\code{lefkoMatList} object from a subset of matrices in another
+\code{lefkoMat} or \code{lefkoMatList} object.
 }
 \section{Notes}{
 

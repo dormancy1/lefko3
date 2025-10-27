@@ -2450,11 +2450,13 @@ create_lM <- function(mats, stageframe = NULL, hstages = NA, agestages = NA,
   return(output)
 }
 
-#' Add Matrices to lefkoMat Object
+#' Add Matrices to a lefkoMat or lefkoMatList Object
 #' 
-#' Function \code{add_lM()} adds matrices to lefkoMat objects.
+#' Function \code{add_lM()} adds matrices to \code{lefkoMat} and
+#' \code{lefkoMatList} objects.
 #' 
-#' @param lM The lefkoMat object to add matrices to.
+#' @param lM The \code{lefkoMat} or \code{lefkoMatList} object to add matrices
+#' to.
 #' @param Amats Either a single \code{A} matrix, or a list of \code{A} matrices.
 #' Not necessary if \code{Umats} and \code{Fmats} are both provided.
 #' @param Umats Either a single \code{U} matrix, or a list of \code{U} matrices.
@@ -2477,8 +2479,11 @@ create_lM <- function(mats, stageframe = NULL, hstages = NA, agestages = NA,
 #' @param year The designation for occasion at time \emph{t} corresponding to
 #' each matrix. Cannot be left empty.
 #' 
-#' @return A \code{lefkoMat} object incorporating the new matrices within the
-#' object input in \code{lM}. 
+#' @return A \code{lefkoMat} or \code{lefkoMatList} object incorporating the new
+#' matrices within the object input in \code{lM}. Note that if a
+#' \code{lefkoMatList} object is used as input, then ALL composite
+#' \code{lefkoMat} objects will have the same matrices added in exactly the same
+#' way.
 #' 
 #' @section Notes:
 #' This function will not allow matrices of different dimension from those input
@@ -2592,11 +2597,11 @@ add_lM <- function(lM, Amats = NA, Umats = NA, Fmats = NA, UFdecomp = FALSE,
   entrystage = 1, pop = NA, patch = NA, year = NA) {
   
   F_indices <- numstages <- NULL
+  main_counter <- 1
   
-  if (!is(lM, "lefkoMat")) {
-    stop("This function requires a lefkoMat object as input.", call. = FALSE)
+  if (!is(lM, "lefkoMat") & !is(lM, "lefkoMatList")) {
+    stop("This function requires a lefkoMat or lefkoMatList object as input.", call. = FALSE)
   }
-  
   if (all(is.na(Amats)) & all(is.na(Umats))) {
     stop("Please add either Amats or Umats.", call. = FALSE)
   }
@@ -2608,232 +2613,253 @@ add_lM <- function(lM, Amats = NA, Umats = NA, Fmats = NA, UFdecomp = FALSE,
       call. = FALSE)
   }
   
-  mat_dim <- dim(lM$A[[1]])[1]
-  numstages <- length(lM$ahstages$stage_id)
-  
-  if (!all(is.na(lM$hstages))) {
-    historical <- TRUE
-  } else {
-    historical <- FALSE
+  if (is(lM, "lefkoMatList")) {
+    main_counter <- length(lM)
   }
   
-  if (!all(is.na(lM$agestages))) {
-    agebystage <- TRUE
-  } else {
-    agebystage <- FALSE
-  }
-  
-  if (historical & agebystage) {
-    stop("This function cannot proceed with historical age-by-stage MPMs.",
-      call. = FALSE)
-  }
-  
-  if (!all(is.na(Amats))) {
-    if (is.matrix(Amats)) {
-      Amats <- list(Amats)
-    }
+  for (lM_count in c(1:main_counter)) {
+    lM_used <- NULL
     
-    if (!all(unique(unlist(lapply(Amats, dim))) == mat_dim)) {
-      stop("Input A matrices must be of the same dimensions as the matrices in object lM", call. = FALSE)
-    }
-  }
-  
-  if (UFdecomp & all(is.na(Umats))) {
-    if (all(is.na(entrystage))) {
-      warning("No entry stage provided, so assuming that first stage is entry stage.", call. = FALSE)
-      entrystage <- 1
-    } else if (all(is.element(entrystage, lM$ahstages$stage)) | 
-      all(is.element(entrystage, lM$ahstages$stage_id))) {
-      
-      total_entries <- length(entrystage)
-      
-      if (!all(is.element(entrystage, lM$ahstages$stage_id))) {
-        entrystage <- apply(as.matrix(entrystage), 1, function(X) {
-          return(which(lM$ahstages$stage == X))
-        })
-      }
+    if (is(lM, "lefkoMat")) {
+      lM_used <- lM
     } else {
-      stop("Unable to interpret entry stage designations.", call. = FALSE)
+      lM_used <-lM[[lM_count]]
     }
     
-    rep_from <- which(lM$ahstages$repstatus == 1)
+    mat_dim <- dim(lM_used$A[[1]])[1]
+    numstages <- length(lM_used$ahstages$stage_id)
     
-    # Indexing
-    if (!historical & !agebystage) { #Ahistorical
-      for (i in c(1:length(rep_from))) {
-        for (j in c(1:length(entrystage))) {
-          if (i == 1 & j == 1) {
-            F_indices <- ((numstages * (rep_from[i] - 1)) + entrystage[j])
-          } else {
-            F_indices <- append(F_indices, ((numstages * (rep_from[i] - 1)) + entrystage[j]))
+    if (!all(is.na(lM_used$hstages))) {
+      historical <- TRUE
+    } else {
+      historical <- FALSE
+    }
+    
+    if (!all(is.na(lM_used$agestages))) {
+      agebystage <- TRUE
+    } else {
+      agebystage <- FALSE
+    }
+    
+    if (historical & agebystage) {
+      stop("This function cannot proceed with historical age-by-stage MPMs.",
+        call. = FALSE)
+    }
+    
+    if (!all(is.na(Amats))) {
+      if (is.matrix(Amats)) {
+        Amats <- list(Amats)
+      }
+      
+      if (!all(unique(unlist(lapply(Amats, dim))) == mat_dim)) {
+        stop("Input A matrices must be of the same dimensions as the matrices in object lM", call. = FALSE)
+      }
+    }
+    
+    if (UFdecomp & all(is.na(Umats))) {
+      if (all(is.na(entrystage))) {
+        warning("No entry stage provided, so assuming that first stage is entry stage.", call. = FALSE)
+        entrystage <- 1
+      } else if (all(is.element(entrystage, lM_used$ahstages$stage)) | 
+        all(is.element(entrystage, lM_used$ahstages$stage_id))) {
+        
+        total_entries <- length(entrystage)
+        
+        if (!all(is.element(entrystage, lM_used$ahstages$stage_id))) {
+          entrystage <- apply(as.matrix(entrystage), 1, function(X) {
+            return(which(lM_used$ahstages$stage == X))
+          })
+        }
+      } else {
+        stop("Unable to interpret entry stage designations.", call. = FALSE)
+      }
+      
+      rep_from <- which(lM_used$ahstages$repstatus == 1)
+      
+      # Indexing
+      if (!historical & !agebystage) { #Ahistorical
+        for (i in c(1:length(rep_from))) {
+          for (j in c(1:length(entrystage))) {
+            if (i == 1 & j == 1) {
+              F_indices <- ((numstages * (rep_from[i] - 1)) + entrystage[j])
+            } else {
+              F_indices <- append(F_indices, ((numstages * (rep_from[i] - 1)) + entrystage[j]))
+            }
           }
         }
-      }
-    } else if (historical & !agebystage) { #Historical
-      h_numstages <- length(lM$hstages$stage_2)
-      
-      for (time2o1 in c(1:h_numstages)) {
-        for (time32n in c(1:h_numstages)) {
-          if (lM$hstages$stage_id_2[time2o1] == lM$hstages$stage_id_1[time32n]) {
-            if (is.element(lM$hstages$stage_id_2[time2o1], rep_from) & 
-              is.element(lM$hstages$stage_id_2[time32n], entrystage)) {
-              
-              if (length(F_indices) == 0) {
-                F_indices <- ((time2o1 - 1) * h_numstages) + time32n
-              } else {
-                F_indices <- append(F_indices, (((time2o1 - 1) * h_numstages) + time32n))
+      } else if (historical & !agebystage) { #Historical
+        h_numstages <- length(lM_used$hstages$stage_2)
+        
+        for (time2o1 in c(1:h_numstages)) {
+          for (time32n in c(1:h_numstages)) {
+            if (lM_used$hstages$stage_id_2[time2o1] == lM_used$hstages$stage_id_1[time32n]) {
+              if (is.element(lM_used$hstages$stage_id_2[time2o1], rep_from) & 
+                is.element(lM_used$hstages$stage_id_2[time32n], entrystage)) {
+                
+                if (length(F_indices) == 0) {
+                  F_indices <- ((time2o1 - 1) * h_numstages) + time32n
+                } else {
+                  F_indices <- append(F_indices, (((time2o1 - 1) * h_numstages) + time32n))
+                }
               }
             }
           }
         }
-      }
-    } else if (agebystage & !historical) { #Age-by-stage ahistorical
-      age_numstages <- length(lM$agestages$stage_id)
-      
-      for (fromas in c(1:age_numstages)) {
-        for (toas in c(1:age_numstages)) {
-          if (is.element(lM$agestages$stage_id[fromas], rep_from) &
-            is.element(lM$agestages$stage_id[toas], entrystage)) {
-            
-            if (length(F_indices) == 0) {
-              F_indices <- ((fromas - 1) * age_numstages) + toas
-            } else {
-              F_indices <- append(F_indices, (((fromas - 1) * age_numstages) + toas))
+      } else if (agebystage & !historical) { #Age-by-stage ahistorical
+        age_numstages <- length(lM_used$agestages$stage_id)
+        
+        for (fromas in c(1:age_numstages)) {
+          for (toas in c(1:age_numstages)) {
+            if (is.element(lM_used$agestages$stage_id[fromas], rep_from) &
+              is.element(lM_used$agestages$stage_id[toas], entrystage)) {
+              
+              if (length(F_indices) == 0) {
+                F_indices <- ((fromas - 1) * age_numstages) + toas
+              } else {
+                F_indices <- append(F_indices, (((fromas - 1) * age_numstages) + toas))
+              }
             }
           }
         }
+      } else {
+        stop("Requested format unrecognized. Cannot proceed.", call. = FALSE)
       }
-    } else {
-      stop("Requested format unrecognized. Cannot proceed.", call. = FALSE)
-    }
+          
+      Umats <- lapply(Amats, function(X) {
+        newmat <- X
+        newmat[F_indices] <- 0
         
-    Umats <- lapply(Amats, function(X) {
-      newmat <- X
-      newmat[F_indices] <- 0
-      
-      return(newmat)
-    })
-    
-    nonFindices <- c(1:length(Amats[[1]]))[!is.element(c(1:length(Amats[[1]])), F_indices)]
-    Fmats <- lapply(Amats, function(X) {
-      newmat <- X
-      newmat[nonFindices] <- 0
-      
-      return(newmat)
-    })
-  }
-  
-  if (!all(is.na(Umats))) {
-    if (is.matrix(Umats)) {
-      Umats <- list(Umats)
-    }
-    
-    if (!all(unique(unlist(lapply(Umats, dim))) == mat_dim)) {
-      stop("Input U matrices must be of the same dimensions as the matrices in object lM", call. = FALSE)
-    }
-  }
-  if (!all(is.na(Fmats))) {
-    if (is.matrix(Fmats)) {
-      Fmats <- list(Fmats)
-    }
-    
-    if (!all(unique(unlist(lapply(Fmats, dim))) == mat_dim)) {
-      stop("Input F matrices must be of the same dimensions as the matrices in object lM", call. = FALSE)
-    }
-  }
-  
-  if (!UFdecomp) {
-    if (!all(is.na(Amats)) & !all(is.na(Umats))) {
-      list_lengthA <- length(Amats)
-      list_lengthU <- length(Umats)
-      
-      if (list_lengthA != list_lengthU) {
-        stop("Input Amats and Umats objects must include the same number of matrices.", call. = FALSE)
-      }
-      
-      Fmats <- lapply(as.list(1:list_lengthA), function(X) {
-        return(Amats[[X]] - Umats[[X]])
+        return(newmat)
       })
       
-    } else if (!all(is.na(Amats)) & !all(is.na(Fmats))) {
-      list_lengthA <- length(Amats)
-      list_lengthF <- length(Fmats)
-      
-      if (list_lengthA != list_lengthF) {
-        stop("Input Amats and Fmats objects must include the same number of matrices.", call. = FALSE)
-      }
-      
-      Umats <- lapply(as.list(1:list_lengthA), function(X) {
-        return(Amats[[X]] - Fmats[[X]])
+      nonFindices <- c(1:length(Amats[[1]]))[!is.element(c(1:length(Amats[[1]])), F_indices)]
+      Fmats <- lapply(Amats, function(X) {
+        newmat <- X
+        newmat[nonFindices] <- 0
+        
+        return(newmat)
       })
-      
-    } else if (!all(is.na(Umats)) & !all(is.na(Fmats))) {
-      list_lengthU <- length(Umats)
-      list_lengthF <- length(Fmats)
-      
-      if (list_lengthU != list_lengthF) {
-        stop("Input Umats and Fmats objects must include the same number of matrices.", call. = FALSE)
-      }
-      
-      Amats <- lapply(as.list(1:list_lengthU), function(X) {
-        return(Umats[[X]] + Fmats[[X]])
-      })
-      
-      list_lengthA <- list_lengthU
     }
-  } else {
-    list_lengthA <- length(Amats)
-  }
-  
-  if (all(is.na(year)) | length(year) != list_lengthA) {
-    stop("This function requires occasion in time t for each matrix to be added.", call. = FALSE)
-  }
-  if(all(is.na(pop))) {
-    popsinlM <- unique(lM$labels$pop)
     
-    if (length(popsinlM) == 1) {
-      pop <- rep(popsinlM, list_lengthA)
+    if (!all(is.na(Umats))) {
+      if (is.matrix(Umats)) {
+        Umats <- list(Umats)
+      }
+      
+      if (!all(unique(unlist(lapply(Umats, dim))) == mat_dim)) {
+        stop("Input U matrices must be of the same dimensions as the matrices in object lM", call. = FALSE)
+      }
+    }
+    if (!all(is.na(Fmats))) {
+      if (is.matrix(Fmats)) {
+        Fmats <- list(Fmats)
+      }
+      
+      if (!all(unique(unlist(lapply(Fmats, dim))) == mat_dim)) {
+        stop("Input F matrices must be of the same dimensions as the matrices in object lM", call. = FALSE)
+      }
+    }
+    
+    if (!UFdecomp) {
+      if (!all(is.na(Amats)) & !all(is.na(Umats))) {
+        list_lengthA <- length(Amats)
+        list_lengthU <- length(Umats)
+        
+        if (list_lengthA != list_lengthU) {
+          stop("Input Amats and Umats objects must include the same number of matrices.", call. = FALSE)
+        }
+        
+        Fmats <- lapply(as.list(1:list_lengthA), function(X) {
+          return(Amats[[X]] - Umats[[X]])
+        })
+        
+      } else if (!all(is.na(Amats)) & !all(is.na(Fmats))) {
+        list_lengthA <- length(Amats)
+        list_lengthF <- length(Fmats)
+        
+        if (list_lengthA != list_lengthF) {
+          stop("Input Amats and Fmats objects must include the same number of matrices.", call. = FALSE)
+        }
+        
+        Umats <- lapply(as.list(1:list_lengthA), function(X) {
+          return(Amats[[X]] - Fmats[[X]])
+        })
+        
+      } else if (!all(is.na(Umats)) & !all(is.na(Fmats))) {
+        list_lengthU <- length(Umats)
+        list_lengthF <- length(Fmats)
+        
+        if (list_lengthU != list_lengthF) {
+          stop("Input Umats and Fmats objects must include the same number of matrices.", call. = FALSE)
+        }
+        
+        Amats <- lapply(as.list(1:list_lengthU), function(X) {
+          return(Umats[[X]] + Fmats[[X]])
+        })
+        
+        list_lengthA <- list_lengthU
+      }
     } else {
-      stop("Please input the population designation for each matrix to be added.", call. = FALSE)
+      list_lengthA <- length(Amats)
     }
-  }
-  if(all(is.na(patch))) {
-    patchesinlM <- unique(lM$labels$patch)
     
-    if (length(patchesinlM) == 1) {
-      patch <- rep(patchesinlM, list_lengthA)
+    if (all(is.na(year)) | length(year) != list_lengthA) {
+      stop("This function requires occasion in time t for each matrix to be added.", call. = FALSE)
+    }
+    if(all(is.na(pop))) {
+      popsinlM <- unique(lM_used$labels$pop)
+      
+      if (length(popsinlM) == 1) {
+        pop <- rep(popsinlM, list_lengthA)
+      } else {
+        stop("Please input the population designation for each matrix to be added.", call. = FALSE)
+      }
+    }
+    if(all(is.na(patch))) {
+      patchesinlM <- unique(lM_used$labels$patch)
+      
+      if (length(patchesinlM) == 1) {
+        patch <- rep(patchesinlM, list_lengthA)
+      } else {
+        stop("Please input the patch designation for each matrix to be added.", call. = FALSE)
+      }
+    }
+    
+    #Now the appending
+    lM_used$A <- append(lM_used$A, Amats)
+    lM_used$U <- append(lM_used$U, Umats)
+    lM_used$F <- append(lM_used$F, Fmats)
+    
+    surv_additions <- sum(unlist(lapply(Umats, function(X) {
+      length(which(as.matrix(X) > 0))
+    })))
+    fec_additions <- sum(unlist(lapply(Fmats, function(X) {
+      length(which(as.matrix(X) > 0))
+    })))
+    
+    lM_used$matrixqc[1] <- lM_used$matrixqc[1] + surv_additions
+    lM_used$matrixqc[2] <- lM_used$matrixqc[2] + fec_additions
+    lM_used$matrixqc[3] <- lM_used$matrixqc[3] + list_lengthA
+    
+    newlabels <- cbind.data.frame(pop = pop, patch = patch, year2 = year)
+    lM_used$labels <- rbind.data.frame(lM_used$labels, newlabels)
+    
+    if (is(lM, "lefkoMat")) {
+      lM <- lM_used
     } else {
-      stop("Please input the patch designation for each matrix to be added.", call. = FALSE)
+      lM[[lM_count]] <- lM_used
     }
   }
-  
-  #Now the appending
-  lM$A <- append(lM$A, Amats)
-  lM$U <- append(lM$U, Umats)
-  lM$F <- append(lM$F, Fmats)
-  
-  surv_additions <- sum(unlist(lapply(Umats, function(X) {
-    length(which(as.matrix(X) > 0))
-  })))
-  fec_additions <- sum(unlist(lapply(Fmats, function(X) {
-    length(which(as.matrix(X) > 0))
-  })))
-  
-  lM$matrixqc[1] <- lM$matrixqc[1] + surv_additions
-  lM$matrixqc[2] <- lM$matrixqc[2] + fec_additions
-  lM$matrixqc[3] <- lM$matrixqc[3] + list_lengthA
-  
-  newlabels <- cbind.data.frame(pop = pop, patch = patch, year2 = year)
-  lM$labels <- rbind.data.frame(lM$labels, newlabels)
-  
   return(lM)
 }
 
-#' Delete Matrices from lefkoMat Object
+#' Delete Matrices from lefkoMat or lefkoMatList Object
 #' 
-#' Function \code{delete_lM()} deletes matrices from \code{lefkoMat} objects.
+#' Function \code{delete_lM()} deletes matrices from \code{lefkoMat} and
+#' \code{lefkoMatList} objects.
 #' 
-#' @param lM The \code{lefkoMat} object to delete matrices from.
+#' @param lM The \code{lefkoMat} or \code{lefkoMatList} object to delete
+#' matrices from.
 #' @param mat_num Either a single integer corresponding to the matrix to remove
 #' within the \code{labels} element of \code{lM}, or a vector of such integers.
 #' @param pop The population designation for matrices to remove. Only used if
@@ -2843,8 +2869,10 @@ add_lM <- function(lM, Amats = NA, Umats = NA, Fmats = NA, UFdecomp = FALSE,
 #' @param year The time \emph{t} designation for matrices to remove. Only used
 #' if \code{mat_num} is not given.
 #' 
-#' @return A \code{lefkoMat} object in which the matrices specified in \code{lM}
-#' have been removed. 
+#' @return A \code{lefkoMat} or \code{lefkoMatList} object in which the matrices
+#' specified in \code{lM} have been removed. Note that, if applying to a
+#' \code{lefkoMatList} object, then matrices will be deleted from ALL composite
+#' \code{lefkoMat} objects.
 #' 
 #' @section Notes:
 #' If \code{mat_num} is not provided, then at least one of \code{pop},
@@ -2922,89 +2950,113 @@ add_lM <- function(lM, Amats = NA, Umats = NA, Fmats = NA, UFdecomp = FALSE,
 #' @export
 delete_lM <- function(lM, mat_num = NA, pop = NA, patch = NA, year = NA) {
   
-  if (!is(lM, "lefkoMat")) {
-    stop("This function requires a lefkoMat object as input.", call. = FALSE)
+  main_counter <- 1
+  
+  if (!is(lM, "lefkoMat") & !is(lM, "lefkoMatList")) {
+    stop("This function requires a lefkoMat or lefkoMatList object as input.", call. = FALSE)
   }
   if (all(is.na(mat_num)) & all(is.na(pop)) & all(is.na(patch)) & all(is.na(year))) {
     stop("Please add some input to determine which matrices to remove.", call. = FALSE)
   }
   
-  mat_length <- length(lM$A)
-  mat_dim <- dim(lM$A[[1]])[1]
-  pop_set <- unique(lM$labels$pop)
-  patch_set <- unique(lM$labels$patch)
-  year_set <- unique(lM$labels$year2)
+  if (is(lM, "lefkoMatList")) {
+    main_counter <- length(lM)
+  }
   
-  if (!all(is.na(mat_num))) {
-    if (max(mat_num) > mat_length | min(mat_num) < 1) {
-      stop("Matrices chosen for deletion are outside the range of matrices input in object lM.",
+  for (lM_count in c(1:main_counter)) {
+    lM_used <- NULL
+    
+    if (is(lM, "lefkoMat")) {
+      lM_used <- lM
+    } else {
+      lM_used <-lM[[lM_count]]
+    }
+    
+    mat_length <- length(lM_used$A)
+    mat_dim <- dim(lM_used$A[[1]])[1]
+    pop_set <- unique(lM_used$labels$pop)
+    patch_set <- unique(lM_used$labels$patch)
+    year_set <- unique(lM_used$labels$year2)
+    
+    if (!all(is.na(mat_num))) {
+      if (max(mat_num) > mat_length | min(mat_num) < 1) {
+        stop("Matrices chosen for deletion are outside the range of matrices input in object lM.",
+          call. = FALSE)
+      }
+    } else {
+      
+      pop_subset <- patch_subset <- year_subset <- seq(from = 1, to = mat_length)
+      
+      if (!all(is.na(pop))) {
+        if (!all(is.element(pop, pop_set))) {
+          stop("Option pop includes terms not representing known populations in object lM.",
+            call. = FALSE)
+        }
+        
+        pop_subset <- which(is.element(lM_used$labels$pop, pop))
+      }
+      if (!all(is.na(patch))) {
+        if (!all(is.element(patch, patch_set))) {
+          stop("Option patch includes terms not representing known patches in object lM.",
+            call. = FALSE)
+        }
+        
+        patch_subset <- which(is.element(lM_used$labels$patch, patch))
+      }
+      if (!all(is.na(year))) {
+        if (!all(is.element(year, year_set))) {
+          stop("Option year includes terms not representing known times in object lM.",
+            call. = FALSE)
+        }
+        
+        year_subset <- which(is.element(lM_used$labels$year2, year))
+      }
+      
+      mat_num <- intersect(intersect(pop_subset, patch_subset), year_subset)
+    }
+    
+    if (length(unique(mat_num)) >= mat_length) {
+      stop("Options suggest that all matrices are to be deleted. Cannot proceed.",
         call. = FALSE)
     }
-  } else {
     
-    pop_subset <- patch_subset <- year_subset <- seq(from = 1, to = mat_length)
+    #Now the deletion
+    lM_used$A <- lM_used$A[-mat_num]
+    lM_used$U <- lM_used$U[-mat_num]
+    lM_used$F <- lM_used$F[-mat_num]
     
-    if (!all(is.na(pop))) {
-      if (!all(is.element(pop, pop_set))) {
-        stop("Option pop includes terms not representing known populations in object lM.",
-          call. = FALSE)
-      }
-      
-      pop_subset <- which(is.element(lM$labels$pop, pop))
-    }
-    if (!all(is.na(patch))) {
-      if (!all(is.element(patch, patch_set))) {
-        stop("Option patch includes terms not representing known patches in object lM.",
-          call. = FALSE)
-      }
-      
-      patch_subset <- which(is.element(lM$labels$patch, patch))
-    }
-    if (!all(is.na(year))) {
-      if (!all(is.element(year, year_set))) {
-        stop("Option year includes terms not representing known times in object lM.",
-          call. = FALSE)
-      }
-      
-      year_subset <- which(is.element(lM$labels$year2, year))
-    }
+    surv_portions <- sum(unlist(lapply(lM_used$U, function(X) {
+      length(which(as.matrix(X) > 0))
+    })))
+    fec_portions <- sum(unlist(lapply(lM_used$F, function(X) {
+      length(which(as.matrix(X) > 0))
+    })))
     
-    mat_num <- intersect(intersect(pop_subset, patch_subset), year_subset)
+    lM_used$matrixqc[1] <- surv_portions
+    lM_used$matrixqc[2] <- fec_portions
+    lM_used$matrixqc[3] <- lM_used$matrixqc[3] - length(mat_num)
+    
+    lM_used$labels <- lM_used$labels[-mat_num,]
+    rownames(lM_used$labels) <- seq(from = 1, to = length(lM_used$A))
+    
+    if (is(lM, "lefkoMat")) {
+      lM <- lM_used
+    } else {
+      lM[[lM_count]] <- lM_used
+    }
   }
-  
-  if (length(unique(mat_num)) >= mat_length) {
-    stop("Options suggest that all matrices are to be deleted. Cannot proceed.",
-      call. = FALSE)
-  }
-  
-  #Now the deletion
-  lM$A <- lM$A[-mat_num]
-  lM$U <- lM$U[-mat_num]
-  lM$F <- lM$F[-mat_num]
-  
-  surv_portions <- sum(unlist(lapply(lM$U, function(X) {
-    length(which(as.matrix(X) > 0))
-  })))
-  fec_portions <- sum(unlist(lapply(lM$F, function(X) {
-    length(which(as.matrix(X) > 0))
-  })))
-  
-  lM$matrixqc[1] <- surv_portions
-  lM$matrixqc[2] <- fec_portions
-  lM$matrixqc[3] <- lM$matrixqc[3] - length(mat_num)
-  
-  lM$labels <- lM$labels[-mat_num,]
-  rownames(lM$labels) <- seq(from = 1, to = length(lM$A))
   
   return(lM)
 }
 
-#' Create New lefkoMat Object as Subset of Another lefkoMat Object
+#' Create New lefkoMat or lefkoMatList Object as Subset of Another
 #' 
-#' Function \code{subset_lM()} creates a new \code{lefkoMat} object from a
-#' subset of matrices in another \code{lefkoMat} object.
+#' Function \code{subset_lM()} creates a new \code{lefkoMat} or
+#' \code{lefkoMatList} object from a subset of matrices in another
+#' \code{lefkoMat} or \code{lefkoMatList} object.
 #' 
-#' @param lM The \code{lefkoMat} object to select matrices from.
+#' @param lM The \code{lefkoMat} or \code{lefkoMatList} object to select
+#' matrices from.
 #' @param mat_num Either a single integer corresponding to the matrix to select
 #' within the \code{labels} element of \code{lM}, or a vector of such integers.
 #' @param pop The population designation for matrices to select. Only used if
@@ -3014,8 +3066,10 @@ delete_lM <- function(lM, mat_num = NA, pop = NA, patch = NA, year = NA) {
 #' @param year The time \emph{t} designation for matrices to select. Only used
 #' if \code{mat_num} is not given.
 #' 
-#' @return A \code{lefkoMat} object composed of the matrices specified in the
-#' options. 
+#' @return A \code{lefkoMat} or \code{lefkoMatList} object composed of the
+#' matrices specified in the options. Note that, when applied to a
+#' \code{lefkoMatList} object, subsetting happens equivalently across all
+#' composite \code{lefkoMat} objects.
 #' 
 #' @section Notes:
 #' If \code{mat_num} is not provided, then at least one of \code{pop},
@@ -3211,80 +3265,101 @@ delete_lM <- function(lM, mat_num = NA, pop = NA, patch = NA, year = NA) {
 #' @export
 subset_lM <- function(lM, mat_num = NA, pop = NA, patch = NA, year = NA) {
   
-  if (!is(lM, "lefkoMat")) {
-    stop("This function requires a lefkoMat object as input.", call. = FALSE)
+  main_counter <- 1
+  
+  if (!is(lM, "lefkoMat") & !is(lM, "lefkoMatList")) {
+    stop("This function requires a lefkoMat or lefkoMatList object as input.", call. = FALSE)
   }
   if (all(is.na(mat_num)) & all(is.na(pop)) & all(is.na(patch)) & all(is.na(year))) {
     stop("Please add some input to determine which matrices to select.", call. = FALSE)
   }
   
-  mat_length <- length(lM$A)
-  mat_dim <- dim(lM$A[[1]])[1]
-  pop_set <- unique(lM$labels$pop)
-  patch_set <- unique(lM$labels$patch)
-  year_set <- unique(lM$labels$year2)
+  if (is(lM, "lefkoMatList")) {
+    main_counter <- length(lM)
+  }
   
-  if (!all(is.na(mat_num))) {
-    if (max(mat_num) > mat_length | min(mat_num) < 1) {
-      stop("Matrices chosen for selection are outside the range of matrices input in object lM.",
+  for (lM_count in c(1:main_counter)) {
+    lM_used <- NULL
+    
+    if (is(lM, "lefkoMat")) {
+      lM_used <- lM
+    } else {
+      lM_used <-lM[[lM_count]]
+    }
+    
+    mat_length <- length(lM_used$A)
+    mat_dim <- dim(lM_used$A[[1]])[1]
+    pop_set <- unique(lM_used$labels$pop)
+    patch_set <- unique(lM_used$labels$patch)
+    year_set <- unique(lM_used$labels$year2)
+    
+    if (!all(is.na(mat_num))) {
+      if (max(mat_num) > mat_length | min(mat_num) < 1) {
+        stop("Matrices chosen for selection are outside the range of matrices input in object lM.",
+          call. = FALSE)
+      }
+    } else {
+      
+      pop_subset <- patch_subset <- year_subset <- seq(from = 1, to = mat_length)
+      
+      if (!all(is.na(pop))) {
+        if (!all(is.element(pop, pop_set))) {
+          stop("Option pop includes terms not representing known populations in object lM.",
+            call. = FALSE)
+        }
+        
+        pop_subset <- which(is.element(lM_used$labels$pop, pop))
+      }
+      if (!all(is.na(patch))) {
+        if (!all(is.element(patch, patch_set))) {
+          stop("Option patch includes terms not representing known patches in object lM.",
+            call. = FALSE)
+        }
+        
+        patch_subset <- which(is.element(lM_used$labels$patch, patch))
+      }
+      if (!all(is.na(year))) {
+        if (!all(is.element(year, year_set))) {
+          stop("Option year includes terms not representing known times in object lM.",
+            call. = FALSE)
+        }
+        
+        year_subset <- which(is.element(lM_used$labels$year2, year))
+      }
+      
+      mat_num <- intersect(intersect(pop_subset, patch_subset), year_subset)
+    }
+    
+    if (length(unique(mat_num)) >= mat_length) {
+      stop("Options suggest that all matrices are to be selected. Cannot proceed.",
         call. = FALSE)
     }
-  } else {
     
-    pop_subset <- patch_subset <- year_subset <- seq(from = 1, to = mat_length)
+    #Now the selection
+    lM_used$A <- lM_used$A[mat_num]
+    lM_used$U <- lM_used$U[mat_num]
+    lM_used$F <- lM_used$F[mat_num]
     
-    if (!all(is.na(pop))) {
-      if (!all(is.element(pop, pop_set))) {
-        stop("Option pop includes terms not representing known populations in object lM.",
-          call. = FALSE)
-      }
-      
-      pop_subset <- which(is.element(lM$labels$pop, pop))
-    }
-    if (!all(is.na(patch))) {
-      if (!all(is.element(patch, patch_set))) {
-        stop("Option patch includes terms not representing known patches in object lM.",
-          call. = FALSE)
-      }
-      
-      patch_subset <- which(is.element(lM$labels$patch, patch))
-    }
-    if (!all(is.na(year))) {
-      if (!all(is.element(year, year_set))) {
-        stop("Option year includes terms not representing known times in object lM.",
-          call. = FALSE)
-      }
-      
-      year_subset <- which(is.element(lM$labels$year2, year))
-    }
+    surv_portions <- sum(unlist(lapply(lM_used$U, function(X) {
+      length(which(as.matrix(X) > 0))
+    })))
+    fec_portions <- sum(unlist(lapply(lM_used$F, function(X) {
+      length(which(as.matrix(X) > 0))
+    })))
     
-    mat_num <- intersect(intersect(pop_subset, patch_subset), year_subset)
+    lM_used$matrixqc[1] <- surv_portions
+    lM_used$matrixqc[2] <- fec_portions
+    lM_used$matrixqc[3] <- length(mat_num)
+      
+    lM_used$labels <- lM_used$labels[mat_num,]
+    rownames(lM_used$labels) <- seq(from = 1, to = length(lM_used$A))
+    
+    if (is(lM, "lefkoMat")) {
+      lM <- lM_used
+    } else {
+      lM[[lM_count]] <- lM_used
+    }
   }
-  
-  if (length(unique(mat_num)) >= mat_length) {
-    stop("Options suggest that all matrices are to be selected. Cannot proceed.",
-      call. = FALSE)
-  }
-  
-  #Now the selection
-  lM$A <- lM$A[mat_num]
-  lM$U <- lM$U[mat_num]
-  lM$F <- lM$F[mat_num]
-  
-  surv_portions <- sum(unlist(lapply(lM$U, function(X) {
-    length(which(as.matrix(X) > 0))
-  })))
-  fec_portions <- sum(unlist(lapply(lM$F, function(X) {
-    length(which(as.matrix(X) > 0))
-  })))
-  
-  lM$matrixqc[1] <- surv_portions
-  lM$matrixqc[2] <- fec_portions
-  lM$matrixqc[3] <- length(mat_num)
-    
-  lM$labels <- lM$labels[mat_num,]
-  rownames(lM$labels) <- seq(from = 1, to = length(lM$A))
-  
   return(lM)
 }
 

@@ -2,12 +2,13 @@
 % Please edit documentation in R/datamanag.R
 \name{delete_lM}
 \alias{delete_lM}
-\title{Delete Matrices from lefkoMat Object}
+\title{Delete Matrices from lefkoMat or lefkoMatList Object}
 \usage{
 delete_lM(lM, mat_num = NA, pop = NA, patch = NA, year = NA)
 }
 \arguments{
-\item{lM}{The \code{lefkoMat} object to delete matrices from.}
+\item{lM}{The \code{lefkoMat} or \code{lefkoMatList} object to delete
+matrices from.}
 
 \item{mat_num}{Either a single integer corresponding to the matrix to remove
 within the \code{labels} element of \code{lM}, or a vector of such integers.}
@@ -22,11 +23,14 @@ within the \code{labels} element of \code{lM}, or a vector of such integers.}
 if \code{mat_num} is not given.}
 }
 \value{
-A \code{lefkoMat} object in which the matrices specified in \code{lM}
-have been removed.
+A \code{lefkoMat} or \code{lefkoMatList} object in which the matrices
+specified in \code{lM} have been removed. Note that, if applying to a
+\code{lefkoMatList} object, then matrices will be deleted from ALL composite
+\code{lefkoMat} objects.
 }
 \description{
-Function \code{delete_lM()} deletes matrices from \code{lefkoMat} objects.
+Function \code{delete_lM()} deletes matrices from \code{lefkoMat} and
+\code{lefkoMatList} objects.
 }
 \section{Notes}{
 

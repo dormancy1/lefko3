@@ -2,7 +2,7 @@
 % Please edit documentation in R/datamanag.R
 \name{add_lM}
 \alias{add_lM}
-\title{Add Matrices to lefkoMat Object}
+\title{Add Matrices to a lefkoMat or lefkoMatList Object}
 \usage{
 add_lM(
   lM,
@@ -17,7 +17,8 @@ add_lM(
 )
 }
 \arguments{
-\item{lM}{The lefkoMat object to add matrices to.}
+\item{lM}{The \code{lefkoMat} or \code{lefkoMatList} object to add matrices
+to.}
 
 \item{Amats}{Either a single \code{A} matrix, or a list of \code{A} matrices.
 Not necessary if \code{Umats} and \code{Fmats} are both provided.}
@@ -49,11 +50,15 @@ requires a designation as input.}
 each matrix. Cannot be left empty.}
 }
 \value{
-A \code{lefkoMat} object incorporating the new matrices within the
-object input in \code{lM}.
+A \code{lefkoMat} or \code{lefkoMatList} object incorporating the new
+matrices within the object input in \code{lM}. Note that if a
+\code{lefkoMatList} object is used as input, then ALL composite
+\code{lefkoMat} objects will have the same matrices added in exactly the same
+way.
 }
 \description{
-Function \code{add_lM()} adds matrices to lefkoMat objects.
+Function \code{add_lM()} adds matrices to \code{lefkoMat} and
+\code{lefkoMatList} objects.
 }
 \section{Notes}{
 
