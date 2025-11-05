@@ -1,3 +1,10 @@
+# lefko3 6.6.1 (2025-XX-XX)
+
+## BUG FIXES
+
+* Fixed fatal error in historicalize3() caused under situations in which some
+  individuals encounter undefined states.
+
 # lefko3 6.6.0 (2025-10-28)
 
 ## NEW FEATURES

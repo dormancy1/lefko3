@@ -4597,7 +4597,7 @@ Rcpp::List jpf(const DataFrame& data, const DataFrame& stageframe, int popidcol,
             Rf_warningcall(R_NilValue,
               "Some stages in the dataset do not match stage descriptions in the stageframe.");
           }
-          if (i > 836) throw Rcpp::exception("made it this far 7f", false); 
+          //if (i > 836) throw Rcpp::exception("made it this far 7f", false); 
         } else if (cs4.n_elem > 1) {
           if (!quiet) {
             Rf_warningcall(R_NilValue,
