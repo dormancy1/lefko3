@@ -1,10 +1,32 @@
-# lefko3 6.6.1 (2025-XX-XX)
+# lefko3 6.7.0 (2025-XX-XX)
+
+## NEW FEATURES
+
+* The additive limit function is now usable as a new density dependence function
+  in projection via function density_input().
+  
+* Function projection3() can now handle density dependent projections using
+  simple lists of matrices.
+  
+* Function projection3() can use lists of density dependence inputs and
+  stage weight inputs, with one entry per A matrix.
+  
+## USER VISIBLE CHANGES
+
+* Function create_lM() no longer gives a warning that no supplements were
+  provided to infer fecundity pathways.
 
 ## BUG FIXES
 
 * Fixed fatal error in historicalize3() caused under situations in which some
   individuals encounter undefined states.
-
+  
+* Corrected issues with matrix list imports with function create_lM() leading to
+  fatal errors in certain situations.
+  
+* Fixed incorrect assignment of logistic density dependence to the Ricker
+  function in function density_input().
+  
 # lefko3 6.6.0 (2025-10-28)
 
 ## NEW FEATURES

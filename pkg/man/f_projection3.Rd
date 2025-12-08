@@ -364,9 +364,9 @@ to equal weighting among matrices.}
 
 \item{density}{An optional data frame describing the matrix elements that
 will be subject to density dependence, and the exact kind of density
-dependence that they will be subject to. The data frame used should be an
-object of class \code{lefkoDens}, which is the output from function
-\code{\link{density_input}()}.}
+dependence that they will be subject to, or a list of such objects. The data
+frame used should be an object of class \code{lefkoDens}, which is the
+output from function \code{\link{density_input}()}.}
 
 \item{density_vr}{An optional data frame describing density dependence
 relationships in vital rates, if such relationships are to be assumed. The
@@ -374,12 +374,13 @@ data frame must be of class \code{lefkoDensVR}, which is the output from the
 function \code{\link{density_vr}()}.}
 
 \item{stage_weights}{An optional object of class \code{lefkoEq} giving the
-degree to which individuals in each stage are equivalent to one another.
-May also be a numeric vector, in which case the vector must have the same
-number of elements as the number of rows in the associated MPM, with each
-element giving the effect of an individual of that age, stage, age-stage, or
-stage-pair, depending on whether the MPM is age-based, ahistorical
-stage-based, age-by-stage, or historical stage-based, respectively.}
+degree to which individuals in each stage are equivalent to one another, or
+a list of such objects. May also be a numeric vector (or a list thereof), in
+which case the vector must have the same number of elements as the number of
+rows in the associated MPM, with each element giving the effect of an
+individual of that age, stage, age-stage, or stage-pair, depending on
+whether the MPM is age-based, ahistorical stage-based, age-by-stage, or
+historical stage-based, respectively.}
 
 \item{sparse}{A text string indicating whether to use sparse matrix encoding
 (\code{"yes"}) or dense matrix encoding (\code{"no"}). Defaults to

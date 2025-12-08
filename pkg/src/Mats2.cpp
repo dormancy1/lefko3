@@ -14,7 +14,7 @@ using namespace LefkoMats;
 // 1. List sf_reassess  Standardize Stageframe For MPM Analysis
 // 2. DataFrame sf_skeleton  Create Skeleton Stageframe
 // 3. List thefifthhousemate  Create Historically Structured Version of ahMPM
-// 4. hist_null  Create Historical MPMs Assuming No Influence of Individual History
+// 4. List hist_null  Create Historical MPMs Assuming No Influence of Individual History
 // 5. List lmean  Estimate Mean Projection Matrices
 // 6. void add_stage_single  Add a New Stage to a Single lefkoMat
 // 7. List add_stage  Add a New Stage to an Existing lefkoMat or lefkoMatList Object
@@ -43,6 +43,10 @@ using namespace LefkoMats;
 //' @param format An integer indicating whether matrices will be in Ehrlen
 //' format (if set to 1), or deVries format (if set to 2). Setting to deVries
 //' format adds one extra stage to account for the prior status of newborns.
+//' @param import_lM A logical value indicating whether the lefkoMat object
+//' being dealt with was imported using \code{create_lM()} or a similar
+//' function. If \code{TRUE}, then warnings related to missing supplements will
+//' be skipped. Defaults to \code{FALSE}.
 //' 
 //' @return This function returns a list with a modified \code{stageframe}
 //' usable in MPM construction, an associated \code{repmatrix}, and a general
@@ -57,11 +61,11 @@ using namespace LefkoMats;
 Rcpp::List sf_reassess(const DataFrame& stageframe,
   Nullable<DataFrame> supplement = R_NilValue,
   Nullable<DataFrame> overwrite = R_NilValue,
-  Nullable<NumericMatrix> repmatrix = R_NilValue,
-  bool agemat = false, bool historical = false, int format = 1) {
+  Nullable<NumericMatrix> repmatrix = R_NilValue, bool agemat = false,
+  bool historical = false, int format = 1, bool import_lM = false) {
   
   List sf_output = LefkoMats::sf_reassess_internal(stageframe, supplement,
-    overwrite, repmatrix, agemat, historical, format);
+    overwrite, repmatrix, agemat, historical, format, import_lM);
   
   return sf_output;
 }

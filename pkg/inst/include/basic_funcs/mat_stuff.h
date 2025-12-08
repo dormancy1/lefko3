@@ -4015,11 +4015,16 @@ namespace LefkoMats {
   //' @param overwrite An overwrite table.
   //' @param repmatrix The original reproduction matrix. Can also equal \code{NA},
   //' \code{0}, or \code{NULL} (the last value by default).
-  //' @param agemat A logical value indicating whether MPM is age-by-stage.
-  //' @param historical A logical value indicating whether MPM is historical.
+  //' @param agemat A Boolean value indicating whether MPM is age-by-stage.
+  //' @param historical A Boolean value indicating whether MPM is historical.
   //' @param format An integer indicating whether matrices will be in Ehrlen
   //' format (if set to 1), or deVries format (if set to 2). Setting to deVries
   //' format adds one extra stage to account for the prior status of newborns.
+  //' @param import_lM A Boolean value indicating whether the lefkoMat object
+  //' being dealt with was imported. If \code{TRUE}, then will skip warnings
+  //' related to the lack of supplements being input (since supplements cannot
+  //' be input via the create_lM() function and its relatives). Defaults to
+  //' \code{FALSE}.
   //' 
   //' @return This function returns a list with a modified \code{stageframe}
   //' usable in MPM construction, an associated \code{repmatrix}, and a general
@@ -4034,7 +4039,8 @@ namespace LefkoMats {
     Nullable<DataFrame> supplement = R_NilValue,
     Nullable<DataFrame> overwrite = R_NilValue,
     Nullable<NumericMatrix> repmatrix = R_NilValue,
-    bool agemat = false, bool historical = false, int format = 1) {
+    bool agemat = false, bool historical = false, int format = 1,
+    bool import_lM = false) {
     
     bool supp_provided = false;
     
@@ -4275,7 +4281,7 @@ namespace LefkoMats {
         repentryvec(0) = 1;
         Rf_warningcall(R_NilValue,
           "Reproductive entry stages unknown. Assuming stage 1 is entry stage.");
-      } else {
+      } else if (!import_lM) {
         Rf_warningcall(R_NilValue,
           "No supplement provided. Assuming fecundity yields all propagule and immature stages.");
       }

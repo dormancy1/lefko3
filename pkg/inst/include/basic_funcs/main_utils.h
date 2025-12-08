@@ -71,6 +71,9 @@ using namespace arma;
 // 49. void matrix_reducer  Reduces Matrices In A Function-based lefkoMat Object
 // 50. int whichbrew  Assess if MPM is ahistorical, historical, age-by-stage, or Leslie
 // 51. void pop_error  Standardized Error Messages
+// 
+// 52. void density_prep  Format All Density-related Variables Based on Density Inputs
+// 53. void equivalence_prep  Format All Equivalence Weight-related Variables Based on Input
 
 
 
@@ -10216,5 +10219,326 @@ namespace LefkoUtils {
     
     return;
   }
+  
+  //' Format All Density-related Variables Based on Density Inputs
+  //' 
+  //' Function \code{density_prep()} takes the objects input in arguement
+  //' \code{density} within the core projection functions and formats a number
+  //' of control variables dictating how density will be interpreted during the
+  //' projection.
+  //' 
+  //' @name density_prep
+  //' 
+  //' @param dens_index A reference to an empty List, which will be modified via
+  //' this function. Will provide an index to the elements of the matrix to be
+  //' altered during density adjustment.
+  //' @param dyn_style An empty Armadillo unsigned integer vector, given as a
+  //' reference to be modified. Will provide the density dependence styles to be
+  //' used in density adjustment.
+  //' @param dyn_alpha An empty Armadillo double floating point vector, given as
+  //' a reference to be modified. Will provide the values of alpha to be used in
+  //' density adjustment.
+  //' @param dyn_beta An empty Armadillo double floating point vector, given as
+  //' a reference to be modified. Will provide the values of beta to be used in
+  //' density adjustment.
+  //' @param dens_input The data frame input via the \code{density} argument, or
+  //' a single data frame from the list input there.
+  //' @param hstages The \code{hstages} data frame within the input lefkoMat
+  //' object.
+  //' @param stageframe The stageframe, typically within object \code{ahstages}
+  //' within the lefkoMat object input.
+  //' @param exp_tol The exponent maximmum limit being used.
+  //' @param historical A Boolean value indicating whether the lefkoMat object
+  //' is historical.
+  //' 
+  //' @return No objects are returned, though some inputs are modified.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline void density_prep (List& dens_index, arma::uvec& dyn_style,
+    arma::vec& dyn_alpha, arma::vec& dyn_beta, const DataFrame dens_input,
+    const DataFrame hstages, const DataFrame stageframe, const double exp_tol,
+    const bool historical) {
+    
+    Rcpp::StringVector di_stage3 = as<StringVector>(dens_input["stage3"]);
+    Rcpp::StringVector di_stage2 = as<StringVector>(dens_input["stage2"]);
+    Rcpp::StringVector di_stage1 = as<StringVector>(dens_input["stage1"]);
+    int di_size = di_stage3.length();
+    
+    if (historical) {
+      StringVector stage3 = as<StringVector>(hstages["stage_2"]);
+      StringVector stage2r = as<StringVector>(hstages["stage_1"]);
+      StringVector stage2c = as<StringVector>(hstages["stage_2"]);
+      StringVector stage1 = as<StringVector>(hstages["stage_1"]);
+      int hst_size = stage3.length();
+      
+      arma::uvec hst_3(hst_size, fill::zeros);
+      arma::uvec hst_2r(hst_size, fill::zeros);
+      arma::uvec hst_2c(hst_size, fill::zeros);
+      arma::uvec hst_1(hst_size, fill::zeros);
+      
+      arma::uvec di_stage32_id(di_size, fill::zeros);
+      arma::uvec di_stage21_id(di_size, fill::zeros);
+      arma::uvec di_index(di_size, fill::zeros);
+      
+      for (int i = 0; i < di_size; i++) { // Loop through each density_input line
+        for (int j = 0; j < hst_size; j++) {
+          if (di_stage3(i) == stage3(j)) {
+            hst_3(j) = 1;
+          } else {
+            hst_3(j) = 0;
+          }
+        }
+        
+        for (int j = 0; j < hst_size; j++) {
+          if (di_stage2(i) == stage2r(j)) {
+            hst_2r(j) = 1;
+          } else {
+            hst_2r(j) = 0;
+          }
+        }
+        
+        for (int j = 0; j < hst_size; j++) {
+          if (di_stage2(i) == stage2c(j)) {
+            hst_2c(j) = 1;
+          } else {
+            hst_2c(j) = 0;
+          }
+        }
+        
+        for (int j = 0; j < hst_size; j++) {
+          if (di_stage1(i) == stage1(j)) {
+            hst_1(j) = 1;
+          } else {
+            hst_1(j) = 0;
+          }
+        }
+        
+        arma::uvec find_hst3 = find(hst_3);
+        arma::uvec find_hst2r = find(hst_2r);
+        arma::uvec find_hst2c = find(hst_2c);
+        arma::uvec find_hst1 = find(hst_1);
+        
+        if (static_cast<int>(find_hst3.n_elem) == 0 || static_cast<int>(find_hst2r.n_elem) == 0) {
+          throw Rcpp::exception("Some stages entered in argument density do not exist in the life history model.",
+            false);
+        }
+        if (static_cast<int>(find_hst1.n_elem) == 0 || static_cast<int>(find_hst2c.n_elem) == 0) {
+          throw Rcpp::exception("Some stages entered in argument density do not exist in the life history model.",
+            false);
+        }
+        
+        arma::uvec pop_32 = intersect(find_hst3, find_hst2r);
+        arma::uvec pop_21 = intersect(find_hst2c, find_hst1);
+        
+        di_stage32_id(i) = pop_32(0);
+        di_stage21_id(i) = pop_21(0);
+        di_index(i) = pop_32(0) + (pop_21(0) * hst_size);
+        
+        hst_3.zeros();
+        hst_2r.zeros();
+        hst_2c.zeros();
+        hst_1.zeros();
+      }
+      
+      dens_index = Rcpp::List::create(_["index32"] = di_stage32_id,
+        _["index21"] = di_stage21_id, _["index321"] = di_index);
+      
+    } else {
+      StringVector stage3 = as<StringVector>(stageframe["stage"]);
+      StringVector stage2 = as<StringVector>(stageframe["stage"]);
+      int ahst_size = stage3.length();
+      
+      arma::uvec ahst_3(ahst_size, fill::zeros);
+      arma::uvec ahst_2(ahst_size, fill::zeros);
+      
+      arma::uvec di_stage32_id(di_size, fill::zeros);
+      arma::uvec di_stage21_id(di_size, fill::zeros);
+      arma::uvec di_index(di_size, fill::zeros);
+      
+      for (int i = 0; i < di_size; i++) { // Loop through each density_input
+        for (int j = 0; j < ahst_size; j++) {
+          if (di_stage3(i) == stage3(j)) {
+            ahst_3(j) = 1;
+          } else {
+            ahst_3(j) = 0;
+          }
+        }
+        
+        for (int j = 0; j < ahst_size; j++) {
+          if (di_stage2(i) == stage2(j)) {
+            ahst_2(j) = 1;
+          } else {
+            ahst_2(j) = 0;
+          }
+        }
+        
+        arma::uvec find_ahst3 = find(ahst_3);
+        arma::uvec find_ahst2 = find(ahst_2);
+        
+        if (static_cast<int>(find_ahst3.n_elem) == 0 || static_cast<int>(find_ahst2.n_elem) == 0) {
+          throw Rcpp::exception("Some stages entered in argument density do not exist in the life history model.",
+            false);
+        }
+        
+        di_stage32_id(i) = find_ahst3(0);
+        di_stage21_id(i) = find_ahst2(0);
+        di_index(i) = find_ahst3(0) + (find_ahst2(0) * ahst_size);
+        
+        ahst_3.zeros();
+        ahst_2.zeros();
+      }
+      
+      dens_index = Rcpp::List::create(_["index3"] = di_stage32_id,
+        _["index2"] = di_stage21_id, _["index321"] = di_index);
+    }
+    
+    dyn_style = as<arma::uvec>(dens_input["style"]);
+    dyn_alpha = as<arma::vec>(dens_input["alpha"]);
+    dyn_beta = as<arma::vec>(dens_input["beta"]);
+    
+    for (int i = 0; i < static_cast<int>(dyn_style.n_elem); i++) {
+      if (dyn_style(i) < 1 || dyn_style(i) > 5) pop_error("density inputs", "", "", 21);
+      
+      if (dyn_style(i) == 1) {
+        if (dyn_beta(i) > exp_tol) {
+          Rf_warningcall(R_NilValue,
+            "Beta used in Ricker function may be too high. Results may be unpredictable.");
+          
+        } else if (dyn_beta(i) < (-1.0 * exp_tol)) {
+          Rf_warningcall(R_NilValue,
+            "Beta used in Ricker function may be too high. Results may be unpredictable.");
+          
+        }
+        
+      } else if (dyn_style(i) == 3) {
+        double summed_stuff = dyn_alpha(i) + dyn_beta(i);
+        
+        if (summed_stuff > exp_tol) {
+          Rf_warningcall(R_NilValue,
+            "Alpha and beta used in Usher function may be too high. Results may be unpredictable.");
+          
+        } else if (summed_stuff < (-1.0 * exp_tol)) {
+          Rf_warningcall(R_NilValue,
+            "Alpha and beta used in Usher function may be too high. Results may be unpredictable.");
+        }
+      }
+    }
+  }
+  
+  //' Format All Equivalence Weight-related Variables Based on Input
+  //' 
+  //' @name equivalence_prep
+  //' 
+  //' @param equivalence_frame An empty data frame to be modified by this
+  //' function. Will hold the core stage weights data.
+  //' @param equivalence_vec An empty NumericVector to hold the stage-by-stage
+  //' equivalence weights to be used.
+  //' @param equivalence_vec_arma An empty Armadillo double floating point
+  //' vector to hold the stage-by-stage equivalence weights to be used.
+  //' @param eq_vec_length An empty integer to hold the length of the
+  //' equivalence vectors.
+  //' @param stage_weights The RObject version of the object input in argument
+  //' \code{stage_weights}, or the first element of the list input there.
+  //' @param format The MPM format code being used.
+  //' @param used_matsize The matrix dimensions, as previously measured.
+  //' 
+  //' @return No objects are returned, though some inputs are modified.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline void equivalence_prep (DataFrame& equivalence_frame,
+    NumericVector& equivalence_vec, arma::vec& equivalence_vec_arma,
+    int& eq_vec_length, const RObject stage_weights, const int format,
+    const int used_matsize) {
+    
+    if (is<DataFrame>(stage_weights)) {
+      equivalence_frame = as<DataFrame>(stage_weights);
+      if (!equivalence_frame.hasAttribute("class")) {
+        throw Rcpp::exception("Argument stage_weights should be a data frame of class lefkoEq.", 
+          false);
+      }
+      
+      CharacterVector eq_list_df_class = equivalence_frame.attr("class");
+      bool found_lefkoEq {false};
+      for (int j = 0; j < static_cast<int>(eq_list_df_class.length()); j++) {
+        if (eq_list_df_class(j) == "lefkoEq" || eq_list_df_class(j) == "adaptEq") found_lefkoEq = true;
+      }
+      
+      if (!found_lefkoEq) {
+        throw Rcpp::exception("Argument stage_weights should be a data frame of class lefkoEq.",
+          false);
+      }
+      
+      IntegerVector eq_s2 = as<IntegerVector>(equivalence_frame["stage_id_2"]);
+      IntegerVector eq_s1 = as<IntegerVector>(equivalence_frame["stage_id_1"]);
+      IntegerVector eq_a2 = as<IntegerVector>(equivalence_frame["age2"]);
+      IntegerVector eq_rn = clone(as<IntegerVector>(equivalence_frame["row_num"]));
+      NumericVector eq_val = as<NumericVector>(equivalence_frame["value"]);
+      
+      eq_rn = eq_rn - 1;
+      
+      if (format < 3) {
+        if (IntegerVector::is_na(eq_s1(0))) {
+          throw Rcpp::exception("Enter stage pairs in lefkoEq objects used for historical MPMs.", 
+            false);
+        }
+        if (IntegerVector::is_na(eq_s2(0))) {
+          throw Rcpp::exception("Entries in column stage2 of lefkoEq objects cannot be empty except in Leslie MPMs.",
+            false);
+        }
+      } else if (format > 3) {
+        if (IntegerVector::is_na(eq_a2(0))) {
+          throw Rcpp::exception("Enter ages in lefkoEq objects used for age-by-stage MPMs.",
+            false);
+        }
+        if (format == 4) {
+          if (IntegerVector::is_na(eq_s2(0))) {
+            throw Rcpp::exception("Entries in column stage2 of lefkoEq objects cannot be empty except in Leslie MPMs.",
+              false);
+          }
+        }
+      } else {
+        if (IntegerVector::is_na(eq_s2(0))) {
+          throw Rcpp::exception("Entries in column stage2 of lefkoEq objects cannot be empty except in Leslie MPMs.",
+            false);
+        }
+      }
+      
+      if (max(eq_rn) > used_matsize) {
+        throw Rcpp::exception("Some row numbers in an entered lefkoEq object are too high.", 
+          false);
+      }
+      
+      if (min(eq_val) < 0.0) {
+        throw Rcpp::exception("Values in argument stage weights may not be negative.", false);
+      }
+      
+      NumericVector current_eq (used_matsize, 1.0);
+      for (int j = 0; j < static_cast<int>(eq_rn.length()); j++) {
+        current_eq(eq_rn(j)) = eq_val(j);
+      }
+      
+      equivalence_vec = current_eq;
+      equivalence_vec_arma = as<arma::vec>(equivalence_vec);
+      eq_vec_length = static_cast<int>(equivalence_vec.length());
+      
+    } else if (is<NumericVector>(stage_weights) || is<IntegerVector>(stage_weights)) {
+      equivalence_vec = as<NumericVector>(stage_weights);
+      eq_vec_length = static_cast<int>(equivalence_vec.length());
+      
+      if (eq_vec_length != used_matsize) {
+        throw Rcpp::exception("Numeric vector in argument stage_weights should be as long as there are rows in each matrix.", 
+          false);
+      }
+      
+      equivalence_vec_arma = as<arma::vec>(equivalence_vec);
+      
+    } else {
+      throw Rcpp::exception("Argument stage_weights should be a data frame of class lefkoEq.", 
+        false);
+    }
+  }
+  
 }
 #endif

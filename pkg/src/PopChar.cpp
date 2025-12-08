@@ -5557,12 +5557,12 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' 
 //' Function \code{density_input()} provides all necessary data to incorporate
 //' density dependence into a \code{lefkoMat} object, a list of matrices, or a
-//' single matrix. Four forms of density dependence are allowed, including the
-//' Ricker function, the Beverton-Holt function, the Usher function, and the
-//' logistic function. In each case, density must have an effect with a delay of
-//' at least one time-step (see Notes). The resulting data frame provides a
-//' guide for other \code{lefko3} functions to modify matrix elements by
-//' density.
+//' single matrix. Five forms of density dependence are allowed, including the
+//' Ricker function, the Beverton-Holt function, the Usher function, the
+//' logistic function, and the additive limit function. In each case, density
+//' must have an effect with a delay of at least one time-step (see Notes). The
+//' resulting data frame provides a guide for other \code{lefko3} functions to
+//' modify matrix elements by density.
 //'
 //' @name density_input
 //' 
@@ -5585,11 +5585,12 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' transition subject to density dependence. Options include \code{1},
 //' \code{ricker}, \code{ric}, or \code{r} for the Ricker function; \code{2},
 //' \code{beverton}, \code{bev}, and \code{b} for the Beverton-Holt function;
-//' \code{3}, \code{usher}, \code{ush}, and \code{u} for the Usher function; and
+//' \code{3}, \code{usher}, \code{ush}, and \code{u} for the Usher function;
 //' \code{4}, \code{logistic}, \code{log}, and \code{l} for the logistic
-//' function. If only a single code is provided, then all noted transitions are
-//' assumed to be subject to this style of density dependence. Defaults to
-//' \code{ricker}.
+//' function; and \code{5}, \code{additive}, \code{add}, and \code{a} for the
+//' additive limit function. If only a single code is provided, then all noted
+//' transitions are assumed to be subject to this style of density dependence.
+//' Defaults to \code{ricker}.
 //' @param time_delay An integer vector indicating the number of occasions back
 //' on which density dependence operates. Defaults to \code{1}, and may not equal
 //' any integer less than 1. If a single number is input, then all noted
@@ -5597,16 +5598,17 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \code{1}.
 //' @param alpha A vector indicating the numeric values to use as the
 //' alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
-//' the value of the carrying capacity \emph{K} to use in the logistic equation
-//' (see \code{Notes} section for more on this term). If a single number is
-//' provided, then all noted transitions are assumed to be subject to this value
-//' of alpha. Defaults to \code{1}.
+//' the value of the carrying capacity \emph{K} to use in the logistic or
+//' additive limit functions (see \code{Notes} section for more on this term).
+//' If a single number is provided, then all noted transitions are assumed to be
+//' subject to this value of alpha. Defaults to \code{1}.
 //' @param beta A vector indicating the numeric values to use as the beta term in
-//' the two parameter Ricker, Beverton-Holt, or Usher function. Used to indicate
-//' whether to use \emph{K} as a hard limit in the logistic equation (see section
-//' \code{Notes} below). If a single number is provided, then all noted
-//' transitions are assumed to be subject to this value of \code{beta}. Defaults
-//' to \code{1}.
+//' the two parameter Ricker, Beverton-Holt, or Usher function, or the
+//' multiplier on the previous population size in the additive limit function.
+//' Also used to indicate whether to use \emph{K} as a hard limit in the
+//' logistic equation (see section \code{Notes} below). If a single number is
+//' provided, then all noted transitions are assumed to be subject to this value
+//' of \code{beta}. Defaults to \code{1}.
 //' @param type A vector denoting the kind of transition between occasions
 //' \emph{t} and \emph{t}+1 to be replaced. This should be entered as \code{1},
 //' \code{S}, or \code{s} for the replacement of a survival transition; or 
@@ -5655,9 +5657,10 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' 
 //' The parameters \code{alpha} and \code{beta} are applied according to the
 //' two-parameter Ricker function, the two-parameter Beverton-Holt function, the
-//' two-parameter Usher function, or the one-parameter logistic function.
-//' Although the default is that a 1 time step delay is assumed, greater time
-//' delays can be set through the \code{time_delay} option.
+//' two-parameter Usher function, the one-parameter logistic function, or the
+//' two-parameter additive limit function. Although the default is that a 1 time
+//' step delay is assumed, greater time delays can be set through the
+//' \code{time_delay} option.
 //' 
 //' Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
 //' abbreviations for groups of stages. Use \code{rep} if all reproductive stages
@@ -5775,7 +5778,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     agebystage = true;
   } 
   if (stageframe.length() == 1) {
-    throw Rcpp::exception("Input lefkoMat object does not appear to have a stageframe, which should be element ahstages.",
+    throw Rcpp::exception("Input lefkoMat object appears to be missing a stageframe.",
       false);
   }
   
@@ -5993,6 +5996,8 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     StringVector usher_style = {"3", "usher", "ushe", "ush", "us", "u"};
     StringVector logistic_style = {"4", "logistic", "logisti", "logist", "logis",
       "logi", "log", "lo", "l"};
+    StringVector recr_box_style = {"5", "additive", "additiv", "additi",
+      "addit", "addi", "add", "ad", "a"};
     
     if (is<IntegerVector>(style)) {
       IntegerVector style_ = as<IntegerVector>(style);
@@ -6001,7 +6006,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
       arma::ivec style_arma = as<arma::ivec>(style_);
       
       arma::uvec bad_lows = find(style_arma < 1);
-      arma::uvec bad_highs = find(style_arma > 4);
+      arma::uvec bad_highs = find(style_arma > 5);
       
       if (bad_lows.n_elem > 0 || bad_highs.n_elem > 0) {
         throw Rcpp::exception("Invalid density dependence style entered.", false);
@@ -6014,7 +6019,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
       arma::ivec style_arma = as<arma::ivec>(style_);
       
       arma::uvec bad_lows = find(style_arma < 1);
-      arma::uvec bad_highs = find(style_arma > 4);
+      arma::uvec bad_highs = find(style_arma > 5);
       
       if (bad_lows.n_elem > 0 || bad_highs.n_elem > 0) {
         throw Rcpp::exception("Invalid density dependence style entered.", false);
@@ -6052,7 +6057,13 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
         
         for (int j = 0; j < logistic_style.length(); j++) {
           if (stringcompare_hard(ssv, as<std::string>(logistic_style(j)))) {
-            style_vec_(i) = 1;
+            style_vec_(i) = 4;
+          }
+        }
+        
+        for (int j = 0; j < recr_box_style.length(); j++) {
+          if (stringcompare_hard(ssv, as<std::string>(recr_box_style(j)))) {
+            style_vec_(i) = 5;
           }
         }
       }
@@ -6110,7 +6121,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     }
     
   } else {
-    NumericVector alpha_vec_ = {1};
+    NumericVector alpha_vec_ = {1.};
     alpha_vec = alpha_vec_;
   }
   
@@ -6123,7 +6134,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
       throw Rcpp::exception("Only floating point decimals are allowed in option beta.", false);
     }
   } else {
-    NumericVector beta_vec_ = {1};
+    NumericVector beta_vec_ = {1.};
     beta_vec = beta_vec_;
   }
   

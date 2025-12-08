@@ -1968,7 +1968,8 @@ historicalize3 <- function(data, popidcol = 0, patchidcol = 0, individcol,
   }
   
   new_frame <- .sf_reassess(stageframe, supplement = NULL, overwrite = NULL,
-    repmatrix = NULL, agemat = agebystage, historical = historical, format = 1)
+    repmatrix = NULL, agemat = agebystage, historical = historical, format = 1,
+    import_lM = TRUE)
   stageframe <- new_frame$stageframe
   stageframe <- stageframe[-(dim(stageframe)[1]),]
   # Entry stage issue
@@ -2159,11 +2160,22 @@ historicalize3 <- function(data, popidcol = 0, patchidcol = 0, individcol,
     stageframe$entrystage[entrystage] <- 1
   }
   
+  if (!is.element("stage_id", names(stageframe))) {
+    stageframe <- cbind.data.frame(stage_id = c(1:numstages), stageframe)
+  }
+  
+  stage_ids_pos <- which(names(stageframe) == "stage_id")
+  num_of_stage_id <- length(stage_ids_pos)
+  
+  if (num_of_stage_id > 1) {
+    stageframe <- stageframe[, -stage_ids_pos[(c(2:length(num_of_stage_id)))]]
+  }
+  
   dataqc <- c(NA, NA)
   
   output <- list(A = mats, U = U, F = F, hstages = hstages, agestages = NA,
-    ahstages = cbind.data.frame(stage_id = c(1:numstages), stageframe),
-    labels = labels, matrixqc = matrixqc, dataqc = dataqc)
+    ahstages = stageframe, labels = labels, matrixqc = matrixqc,
+    dataqc = dataqc)
   class(output) <- "lefkoMat"
   
   return(output)
