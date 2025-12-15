@@ -3780,16 +3780,18 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   }
   
   // Input variables in current density input frame
-  StringVector stage3_di = dens_inp["stage3"];
-  StringVector stage2_di = dens_inp["stage2"];
-  StringVector stage1_di = dens_inp["stage1"];
-  IntegerVector age2_di = dens_inp["age2"];
-  IntegerVector style_di = dens_inp["style"];
-  IntegerVector time_delay_di = dens_inp["time_delay"];
-  NumericVector alpha_di = dens_inp["alpha"];
-  NumericVector beta_di = dens_inp["beta"];
-  IntegerVector type_di = dens_inp["type"];
-  IntegerVector type_t12_di = dens_inp["type_t12"];
+  StringVector stage3_di = as<StringVector>(dens_inp["stage3"]);
+  StringVector stage2_di = as<StringVector>(dens_inp["stage2"]);
+  StringVector stage1_di = as<StringVector>(dens_inp["stage1"]);
+  IntegerVector age2_di = as<IntegerVector>(dens_inp["age2"]);
+  IntegerVector style_di = as<IntegerVector>(dens_inp["style"]);
+  IntegerVector time_delay_di = as<IntegerVector>(dens_inp["time_delay"]);
+  NumericVector alpha_di = as<NumericVector>(dens_inp["alpha"]);
+  NumericVector beta_di = as<NumericVector>(dens_inp["beta"]);
+  NumericVector gamma_di = as<NumericVector>(dens_inp["gamma"]);
+  IntegerVector type_di = as<IntegerVector>(dens_inp["type"]);
+  IntegerVector type_t12_di = as<IntegerVector>(dens_inp["type_t12"]);
+  LogicalVector s3_overwrite_di = as<LogicalVector>(dens_inp["s3_overwrite"]);
   int di_rows = stage3_di.length(); // Size of density input frame
   
   StringVector unique_stages = unique(stagevec);
@@ -5045,16 +5047,18 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   // New output data frame set-up
   int newdi_rows = sum(s123_calls);
   
-  StringVector stage3_newdi(newdi_rows);
-  StringVector stage2_newdi(newdi_rows);
-  StringVector stage1_newdi(newdi_rows);
-  IntegerVector age2_newdi(newdi_rows);
-  IntegerVector style_newdi(newdi_rows);
-  NumericVector alpha_newdi(newdi_rows);
-  NumericVector beta_newdi(newdi_rows);
-  IntegerVector time_delay_newdi(newdi_rows);
-  IntegerVector type_newdi(newdi_rows);
-  IntegerVector type_t12_newdi(newdi_rows);
+  StringVector stage3_newdi (newdi_rows);
+  StringVector stage2_newdi (newdi_rows);
+  StringVector stage1_newdi (newdi_rows);
+  IntegerVector age2_newdi (newdi_rows);
+  IntegerVector style_newdi (newdi_rows);
+  NumericVector alpha_newdi (newdi_rows);
+  NumericVector beta_newdi (newdi_rows);
+  NumericVector gamma_newdi (newdi_rows);
+  IntegerVector time_delay_newdi (newdi_rows);
+  IntegerVector type_newdi (newdi_rows);
+  IntegerVector type_t12_newdi (newdi_rows);
+  LogicalVector s3_overwrite_newdi (newdi_rows);
   
   int overall_counter {0};
   // int group_check {0};
@@ -5279,13 +5283,15 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
           }
           
           // Set up of most core variables in output data frame
-          age2_newdi(basepoints(i) + overall_counter) = age2_di(i);
-          style_newdi(basepoints(i) + overall_counter) = style_di(i);
-          alpha_newdi(basepoints(i) + overall_counter) = alpha_di(i);
-          beta_newdi(basepoints(i) + overall_counter) = beta_di(i);
-          time_delay_newdi(basepoints(i) + overall_counter) = time_delay_di(i);
-          type_newdi(basepoints(i) + overall_counter) = type_di(i);
-          type_t12_newdi(basepoints(i) + overall_counter) = type_t12_di(i);
+          age2_newdi (basepoints(i) + overall_counter) = age2_di(i);
+          style_newdi (basepoints(i) + overall_counter) = style_di(i);
+          alpha_newdi (basepoints(i) + overall_counter) = alpha_di(i);
+          beta_newdi (basepoints(i) + overall_counter) = beta_di(i);
+          gamma_newdi (basepoints(i) + overall_counter) = gamma_di(i);
+          time_delay_newdi (basepoints(i) + overall_counter) = time_delay_di(i);
+          type_newdi (basepoints(i) + overall_counter) = type_di(i);
+          type_t12_newdi (basepoints(i) + overall_counter) = type_t12_di(i);
+          s3_overwrite_newdi (basepoints(i) + overall_counter) = s3_overwrite_di(i);
           
           // Time t
           if (stringcompare_hard(s2used, "prop")) {
@@ -5530,7 +5536,7 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   }
   
   // Output final set-up
-  Rcpp::List new_di(10);
+  Rcpp::List new_di(12);
   
   new_di(0) = stage3_newdi;
   new_di(1) = stage2_newdi;
@@ -5539,12 +5545,14 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   new_di(4) = style_newdi;
   new_di(5) = alpha_newdi;
   new_di(6) = beta_newdi;
-  new_di(7) = time_delay_newdi;
-  new_di(8) = type_newdi;
-  new_di(9) = type_t12_newdi;
+  new_di(7) = gamma_newdi;
+  new_di(8) = time_delay_newdi;
+  new_di(9) = type_newdi;
+  new_di(10) = type_t12_newdi;
+  new_di(11) = s3_overwrite_newdi;
   
   CharacterVector namevec = {"stage3", "stage2", "stage1", "age2", "style",
-    "alpha", "beta", "time_delay", "type", "type_t12"};
+    "alpha", "beta", "gamma", "time_delay", "type", "type_t12", "s3_overwrite"};
   CharacterVector newclass = {"data.frame"};
   new_di.attr("names") = namevec;
   new_di.attr("row.names") = Rcpp::IntegerVector::create(NA_INTEGER, newdi_rows);
@@ -5587,10 +5595,11 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \code{beverton}, \code{bev}, and \code{b} for the Beverton-Holt function;
 //' \code{3}, \code{usher}, \code{ush}, and \code{u} for the Usher function;
 //' \code{4}, \code{logistic}, \code{log}, and \code{l} for the logistic
-//' function; and \code{5}, \code{additive}, \code{add}, and \code{a} for the
-//' additive limit function. If only a single code is provided, then all noted
-//' transitions are assumed to be subject to this style of density dependence.
-//' Defaults to \code{ricker}.
+//' function; \code{5}, \code{additive}, \code{add}, and \code{a} for the
+//' additive limit function; and \code{6}, \code{absolute}, or \code{abs} for
+//' the absolute limit function. If only a single code is provided, then all
+//' noted transitions are assumed to be subject to this style of density
+//' dependence. Defaults to \code{ricker}.
 //' @param time_delay An integer vector indicating the number of occasions back
 //' on which density dependence operates. Defaults to \code{1}, and may not equal
 //' any integer less than 1. If a single number is input, then all noted
@@ -5598,17 +5607,22 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \code{1}.
 //' @param alpha A vector indicating the numeric values to use as the
 //' alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
-//' the value of the carrying capacity \emph{K} to use in the logistic or
-//' additive limit functions (see \code{Notes} section for more on this term).
-//' If a single number is provided, then all noted transitions are assumed to be
-//' subject to this value of alpha. Defaults to \code{1}.
-//' @param beta A vector indicating the numeric values to use as the beta term in
-//' the two parameter Ricker, Beverton-Holt, or Usher function, or the
-//' multiplier on the previous population size in the additive limit function.
-//' Also used to indicate whether to use \emph{K} as a hard limit in the
-//' logistic equation (see section \code{Notes} below). If a single number is
-//' provided, then all noted transitions are assumed to be subject to this value
-//' of \code{beta}. Defaults to \code{1}.
+//' the value of the carrying capacity \emph{K} to use in the logistic, additive
+//' limit, or absolute limit functions (see \code{Notes} section for more on
+//' this term). If a single number is provided, then all noted transitions are
+//' assumed to be subject to this value of alpha. Defaults to \code{1}.
+//' @param beta A vector indicating the numeric values to use as the beta term
+//' in the two parameter Ricker, Beverton-Holt, or Usher function, or the
+//' multiplier on the previous population size in the additive limit function,
+//' or the minimum limit for the number of individuals in \code{stage3} in the
+//' absolute limit function. Also used to indicate whether to use \emph{K} as a
+//' hard limit in the logistic equation (see section \code{Notes} below). If a
+//' single number is provided, then all noted transitions are assumed to be
+//' subject to this value of \code{beta}. Defaults to \code{1}.
+//' @param gamma A vector indicating the numeric values to use as the gamma term
+//' in any function using a third term. Currently, this is only used in the
+//' additive limit function, and denotes the minimum number of individuals
+//' allowed in a particular stage.
 //' @param type A vector denoting the kind of transition between occasions
 //' \emph{t} and \emph{t}+1 to be replaced. This should be entered as \code{1},
 //' \code{S}, or \code{s} for the replacement of a survival transition; or 
@@ -5621,6 +5635,12 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
 //' fecundity transitions. Defaults to \code{1} for survival transition, with
 //' impacts only on the construction of deVries-format hMPMs.
+//' @param s3_overwrite An optional logical value or vector detailing whether
+//' to overwrite the number of individuals given in \code{stage3} upon using the
+//' logistic, additive limit, or absolute limit functions for density
+//' dependence. This is generally done to reduce the possibility of overshooting
+//' K, and of undershooting any minimum limits provided. Defaults to
+//' \code{FALSE}.
 //' 
 //' @return A data frame of class \code{lefkoDens}. This object can be used as
 //' input in function \code{\link{projection3}()}.
@@ -5636,16 +5656,21 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' Ricker, Beverton-Holt, Usher, or logistic function, respectively.}
 //' \item{time_delay}{The time delay on density dependence, in time steps.}
 //' \item{alpha}{The value of alpha in the Ricker, Beverton-Holt, or Usher
-//' function, or the value of carrying capacity, \emph{K}, in the logistic
-//' function.}
+//' function, or the value of carrying capacity, \emph{K}, in the logistic,
+//' additive limit, or absolute limit functions.}
 //' \item{beta}{The value of beta in the Ricker, Beverton-Holt, or Usher
-//' function.}
+//' function, or the value of the minimum limit in the absolute limit function.}
+//' \item{gamma}{The value of gamma, if such a value exists, as in the additive
+//' limit function.}
 //' \item{type}{Designates whether the transition from occasion \emph{t} to
 //' occasion \emph{t}+1 is a survival transition probability (1), or a fecundity
 //' rate (2).}
 //' \item{type_t12}{Designates whether the transition from occasion \emph{t}-1 to
 //' occasion \emph{t} is a survival transition probability (1), a fecundity rate
 //' (2).}
+//' \item{s3_overwrite}{Designates whether a density dependent transition using
+//' the additive limit function will have the number of individuals in
+//' \code{stage3} overwritten by that function.}
 //' 
 //' @section Notes:
 //' This function provides inputs when density dependence is operationalized
@@ -5658,9 +5683,14 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' The parameters \code{alpha} and \code{beta} are applied according to the
 //' two-parameter Ricker function, the two-parameter Beverton-Holt function, the
 //' two-parameter Usher function, the one-parameter logistic function, or the
-//' two-parameter additive limit function. Although the default is that a 1 time
-//' step delay is assumed, greater time delays can be set through the
-//' \code{time_delay} option.
+//' additive limit function. Although the default is that a 1 time step delay is
+//' assumed, greater time delays can be set through the \code{time_delay}
+//' option.
+//' 
+//' The gamma term is currently only used for the additive limit function, and
+//' designates a minimum number of individuals in a particular stage, if other
+//' than 0. If used, then the limit will be applied to the stage given in
+//' \code{stage3}.
 //' 
 //' Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
 //' abbreviations for groups of stages. Use \code{rep} if all reproductive stages
@@ -5739,8 +5769,9 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   Nullable<RObject> stage2 = R_NilValue, Nullable<RObject> stage1 = R_NilValue,
   Nullable<RObject> age2 = R_NilValue, Nullable<RObject> style = R_NilValue,
   Nullable<RObject> time_delay = R_NilValue, Nullable<RObject> alpha = R_NilValue,
-  Nullable<RObject> beta = R_NilValue, Nullable<RObject> type = R_NilValue,
-  Nullable<RObject> type_t12 = R_NilValue) {
+  Nullable<RObject> beta = R_NilValue, Nullable<RObject> gamma = R_NilValue,
+  Nullable<RObject> type = R_NilValue, Nullable<RObject> type_t12 = R_NilValue,
+  Nullable<RObject> s3_overwrite = R_NilValue) {
   
   bool historical = false;
   bool agebystage = false;
@@ -5926,8 +5957,10 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   IntegerVector time_delay_vec;
   NumericVector alpha_vec;
   NumericVector beta_vec;
+  NumericVector gamma_vec;
   IntegerVector type_vec;
   IntegerVector type_t12_vec;
+  LogicalVector s3_overwrite_vec;
   
   if (age2.isNotNull()) {
     if (!stage2used && !stage3used) ageonly = true;
@@ -5998,6 +6031,8 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
       "logi", "log", "lo", "l"};
     StringVector recr_box_style = {"5", "additive", "additiv", "additi",
       "addit", "addi", "add", "ad", "a"};
+    StringVector abs_lim_style = {"6", "absolute", "absolut", "absolu", "absol",
+      "abso", "abs", "ab"};
     
     if (is<IntegerVector>(style)) {
       IntegerVector style_ = as<IntegerVector>(style);
@@ -6006,7 +6041,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
       arma::ivec style_arma = as<arma::ivec>(style_);
       
       arma::uvec bad_lows = find(style_arma < 1);
-      arma::uvec bad_highs = find(style_arma > 5);
+      arma::uvec bad_highs = find(style_arma > 6);
       
       if (bad_lows.n_elem > 0 || bad_highs.n_elem > 0) {
         throw Rcpp::exception("Invalid density dependence style entered.", false);
@@ -6019,7 +6054,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
       arma::ivec style_arma = as<arma::ivec>(style_);
       
       arma::uvec bad_lows = find(style_arma < 1);
-      arma::uvec bad_highs = find(style_arma > 5);
+      arma::uvec bad_highs = find(style_arma > 6);
       
       if (bad_lows.n_elem > 0 || bad_highs.n_elem > 0) {
         throw Rcpp::exception("Invalid density dependence style entered.", false);
@@ -6064,6 +6099,12 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
         for (int j = 0; j < recr_box_style.length(); j++) {
           if (stringcompare_hard(ssv, as<std::string>(recr_box_style(j)))) {
             style_vec_(i) = 5;
+          }
+        }
+        
+        for (int j = 0; j < abs_lim_style.length(); j++) {
+          if (stringcompare_hard(ssv, as<std::string>(abs_lim_style(j)))) {
+            style_vec_(i) = 6;
           }
         }
       }
@@ -6136,6 +6177,19 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   } else {
     NumericVector beta_vec_ = {1.};
     beta_vec = beta_vec_;
+  }
+  
+  if (gamma.isNotNull()) {
+    if (is<NumericVector>(gamma)) {
+      NumericVector gamma_vec_ = as<NumericVector>(gamma);
+      gamma_vec = gamma_vec_;
+      
+    } else {
+      throw Rcpp::exception("Only floating point decimals are allowed in option gamma.", false);
+    }
+  } else {
+    NumericVector gamma_vec_ = {0.};
+    gamma_vec = gamma_vec_;
   }
   
   if (type.isNotNull()) {
@@ -6242,6 +6296,30 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     type_t12_vec = type_t12_vec_;
   }
   
+  if (s3_overwrite.isNotNull()) {
+    if (is<NumericVector>(s3_overwrite) || is<IntegerVector>(s3_overwrite)) {
+      arma::vec core_s3ow_input = as<arma::vec>(s3_overwrite);
+      arma::uvec s3ow_nonzero = find(core_s3ow_input);
+      
+      LogicalVector s3_overwrite_vec_ (static_cast<int>(core_s3ow_input.n_elem));
+      for (int i = 0; i < static_cast<int>(s3ow_nonzero.n_elem); i++) {
+        s3_overwrite_vec_(s3ow_nonzero(i)) = true;
+      }
+      
+      s3_overwrite_vec = s3_overwrite_vec_;
+      
+    } else if (is<LogicalVector>(s3_overwrite)) {
+      LogicalVector s3_overwrite_vec_ = as<LogicalVector>(s3_overwrite);
+      s3_overwrite_vec = s3_overwrite_vec_;
+      
+    } else {
+      throw Rcpp::exception("Only logical values are allowed in option s3_overwrite.", false);
+    }
+  } else {
+    LogicalVector s3_overwrite_vec_ = {false};
+    s3_overwrite_vec = s3_overwrite_vec_;
+  }
+  
   StringVector new_stage3_names;
   StringVector new_stage2_names;
   StringVector new_stage1_names;
@@ -6250,15 +6328,18 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   IntegerVector new_time_delay_vec;
   NumericVector new_alpha_vec;
   NumericVector new_beta_vec;
+  NumericVector new_gamma_vec;
   IntegerVector new_type_vec;
   IntegerVector new_type_t12_vec;
+  LogicalVector new_s3_overwrite_vec;
   
   IntegerVector vec_lengths = {static_cast<int>(stage3_names.length()),
     static_cast<int>(stage2_names.length()), static_cast<int>(stage1_names.length()),
     static_cast<int>(age2_vec.length()), static_cast<int>(style_vec.length()),
     static_cast<int>(time_delay_vec.length()), static_cast<int>(alpha_vec.length()),
-    static_cast<int>(beta_vec.length()), static_cast<int>(type_vec.length()),
-    static_cast<int>(type_t12_vec.length())};
+    static_cast<int>(beta_vec.length()), static_cast<int>(gamma_vec.length()),
+    static_cast<int>(type_vec.length()), static_cast<int>(type_t12_vec.length()),
+    static_cast<int>(s3_overwrite_vec.length())};
   int vec_max = max(vec_lengths);
   
   if (stage3_names.length() != vec_max) {
@@ -6381,12 +6462,37 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     new_beta_vec = beta_vec;
   }
   
+  if (gamma_vec.length() != vec_max) {
+    if (gamma_vec.length() == 1) {
+      NumericVector ngv (vec_max, gamma_vec(0));
+      new_gamma_vec = ngv;
+      
+    } else {
+      throw Rcpp::exception("Vector gamma is not the correct length.", false);
+    }
+  } else {
+    new_gamma_vec = gamma_vec;
+  }
+  
+  if (s3_overwrite_vec.length() != vec_max) {
+    if (s3_overwrite_vec.length() == 1) {
+      LogicalVector s3owv (vec_max, s3_overwrite_vec(0));
+      new_s3_overwrite_vec = s3owv;
+      
+    } else {
+      throw Rcpp::exception("Vector s3_overwrite is not the correct length.", false);
+    }
+  } else {
+    new_s3_overwrite_vec = s3_overwrite_vec;
+  }
+  
   DataFrame output_tab = DataFrame::create(_["stage3"] = new_stage3_names,
     _["stage2"] = new_stage2_names, _["stage1"] = new_stage1_names,
     _["age2"] = new_age2_vec, _["style"] = new_style_vec,
     _["time_delay"] = new_time_delay_vec, _["alpha"] = new_alpha_vec,
-    _["beta"] = new_beta_vec, _["type"] = new_type_vec,
-    _["type_t12"] = new_type_t12_vec);
+    _["beta"] = new_beta_vec, _["gamma"] = new_gamma_vec,
+    _["type"] = new_type_vec, _["type_t12"] = new_type_t12_vec,
+    _["s3_overwrite"] = new_s3_overwrite_vec);
   
   DataFrame output = density_reassess(stageframe, output_tab, agestages,
     historical, agebystage);

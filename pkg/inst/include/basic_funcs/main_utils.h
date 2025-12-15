@@ -10241,6 +10241,9 @@ namespace LefkoUtils {
   //' @param dyn_beta An empty Armadillo double floating point vector, given as
   //' a reference to be modified. Will provide the values of beta to be used in
   //' density adjustment.
+  //' @param dyn_gamma An empty Armadillo double floating point vector, given as
+  //' a reference to be modified. Will provide the values of gamma to be used in
+  //' density adjustment.
   //' @param dens_input The data frame input via the \code{density} argument, or
   //' a single data frame from the list input there.
   //' @param hstages The \code{hstages} data frame within the input lefkoMat
@@ -10256,9 +10259,9 @@ namespace LefkoUtils {
   //' @keywords internal
   //' @noRd
   inline void density_prep (List& dens_index, arma::uvec& dyn_style,
-    arma::vec& dyn_alpha, arma::vec& dyn_beta, const DataFrame dens_input,
-    const DataFrame hstages, const DataFrame stageframe, const double exp_tol,
-    const bool historical) {
+    arma::vec& dyn_alpha, arma::vec& dyn_beta, arma::vec& dyn_gamma,
+    const DataFrame dens_input, const DataFrame hstages,
+    const DataFrame stageframe, const double exp_tol, const bool historical) {
     
     Rcpp::StringVector di_stage3 = as<StringVector>(dens_input["stage3"]);
     Rcpp::StringVector di_stage2 = as<StringVector>(dens_input["stage2"]);
@@ -10396,9 +10399,10 @@ namespace LefkoUtils {
     dyn_style = as<arma::uvec>(dens_input["style"]);
     dyn_alpha = as<arma::vec>(dens_input["alpha"]);
     dyn_beta = as<arma::vec>(dens_input["beta"]);
+    dyn_gamma = as<arma::vec>(dens_input["gamma"]);
     
     for (int i = 0; i < static_cast<int>(dyn_style.n_elem); i++) {
-      if (dyn_style(i) < 1 || dyn_style(i) > 5) pop_error("density inputs", "", "", 21);
+      if (dyn_style(i) < 1 || dyn_style(i) > 6) pop_error("density inputs", "", "", 21);
       
       if (dyn_style(i) == 1) {
         if (dyn_beta(i) > exp_tol) {

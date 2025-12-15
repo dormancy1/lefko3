@@ -1000,8 +1000,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // density_input
-DataFrame density_input(List mpm, Nullable<RObject> stage3, Nullable<RObject> stage2, Nullable<RObject> stage1, Nullable<RObject> age2, Nullable<RObject> style, Nullable<RObject> time_delay, Nullable<RObject> alpha, Nullable<RObject> beta, Nullable<RObject> type, Nullable<RObject> type_t12);
-RcppExport SEXP _lefko3_density_input(SEXP mpmSEXP, SEXP stage3SEXP, SEXP stage2SEXP, SEXP stage1SEXP, SEXP age2SEXP, SEXP styleSEXP, SEXP time_delaySEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP typeSEXP, SEXP type_t12SEXP) {
+DataFrame density_input(List mpm, Nullable<RObject> stage3, Nullable<RObject> stage2, Nullable<RObject> stage1, Nullable<RObject> age2, Nullable<RObject> style, Nullable<RObject> time_delay, Nullable<RObject> alpha, Nullable<RObject> beta, Nullable<RObject> gamma, Nullable<RObject> type, Nullable<RObject> type_t12, Nullable<RObject> s3_overwrite);
+RcppExport SEXP _lefko3_density_input(SEXP mpmSEXP, SEXP stage3SEXP, SEXP stage2SEXP, SEXP stage1SEXP, SEXP age2SEXP, SEXP styleSEXP, SEXP time_delaySEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP gammaSEXP, SEXP typeSEXP, SEXP type_t12SEXP, SEXP s3_overwriteSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -1014,9 +1014,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Nullable<RObject> >::type time_delay(time_delaySEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type beta(betaSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type gamma(gammaSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type type(typeSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type type_t12(type_t12SEXP);
-    rcpp_result_gen = Rcpp::wrap(density_input(mpm, stage3, stage2, stage1, age2, style, time_delay, alpha, beta, type, type_t12));
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type s3_overwrite(s3_overwriteSEXP);
+    rcpp_result_gen = Rcpp::wrap(density_input(mpm, stage3, stage2, stage1, age2, style, time_delay, alpha, beta, gamma, type, type_t12, s3_overwrite));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1226,7 +1228,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_miniMod", (DL_FUNC) &_lefko3_miniMod, 9},
     {"_lefko3_sf_create", (DL_FUNC) &_lefko3_sf_create, 29},
     {"_lefko3_actualstage3", (DL_FUNC) &_lefko3_actualstage3, 10},
-    {"_lefko3_density_input", (DL_FUNC) &_lefko3_density_input, 11},
+    {"_lefko3_density_input", (DL_FUNC) &_lefko3_density_input, 13},
     {"_lefko3_supplemental", (DL_FUNC) &_lefko3_supplemental, 17},
     {"_lefko3_edit_lM", (DL_FUNC) &_lefko3_edit_lM, 18},
     {"_lefko3_bambi3", (DL_FUNC) &_lefko3_bambi3, 2},

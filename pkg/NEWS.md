@@ -2,8 +2,8 @@
 
 ## NEW FEATURES
 
-* The additive limit function is now usable as a new density dependence function
-  in projection via function density_input().
+* The additive limit and absolute limit functions are now usable as new density
+  dependence functions in projection via function density_input().
   
 * Function projection3() can now handle density dependent projections using
   simple lists of matrices.

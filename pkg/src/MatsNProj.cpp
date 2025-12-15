@@ -3886,17 +3886,6 @@ List mothermccooney(const DataFrame& listofyears, const List& modelsuite,
   return output;
 }
 
-
-
-
-
-
-/////
-
-
-
-
-
 //' Project Single Function-based Matrix Projection Model
 //' 
 //' Function \code{f_projection3_single()} develops and projects single
@@ -7032,10 +7021,10 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
   arma::vec equivalence_vec_arma;
   int eq_vec_length {0};
   int eq_list_length {0};
-  bool equiv_used {false};
+  //bool equiv_used {false};
   
   if (stage_weights.isNotNull()) {
-    equiv_used = true;
+    //equiv_used = true;
       
     if (is<DataFrame>(stage_weights)) {
       RObject stage_weights_input = RObject(stage_weights);
@@ -7215,40 +7204,45 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
   double changing_element_F {0.0};
   
   int time_delay {1};
-  int dens_switch {0};
+  //int dens_switch {0};
   bool dens_elems = false;
   bool warn_trigger_neg = false;
   bool warn_trigger_1 = false;
   
   arma::uvec dyn_index321;
   arma::uvec dyn_index_col;
+  arma::uvec dyn_index_s3;
   arma::uvec dyn_style;
   arma::vec dyn_alpha;
   arma::vec dyn_beta;
+  arma::vec dyn_gamma;
   arma::uvec dyn_delay;
   arma::uvec dyn_type;
+  LogicalVector dyn_s3ow;
   int n_dyn_elems {0};
   int dens_list_length {0};
   
   if (density.isNotNull()) {
     RObject dens_thru1 = as<RObject>(density);
-    dens_switch = 1;
+    //dens_switch = 1;
     
     if (is<DataFrame>(dens_thru1)) {
       Rcpp::DataFrame dens_thru(dens_thru1);
       dens_input = dens_thru;
       
-      density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta, dens_thru,
-        hstages, stageframe, exp_tol, historical);
+      LefkoUtils::density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta,
+        dyn_gamma, dens_thru, hstages, stageframe, exp_tol, historical);
       
       dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-      dyn_index_col = as<arma::uvec>(dens_index[1]);
+      dyn_index_col = as<arma::uvec>(dens_index(1));
+      dyn_index_s3 = as<arma::uvec>(dens_index(0));
       dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
       dyn_type = as<arma::uvec>(dens_input["type"]);
+      dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
       n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
       
       for (int i = 0; i < static_cast<int>(dyn_style.n_elem); i++) {
-        if (dyn_style(i) < 1 || dyn_style(i) > 5) pop_error("density inputs", "", "", 21);
+        if (dyn_style(i) < 1 || dyn_style(i) > 6) pop_error("density inputs", "", "", 21);
         
         if (dyn_style(i) == 1) {
           if (dyn_beta(i) > exp_tol) {
@@ -7279,17 +7273,19 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
       if (is<DataFrame>(dens_input_list(0))) {
         Rcpp::DataFrame dens_thru_0(dens_input_list(0));
         
-        density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta, dens_thru_0,
-          hstages, stageframe, exp_tol, historical);
+        LefkoUtils::density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta,
+          dyn_gamma, dens_thru_0, hstages, stageframe, exp_tol, historical);
         
         dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-        dyn_index_col = as<arma::uvec>(dens_index[1]);
+        dyn_index_col = as<arma::uvec>(dens_index(1));
+        dyn_index_s3 = as<arma::uvec>(dens_index(0));
         dyn_delay = as<arma::uvec>(dens_thru_0["time_delay"]);
         dyn_type = as<arma::uvec>(dens_thru_0["type"]);
+        dyn_s3ow = as<LogicalVector>(dens_thru_0["s3_overwrite"]);
         n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
         
         for (int i = 0; i < static_cast<int>(dyn_style.n_elem); i++) {
-          if (dyn_style(i) < 1 || dyn_style(i) > 5) pop_error("density inputs", "", "", 21);
+          if (dyn_style(i) < 1 || dyn_style(i) > 6) pop_error("density inputs", "", "", 21);
           
           if (dyn_style(i) == 1) {
             if (dyn_beta(i) > exp_tol) {
@@ -7433,14 +7429,15 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
         
         if (dens_list_length > 1){
           dens_input = as<DataFrame>(dens_input_list(yearnumber));
-          density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta, dens_input,
-            hstages, stageframe, exp_tol, historical);
+          LefkoUtils:: density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta,
+            dyn_gamma, dens_input, hstages, stageframe, exp_tol, historical);
           
           dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-          dyn_index_col = as<arma::uvec>(dens_index[1]);
-          //dyn_index_s3 = as<arma::uvec>(dens_index[0]);
+          dyn_index_col = as<arma::uvec>(dens_index(1));
+          dyn_index_s3 = as<arma::uvec>(dens_index(0));
           dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
           dyn_type = as<arma::uvec>(dens_input["type"]);
+          dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
           n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
         }
         
@@ -7451,6 +7448,8 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
             equivalence_vec_arma, eq_vec_length, stage_weights_input, format,
             meanmatrows);
         }
+        
+        bool additive_limit_enforced {false};
         
         for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
           time_delay = dyn_delay(j);
@@ -7491,11 +7490,21 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
                 (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
             } else if (dyn_style(j) == 5) { // Additive limit function
               //Rcout << "Found additive limit function" << endl;
+              if (dyn_s3ow(j)) additive_limit_enforced = true;
               
               changing_element_U = Umat(dyn_index321(j)) + 
                 (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
               changing_element_F = Fmat(dyn_index321(j)) + 
                 (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+            } else if (dyn_style(j) == 6) {
+              if (dyn_s3ow(j)) additive_limit_enforced = true;
+              
+              changing_element_U = Umat_sp(dyn_index321(j));
+              changing_element_F = Fmat(dyn_index321(j));
+              
+              double min_limit = dyn_beta(j);
+              
+              if (changing_element_F < min_limit) changing_element_F = min_limit;
             }
             
             if (substoch == 1 && dyn_type(j) == 1) {
@@ -7558,6 +7567,52 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
         if (integeronly) {
           theseventhson = floor(theseventhson);
         }
+        
+        if (additive_limit_enforced) {
+          for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
+            double current_alpha = dyn_alpha(j);
+            double current_beta = dyn_beta(j);
+            double current_gamma = dyn_gamma(j);
+            double Nsum = sum(theseventhson);
+            
+            if (dyn_style(j) == 5) { // Additive limit function
+              //Rcout << "Found additive limit function" << endl;
+              //double current_s3_total = theseventhson(dyn_index_s3(j));
+              //double current_total_nots3 = accu(theseventhson) - current_s3_total;
+              
+              double K_limit = current_alpha;
+              
+              unsigned int current_stage = dyn_index_s3(j);
+              double current_stage_inds = theseventhson(current_stage);
+              double NK_diff = Nsum - current_stage_inds;
+              double max_limit = K_limit - NK_diff;
+              
+              double proposed_s3_total = current_beta * (current_alpha - pop_size);
+              if (proposed_s3_total < current_gamma) {
+                proposed_s3_total = current_gamma;
+              } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+                proposed_s3_total = max_limit;
+              }
+              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            } else if (dyn_style(j) == 6) {
+              double K_limit = current_alpha;
+              
+              unsigned int current_stage = dyn_index_s3(j);
+              double current_stage_inds = theseventhson(current_stage);
+              double NK_diff = Nsum - current_stage_inds;
+              double max_limit = K_limit - NK_diff;
+              
+              double proposed_s3_total = current_stage_inds;
+              if (proposed_s3_total < current_gamma) {
+                proposed_s3_total = current_gamma;
+              } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+                proposed_s3_total = max_limit;
+              }
+              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            }
+          }
+        }
+        
         popproj.col(i+1) = theseventhson;
         Rvecmat(i+1) = sum(theseventhson);
         
@@ -7695,14 +7750,15 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
         
         if (dens_list_length > 1){
           dens_input = as<DataFrame>(dens_input_list(yearnumber));
-          density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta, dens_input,
-            hstages, stageframe, exp_tol, historical);
+          LefkoUtils::density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta,
+            dyn_gamma, dens_input, hstages, stageframe, exp_tol, historical);
           
           dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-          dyn_index_col = as<arma::uvec>(dens_index[1]);
-          //dyn_index_s3 = as<arma::uvec>(dens_index[0]);
+          dyn_index_col = as<arma::uvec>(dens_index(1));
+          dyn_index_s3 = as<arma::uvec>(dens_index(0));
           dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
           dyn_type = as<arma::uvec>(dens_input["type"]);
+          dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
           n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
         }
         
@@ -7713,6 +7769,8 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
             equivalence_vec_arma, eq_vec_length, stage_weights_input, format,
             meanmatrows);
         }
+        
+        bool additive_limit_enforced {false};
         
         for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
           time_delay = dyn_delay(j);
@@ -7752,10 +7810,21 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
               changing_element_F = Fmat_sp(dyn_index321(j)) * 
                 (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
             } else if (dyn_style(j) == 5) { // Additive limit function
+              if (dyn_s3ow(j)) additive_limit_enforced = true;
+              
               changing_element_U = Umat_sp(dyn_index321(j)) + 
                 (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
               changing_element_F = Fmat_sp(dyn_index321(j)) + 
                 (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+            } else if (dyn_style(j) == 6) {
+              if (dyn_s3ow(j)) additive_limit_enforced = true;
+              
+              changing_element_U = Umat_sp(dyn_index321(j));
+              changing_element_F = Fmat_sp(dyn_index321(j));
+              
+              double min_limit = dyn_beta(j);
+              
+              if (changing_element_F < min_limit) changing_element_F = min_limit;
             }
             
             if (substoch == 1 && dyn_type(j) == 1) {
@@ -7819,6 +7888,52 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
         if (integeronly) {
           theseventhson_sp = floor(theseventhson_sp);
         }
+        
+        if (additive_limit_enforced) {
+          for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
+            double current_alpha = dyn_alpha(j);
+            double current_beta = dyn_beta(j);
+            double current_gamma = dyn_gamma(j);
+            double Nsum = sum(theseventhson);
+            
+            if (dyn_style(j) == 5) { // Additive limit function
+              //Rcout << "Found additive limit function" << endl;
+              //double current_s3_total = theseventhson(dyn_index_s3(j));
+              //double current_total_nots3 = accu(theseventhson) - current_s3_total;
+              
+              double K_limit = current_alpha;
+              
+              unsigned int current_stage = dyn_index_s3(j);
+              double current_stage_inds = theseventhson(current_stage);
+              double NK_diff = Nsum - current_stage_inds;
+              double max_limit = K_limit - NK_diff;
+              
+              double proposed_s3_total = current_beta * (current_alpha - pop_size);
+              if (proposed_s3_total < current_gamma) {
+                proposed_s3_total = current_gamma;
+              } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+                proposed_s3_total = max_limit;
+              }
+              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            } else if (dyn_style(j) == 6) {
+              double K_limit = current_alpha;
+              
+              unsigned int current_stage = dyn_index_s3(j);
+              double current_stage_inds = theseventhson(current_stage);
+              double NK_diff = Nsum - current_stage_inds;
+              double max_limit = K_limit - NK_diff;
+              
+              double proposed_s3_total = current_stage_inds;
+              if (proposed_s3_total < current_gamma) {
+                proposed_s3_total = current_gamma;
+              } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+                proposed_s3_total = max_limit;
+              }
+              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            }
+          }
+        }
+        
         popproj.col(i+1) = arma::vec(theseventhson_sp);
         Rvecmat(i+1) = sum(popproj.col(i+1));
         
@@ -16469,19 +16584,6 @@ arma::mat proj3sp(const arma::vec& start_vec, const List& core_list,
   }
 }
 
-
-
-
-
-
-
-
-///// proj3dens()
-
-
-
-
-
 //' Core Time-based Density-Dependent Population Matrix Projection Function
 //' 
 //' Function \code{proj3dens()} runs density-dependent matrix projections.
@@ -16575,8 +16677,10 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
   arma::uvec dyn_style;
   arma::vec dyn_alpha;
   arma::vec dyn_beta;
+  arma::vec dyn_gamma;
   arma::uvec dyn_delay;
   arma::uvec dyn_type;
+  LogicalVector dyn_s3ow;
   int n_dyn_elems;
   
   DataFrame equivalence_frame;
@@ -16587,26 +16691,29 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
   
   if (dens_list_length == 0) {
     dens_input = as<DataFrame>(dens_RO);
-    density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta, dens_input,
-      hstages, stageframe, exp_tol, historical);
+    LefkoUtils::density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta,
+      dyn_gamma, dens_input, hstages, stageframe, exp_tol, historical);
     
     dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-    dyn_index_col = as<arma::uvec>(dens_index[1]);
-    dyn_index_s3 = as<arma::uvec>(dens_index[0]);
+    dyn_index_col = as<arma::uvec>(dens_index(1));
+    dyn_index_s3 = as<arma::uvec>(dens_index(0));
     dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
     dyn_type = as<arma::uvec>(dens_input["type"]);
+    dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
     n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
+    
   } else if (dens_list_length == 1){
     dens_input_list = as<List>(dens_RO);
     dens_input = as<DataFrame>(dens_input_list(0));
-    density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta, dens_input,
-      hstages, stageframe, exp_tol, historical);
+    LefkoUtils::density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta,
+      dyn_gamma, dens_input, hstages, stageframe, exp_tol, historical);
     
     dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-    dyn_index_col = as<arma::uvec>(dens_index[1]);
-    dyn_index_s3 = as<arma::uvec>(dens_index[0]);
+    dyn_index_col = as<arma::uvec>(dens_index(1));
+    dyn_index_s3 = as<arma::uvec>(dens_index(0));
     dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
     dyn_type = as<arma::uvec>(dens_input["type"]);
+    dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
     n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
   } else {
     dens_input_list = as<List>(dens_RO);
@@ -16674,14 +16781,15 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
       
       if (dens_list_length > 1){
         dens_input = as<DataFrame>(dens_input_list((mat_order(i))));
-        density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta, dens_input,
-          hstages, stageframe, exp_tol, historical);
+        LefkoUtils::density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta,
+          dyn_gamma, dens_input, hstages, stageframe, exp_tol, historical);
         
         dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-        dyn_index_col = as<arma::uvec>(dens_index[1]);
-        dyn_index_s3 = as<arma::uvec>(dens_index[0]);
+        dyn_index_col = as<arma::uvec>(dens_index(1));
+        dyn_index_s3 = as<arma::uvec>(dens_index(0));
         dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
         dyn_type = as<arma::uvec>(dens_input["type"]);
+        dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
         n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
       }
       
@@ -16692,6 +16800,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
           equivalence_vec_arma, eq_vec_length, stage_weights_input, format,
           used_matsize);
       }
+      
+      bool additive_limit_enforced {false};
       
       for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
         time_delay = dyn_delay(j);
@@ -16723,8 +16833,17 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             changing_element = theprophecy(dyn_index321(j)) * 
               (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
           } else if (dyn_style(j) == 5) { // Additive limit function
+            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            
             changing_element = theprophecy(dyn_index321(j)) + 
               (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+          } else if (dyn_style(j) == 6) {
+            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            
+            changing_element = theprophecy(dyn_index321(j));
+            double min_limit = dyn_beta(j);
+            
+            if (changing_element < min_limit) changing_element = min_limit;
           }
           
           if (substoch == 1 && dyn_type(j) == 1) {
@@ -16779,30 +16898,48 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
         theseventhson = floor(theseventhson);
       }
       
-      for (int j = 0; j < n_dyn_elems; j++) { // Adjust pop size for additive limit
-        if (dyn_style(j) == 5) {
+      if (additive_limit_enforced) {
+        for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
+          double current_alpha = dyn_alpha(j);
+          double current_beta = dyn_beta(j);
+          double current_gamma = dyn_gamma(j);
           double Nsum = sum(theseventhson);
-          double K_limit = dyn_alpha(j);
           
-          unsigned int current_stage = dyn_index_s3(j);
-          double NK_diff = Nsum - K_limit;
-          
-          double current_stage_inds = theseventhson(current_stage);
-          
-          if (NK_diff < 0.) {
-            if (current_stage_inds < (-1 * NK_diff)) {
-              current_stage_inds = 0.;
-            } else {
-              current_stage_inds += NK_diff;
+          if (dyn_style(j) == 5) { // Additive limit function
+            //Rcout << "Found additive limit function" << endl;
+            //double current_s3_total = theseventhson(dyn_index_s3(j));
+            //double current_total_nots3 = accu(theseventhson) - current_s3_total;
+            
+            double K_limit = current_alpha;
+            
+            unsigned int current_stage = dyn_index_s3(j);
+            double current_stage_inds = theseventhson(current_stage);
+            double NK_diff = Nsum - current_stage_inds;
+            double max_limit = K_limit - NK_diff;
+            
+            double proposed_s3_total = current_beta * (current_alpha - pop_size);
+            if (proposed_s3_total < current_gamma) {
+              proposed_s3_total = current_gamma;
+            } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+              proposed_s3_total = max_limit;
             }
-          } else {
-            if (current_stage_inds < NK_diff) {
-              current_stage_inds = 0.;
-            } else {
-              current_stage_inds -= NK_diff;
+            theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+          } else if (dyn_style(j) == 6) {
+            double K_limit = current_alpha;
+            
+            unsigned int current_stage = dyn_index_s3(j);
+            double current_stage_inds = theseventhson(current_stage);
+            double NK_diff = Nsum - current_stage_inds;
+            double max_limit = K_limit - NK_diff;
+            
+            double proposed_s3_total = current_stage_inds;
+            if (proposed_s3_total < current_gamma) {
+              proposed_s3_total = current_gamma;
+            } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+              proposed_s3_total = max_limit;
             }
+            theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
           }
-          theseventhson(current_stage) = current_stage_inds;
         }
       }
       
@@ -16853,14 +16990,15 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
       
       if (dens_list_length > 1){
         dens_input = as<DataFrame>(dens_input_list((mat_order(i))));
-        density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta, dens_input,
-          hstages, stageframe, exp_tol, historical);
+        LefkoUtils::density_prep(dens_index, dyn_style, dyn_alpha, dyn_beta,
+          dyn_gamma, dens_input, hstages, stageframe, exp_tol, historical);
         
         dyn_index321 = as<arma::uvec>(dens_index["index321"]);
-        dyn_index_col = as<arma::uvec>(dens_index[1]);
-        dyn_index_s3 = as<arma::uvec>(dens_index[0]);
+        dyn_index_col = as<arma::uvec>(dens_index(1));
+        dyn_index_s3 = as<arma::uvec>(dens_index(0));
         dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
         dyn_type = as<arma::uvec>(dens_input["type"]);
+        dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
         n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
       }
       
@@ -16871,6 +17009,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
           equivalence_vec_arma, eq_vec_length, stage_weights_input, format,
           used_matsize);
       }
+      
+      bool additive_limit_enforced {false};
       
       for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
         time_delay = dyn_delay(j);
@@ -16902,8 +17042,17 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             changing_element = sparse_prophecy(dyn_index321(j)) * 
               (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
           } else if (dyn_style(j) == 5) { // Additive limit function
+            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            
             changing_element = theprophecy(dyn_index321(j)) + 
               (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+          } else if (dyn_style(j) == 6) {
+            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            
+            changing_element = theprophecy(dyn_index321(j));
+            double min_limit = dyn_beta(j);
+            
+            if (changing_element < min_limit) changing_element = min_limit;
           }
           
           if (substoch == 1 && dyn_type(j) == 1) {
@@ -16959,30 +17108,48 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
         sparse_seventhson = floor(sparse_seventhson);
       }
       
-      for (int j = 0; j < n_dyn_elems; j++) { // Adjust pop size for additive limit
-        if (dyn_style(j) == 5) {
-          double Nsum = sum(theseventhson);
-          double K_limit = dyn_alpha(j);
+      if (additive_limit_enforced) {
+        for (int j = 0; j < n_dyn_elems; j++) { // Density dependence
+          double current_alpha = dyn_alpha(j);
+          double current_beta = dyn_beta(j);
+          double current_gamma = dyn_gamma(j);
+          double Nsum = accu(sparse_seventhson);
           
-          unsigned int current_stage = dyn_index_s3(j);
-          double NK_diff = Nsum - K_limit;
-          
-          double current_stage_inds = theseventhson(current_stage);
-          
-          if (NK_diff < 0.) {
-            if (current_stage_inds < (-1 * NK_diff)) {
-              current_stage_inds = 0.;
-            } else {
-              current_stage_inds += NK_diff;
+          if (dyn_style(j) == 5) { // Additive limit function
+            //Rcout << "Found additive limit function" << endl;
+            //double current_s3_total = theseventhson(dyn_index_s3(j));
+            //double current_total_nots3 = accu(theseventhson) - current_s3_total;
+            
+            double K_limit = current_alpha;
+            
+            unsigned int current_stage = dyn_index_s3(j);
+            double current_stage_inds = sparse_seventhson(current_stage);
+            double NK_diff = Nsum - current_stage_inds;
+            double max_limit = K_limit - NK_diff;
+            
+            double proposed_s3_total = current_beta * (current_alpha - pop_size);
+            if (proposed_s3_total < current_gamma) {
+              proposed_s3_total = current_gamma;
+            } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+              proposed_s3_total = max_limit;
             }
-          } else {
-            if (current_stage_inds < NK_diff) {
-              current_stage_inds = 0.;
-            } else {
-              current_stage_inds -= NK_diff;
+            sparse_seventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+          } else if (dyn_style(j) == 6) {
+            double K_limit = current_alpha;
+            
+            unsigned int current_stage = dyn_index_s3(j);
+            double current_stage_inds = sparse_seventhson(current_stage);
+            double NK_diff = Nsum - current_stage_inds;
+            double max_limit = K_limit - NK_diff;
+            
+            double proposed_s3_total = current_stage_inds;
+            if (proposed_s3_total < current_gamma) {
+              proposed_s3_total = current_gamma;
+            } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+              proposed_s3_total = max_limit;
             }
+            sparse_seventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
           }
-          theseventhson(current_stage) = current_stage_inds;
         }
       }
       
@@ -17221,10 +17388,11 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
         arma::uvec dyn_style;
         arma::vec dyn_alpha;
         arma::vec dyn_beta;
+        arma::vec dyn_gamma;
         dens_switch = 1;
         
-        density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta, dens_thru,
-          hstages, stageframe, exp_tol, historical);
+        LefkoUtils::density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta,
+          dyn_gamma, dens_thru, hstages, stageframe, exp_tol, historical);
       } else if (is<List>(density)) {
         Rcpp::List dens_thru(density);
         
@@ -17233,10 +17401,11 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
           arma::uvec dyn_style;
           arma::vec dyn_alpha;
           arma::vec dyn_beta;
+          arma::vec dyn_gamma;
           dens_switch = 1;
           
-          density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta, dens_thru_0,
-            hstages, stageframe, exp_tol, historical);
+          LefkoUtils::density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta,
+            dyn_gamma, dens_thru_0, hstages, stageframe, exp_tol, historical);
         } else {
           throw Rcpp::exception ("Unrecognized object entered in argument density", false);
         }
@@ -17581,7 +17750,6 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
         is<IntegerVector>(stage_weights)) {
         
         //Rcout << "projection3_single H1 Data Frame or Vector" << endl;
-        
         
         RObject stage_weights_input = RObject(stage_weights);
         
@@ -18092,10 +18260,11 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
         arma::uvec dyn_style;
         arma::vec dyn_alpha;
         arma::vec dyn_beta;
+        arma::vec dyn_gamma;
         dens_switch = 1;
         
-        density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta, dens_thru,
-          hstages, stageframe, exp_tol, historical);
+        LefkoUtils::density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta,
+          dyn_gamma, dens_thru, hstages, stageframe, exp_tol, historical);
       } else if (is<List>(density)) {
         Rcpp::List dens_thru(density);
         
@@ -18104,10 +18273,11 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
           arma::uvec dyn_style;
           arma::vec dyn_alpha;
           arma::vec dyn_beta;
+          arma::vec dyn_gamma;
           dens_switch = 1;
           
-          density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta, dens_thru_0,
-            hstages, stageframe, exp_tol, false);
+          LefkoUtils::density_prep (dens_index, dyn_style, dyn_alpha, dyn_beta,
+            dyn_gamma, dens_thru_0, hstages, stageframe, exp_tol, false);
         } else {
           throw Rcpp::exception ("Unrecognized object entered in argument density", false);
         }
