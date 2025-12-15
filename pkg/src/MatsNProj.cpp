@@ -16904,18 +16904,16 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
           double current_beta = dyn_beta(j);
           double current_gamma = dyn_gamma(j);
           double Nsum = sum(theseventhson);
+          double K_limit = current_alpha;
+          unsigned int current_stage = dyn_index_s3(j);
+          double current_stage_inds = theseventhson(current_stage);
+          double NK_diff = Nsum - current_stage_inds;
+          double max_limit = K_limit - NK_diff;
           
           if (dyn_style(j) == 5) { // Additive limit function
             //Rcout << "Found additive limit function" << endl;
             //double current_s3_total = theseventhson(dyn_index_s3(j));
             //double current_total_nots3 = accu(theseventhson) - current_s3_total;
-            
-            double K_limit = current_alpha;
-            
-            unsigned int current_stage = dyn_index_s3(j);
-            double current_stage_inds = theseventhson(current_stage);
-            double NK_diff = Nsum - current_stage_inds;
-            double max_limit = K_limit - NK_diff;
             
             double proposed_s3_total = current_beta * (current_alpha - pop_size);
             if (proposed_s3_total < current_gamma) {
@@ -16923,22 +16921,16 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
               proposed_s3_total = max_limit;
             }
-            theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            theseventhson(current_stage) = proposed_s3_total;
+            
           } else if (dyn_style(j) == 6) {
-            double K_limit = current_alpha;
-            
-            unsigned int current_stage = dyn_index_s3(j);
-            double current_stage_inds = theseventhson(current_stage);
-            double NK_diff = Nsum - current_stage_inds;
-            double max_limit = K_limit - NK_diff;
-            
             double proposed_s3_total = current_stage_inds;
             if (proposed_s3_total < current_gamma) {
               proposed_s3_total = current_gamma;
             } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
               proposed_s3_total = max_limit;
             }
-            theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            theseventhson(current_stage) = proposed_s3_total;
           }
         }
       }
@@ -17114,18 +17106,16 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
           double current_beta = dyn_beta(j);
           double current_gamma = dyn_gamma(j);
           double Nsum = accu(sparse_seventhson);
+          double K_limit = current_alpha;
+          unsigned int current_stage = dyn_index_s3(j);
+          double current_stage_inds = sparse_seventhson(current_stage);
+          double NK_diff = Nsum - current_stage_inds;
+          double max_limit = K_limit - NK_diff;
           
           if (dyn_style(j) == 5) { // Additive limit function
             //Rcout << "Found additive limit function" << endl;
             //double current_s3_total = theseventhson(dyn_index_s3(j));
             //double current_total_nots3 = accu(theseventhson) - current_s3_total;
-            
-            double K_limit = current_alpha;
-            
-            unsigned int current_stage = dyn_index_s3(j);
-            double current_stage_inds = sparse_seventhson(current_stage);
-            double NK_diff = Nsum - current_stage_inds;
-            double max_limit = K_limit - NK_diff;
             
             double proposed_s3_total = current_beta * (current_alpha - pop_size);
             if (proposed_s3_total < current_gamma) {
@@ -17134,14 +17124,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
               proposed_s3_total = max_limit;
             }
             sparse_seventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            
           } else if (dyn_style(j) == 6) {
-            double K_limit = current_alpha;
-            
-            unsigned int current_stage = dyn_index_s3(j);
-            double current_stage_inds = sparse_seventhson(current_stage);
-            double NK_diff = Nsum - current_stage_inds;
-            double max_limit = K_limit - NK_diff;
-            
             double proposed_s3_total = current_stage_inds;
             if (proposed_s3_total < current_gamma) {
               proposed_s3_total = current_gamma;
