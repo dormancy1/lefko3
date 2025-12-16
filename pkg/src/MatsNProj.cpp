@@ -21,7 +21,7 @@ using namespace LefkoMats;
 // 4. subvertedpatrolgroup() - Calculates matrix transitions in raw age-by-stage matrices
 // 5. raymccooney() - Takes various vital rate models and other parameters and coordinates them as input into the function-based matrix estimation functions
 // 6. mothermccooney() - Takes various vital rate models and other parameters and coordinates them as input into function fleslie()
-// 7. f_projection_single() - Project single function-based matrix projection model
+// 7. f_projection3_single() - Project single function-based matrix projection model
 // 8. f_projection3() - Develops and projects function-based matrix models
 // 9. mpm_create() - General Matrix Projection Model and Bootstrapped MPM Creation
 // 10. .ss3matrix() - Returns stable stage distribution for a dense or sparse matrix
@@ -7492,10 +7492,10 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
               //Rcout << "Found additive limit function" << endl;
               if (dyn_s3ow(j)) additive_limit_enforced = true;
               
-              changing_element_U = Umat(dyn_index321(j)) + 
-                (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
-              changing_element_F = Fmat(dyn_index321(j)) + 
-                (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+              changing_element_U = Umat(dyn_index321(j)) *
+                ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+              changing_element_F = Fmat(dyn_index321(j)) *
+                ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
             } else if (dyn_style(j) == 6) {
               if (dyn_s3ow(j)) additive_limit_enforced = true;
               
@@ -9424,8 +9424,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
       dev_terms_ = dvi;
     }
   } else {
-    NumericVector basic_devs = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-      0.0, 0.0, 0.0, 0.0, 0.0};
+    NumericVector basic_devs (14);
     dev_terms_ = basic_devs;
   }
   
@@ -16835,8 +16834,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
           } else if (dyn_style(j) == 5) { // Additive limit function
             if (dyn_s3ow(j)) additive_limit_enforced = true;
             
-            changing_element = theprophecy(dyn_index321(j)) + 
-              (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+            changing_element = theprophecy(dyn_index321(j)) * 
+              ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
           } else if (dyn_style(j) == 6) {
             if (dyn_s3ow(j)) additive_limit_enforced = true;
             
@@ -17036,8 +17035,8 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
           } else if (dyn_style(j) == 5) { // Additive limit function
             if (dyn_s3ow(j)) additive_limit_enforced = true;
             
-            changing_element = theprophecy(dyn_index321(j)) + 
-              (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+            changing_element = theprophecy(dyn_index321(j)) * 
+              ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
           } else if (dyn_style(j) == 6) {
             if (dyn_s3ow(j)) additive_limit_enforced = true;
             
