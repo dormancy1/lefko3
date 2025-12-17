@@ -3791,7 +3791,6 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   NumericVector gamma_di = as<NumericVector>(dens_inp["gamma"]);
   IntegerVector type_di = as<IntegerVector>(dens_inp["type"]);
   IntegerVector type_t12_di = as<IntegerVector>(dens_inp["type_t12"]);
-  LogicalVector s3_overwrite_di = as<LogicalVector>(dens_inp["s3_overwrite"]);
   int di_rows = stage3_di.length(); // Size of density input frame
   
   StringVector unique_stages = unique(stagevec);
@@ -5058,7 +5057,6 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   IntegerVector time_delay_newdi (newdi_rows);
   IntegerVector type_newdi (newdi_rows);
   IntegerVector type_t12_newdi (newdi_rows);
-  LogicalVector s3_overwrite_newdi (newdi_rows);
   
   int overall_counter {0};
   // int group_check {0};
@@ -5291,7 +5289,6 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
           time_delay_newdi (basepoints(i) + overall_counter) = time_delay_di(i);
           type_newdi (basepoints(i) + overall_counter) = type_di(i);
           type_t12_newdi (basepoints(i) + overall_counter) = type_t12_di(i);
-          s3_overwrite_newdi (basepoints(i) + overall_counter) = s3_overwrite_di(i);
           
           // Time t
           if (stringcompare_hard(s2used, "prop")) {
@@ -5536,7 +5533,7 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   }
   
   // Output final set-up
-  Rcpp::List new_di(12);
+  Rcpp::List new_di(11);
   
   new_di(0) = stage3_newdi;
   new_di(1) = stage2_newdi;
@@ -5549,10 +5546,9 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
   new_di(8) = time_delay_newdi;
   new_di(9) = type_newdi;
   new_di(10) = type_t12_newdi;
-  new_di(11) = s3_overwrite_newdi;
   
   CharacterVector namevec = {"stage3", "stage2", "stage1", "age2", "style",
-    "alpha", "beta", "gamma", "time_delay", "type", "type_t12", "s3_overwrite"};
+    "alpha", "beta", "gamma", "time_delay", "type", "type_t12"};
   CharacterVector newclass = {"data.frame"};
   new_di.attr("names") = namevec;
   new_di.attr("row.names") = Rcpp::IntegerVector::create(NA_INTEGER, newdi_rows);
@@ -5635,12 +5631,6 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
 //' fecundity transitions. Defaults to \code{1} for survival transition, with
 //' impacts only on the construction of deVries-format hMPMs.
-//' @param s3_overwrite An optional logical value or vector detailing whether
-//' to overwrite the number of individuals given in \code{stage3} upon using the
-//' logistic, additive limit, or absolute limit functions for density
-//' dependence. This is generally done to reduce the possibility of overshooting
-//' K, and of undershooting any minimum limits provided. Defaults to
-//' \code{FALSE}.
 //' 
 //' @return A data frame of class \code{lefkoDens}. This object can be used as
 //' input in function \code{\link{projection3}()}.
@@ -5668,9 +5658,6 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \item{type_t12}{Designates whether the transition from occasion \emph{t}-1 to
 //' occasion \emph{t} is a survival transition probability (1), a fecundity rate
 //' (2).}
-//' \item{s3_overwrite}{Designates whether a density dependent transition using
-//' the additive limit function will have the number of individuals in
-//' \code{stage3} overwritten by that function.}
 //' 
 //' @section Notes:
 //' This function provides inputs when density dependence is operationalized
@@ -5770,8 +5757,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   Nullable<RObject> age2 = R_NilValue, Nullable<RObject> style = R_NilValue,
   Nullable<RObject> time_delay = R_NilValue, Nullable<RObject> alpha = R_NilValue,
   Nullable<RObject> beta = R_NilValue, Nullable<RObject> gamma = R_NilValue,
-  Nullable<RObject> type = R_NilValue, Nullable<RObject> type_t12 = R_NilValue,
-  Nullable<RObject> s3_overwrite = R_NilValue) {
+  Nullable<RObject> type = R_NilValue, Nullable<RObject> type_t12 = R_NilValue) {
   
   bool historical = false;
   bool agebystage = false;
@@ -5960,7 +5946,6 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   NumericVector gamma_vec;
   IntegerVector type_vec;
   IntegerVector type_t12_vec;
-  LogicalVector s3_overwrite_vec;
   
   if (age2.isNotNull()) {
     if (!stage2used && !stage3used) ageonly = true;
@@ -6296,30 +6281,6 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     type_t12_vec = type_t12_vec_;
   }
   
-  if (s3_overwrite.isNotNull()) {
-    if (is<NumericVector>(s3_overwrite) || is<IntegerVector>(s3_overwrite)) {
-      arma::vec core_s3ow_input = as<arma::vec>(s3_overwrite);
-      arma::uvec s3ow_nonzero = find(core_s3ow_input);
-      
-      LogicalVector s3_overwrite_vec_ (static_cast<int>(core_s3ow_input.n_elem));
-      for (int i = 0; i < static_cast<int>(s3ow_nonzero.n_elem); i++) {
-        s3_overwrite_vec_(s3ow_nonzero(i)) = true;
-      }
-      
-      s3_overwrite_vec = s3_overwrite_vec_;
-      
-    } else if (is<LogicalVector>(s3_overwrite)) {
-      LogicalVector s3_overwrite_vec_ = as<LogicalVector>(s3_overwrite);
-      s3_overwrite_vec = s3_overwrite_vec_;
-      
-    } else {
-      throw Rcpp::exception("Only logical values are allowed in option s3_overwrite.", false);
-    }
-  } else {
-    LogicalVector s3_overwrite_vec_ = {false};
-    s3_overwrite_vec = s3_overwrite_vec_;
-  }
-  
   StringVector new_stage3_names;
   StringVector new_stage2_names;
   StringVector new_stage1_names;
@@ -6331,15 +6292,13 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
   NumericVector new_gamma_vec;
   IntegerVector new_type_vec;
   IntegerVector new_type_t12_vec;
-  LogicalVector new_s3_overwrite_vec;
   
   IntegerVector vec_lengths = {static_cast<int>(stage3_names.length()),
     static_cast<int>(stage2_names.length()), static_cast<int>(stage1_names.length()),
     static_cast<int>(age2_vec.length()), static_cast<int>(style_vec.length()),
     static_cast<int>(time_delay_vec.length()), static_cast<int>(alpha_vec.length()),
     static_cast<int>(beta_vec.length()), static_cast<int>(gamma_vec.length()),
-    static_cast<int>(type_vec.length()), static_cast<int>(type_t12_vec.length()),
-    static_cast<int>(s3_overwrite_vec.length())};
+    static_cast<int>(type_vec.length()), static_cast<int>(type_t12_vec.length())};
   int vec_max = max(vec_lengths);
   
   if (stage3_names.length() != vec_max) {
@@ -6474,25 +6433,12 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
     new_gamma_vec = gamma_vec;
   }
   
-  if (s3_overwrite_vec.length() != vec_max) {
-    if (s3_overwrite_vec.length() == 1) {
-      LogicalVector s3owv (vec_max, s3_overwrite_vec(0));
-      new_s3_overwrite_vec = s3owv;
-      
-    } else {
-      throw Rcpp::exception("Vector s3_overwrite is not the correct length.", false);
-    }
-  } else {
-    new_s3_overwrite_vec = s3_overwrite_vec;
-  }
-  
   DataFrame output_tab = DataFrame::create(_["stage3"] = new_stage3_names,
     _["stage2"] = new_stage2_names, _["stage1"] = new_stage1_names,
     _["age2"] = new_age2_vec, _["style"] = new_style_vec,
     _["time_delay"] = new_time_delay_vec, _["alpha"] = new_alpha_vec,
     _["beta"] = new_beta_vec, _["gamma"] = new_gamma_vec,
-    _["type"] = new_type_vec, _["type_t12"] = new_type_t12_vec,
-    _["s3_overwrite"] = new_s3_overwrite_vec);
+    _["type"] = new_type_vec, _["type_t12"] = new_type_t12_vec);
   
   DataFrame output = density_reassess(stageframe, output_tab, agestages,
     historical, agebystage);

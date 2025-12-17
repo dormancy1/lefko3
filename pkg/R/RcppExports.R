@@ -5394,12 +5394,6 @@ actualstage3 <- function(data, check_stage = TRUE, check_age = FALSE, historical
 #' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
 #' fecundity transitions. Defaults to \code{1} for survival transition, with
 #' impacts only on the construction of deVries-format hMPMs.
-#' @param s3_overwrite An optional logical value or vector detailing whether
-#' to overwrite the number of individuals given in \code{stage3} upon using the
-#' logistic, additive limit, or absolute limit functions for density
-#' dependence. This is generally done to reduce the possibility of overshooting
-#' K, and of undershooting any minimum limits provided. Defaults to
-#' \code{FALSE}.
 #' 
 #' @return A data frame of class \code{lefkoDens}. This object can be used as
 #' input in function \code{\link{projection3}()}.
@@ -5427,9 +5421,6 @@ actualstage3 <- function(data, check_stage = TRUE, check_age = FALSE, historical
 #' \item{type_t12}{Designates whether the transition from occasion \emph{t}-1 to
 #' occasion \emph{t} is a survival transition probability (1), a fecundity rate
 #' (2).}
-#' \item{s3_overwrite}{Designates whether a density dependent transition using
-#' the additive limit function will have the number of individuals in
-#' \code{stage3} overwritten by that function.}
 #' 
 #' @section Notes:
 #' This function provides inputs when density dependence is operationalized
@@ -5523,8 +5514,8 @@ actualstage3 <- function(data, check_stage = TRUE, check_age = FALSE, historical
 #' }
 #' 
 #' @export density_input
-density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2 = NULL, style = NULL, time_delay = NULL, alpha = NULL, beta = NULL, gamma = NULL, type = NULL, type_t12 = NULL, s3_overwrite = NULL) {
-    .Call('_lefko3_density_input', PACKAGE = 'lefko3', mpm, stage3, stage2, stage1, age2, style, time_delay, alpha, beta, gamma, type, type_t12, s3_overwrite)
+density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2 = NULL, style = NULL, time_delay = NULL, alpha = NULL, beta = NULL, gamma = NULL, type = NULL, type_t12 = NULL) {
+    .Call('_lefko3_density_input', PACKAGE = 'lefko3', mpm, stage3, stage2, stage1, age2, style, time_delay, alpha, beta, gamma, type, type_t12)
 }
 
 #' Create a Data Frame of Supplemental Data for MPM Development

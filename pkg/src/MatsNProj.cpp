@@ -7218,7 +7218,6 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
   arma::vec dyn_gamma;
   arma::uvec dyn_delay;
   arma::uvec dyn_type;
-  LogicalVector dyn_s3ow;
   int n_dyn_elems {0};
   int dens_list_length {0};
   
@@ -7238,7 +7237,6 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
       dyn_index_s3 = as<arma::uvec>(dens_index(0));
       dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
       dyn_type = as<arma::uvec>(dens_input["type"]);
-      dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
       n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
       
       for (int i = 0; i < static_cast<int>(dyn_style.n_elem); i++) {
@@ -7281,7 +7279,6 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
         dyn_index_s3 = as<arma::uvec>(dens_index(0));
         dyn_delay = as<arma::uvec>(dens_thru_0["time_delay"]);
         dyn_type = as<arma::uvec>(dens_thru_0["type"]);
-        dyn_s3ow = as<LogicalVector>(dens_thru_0["s3_overwrite"]);
         n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
         
         for (int i = 0; i < static_cast<int>(dyn_style.n_elem); i++) {
@@ -7437,7 +7434,6 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
           dyn_index_s3 = as<arma::uvec>(dens_index(0));
           dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
           dyn_type = as<arma::uvec>(dens_input["type"]);
-          dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
           n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
         }
         
@@ -7490,21 +7486,15 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
                 (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
             } else if (dyn_style(j) == 5) { // Additive limit function
               //Rcout << "Found additive limit function" << endl;
-              if (dyn_s3ow(j)) additive_limit_enforced = true;
+              additive_limit_enforced = true;
               
-              changing_element_U = Umat(dyn_index321(j)) *
-                ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
-              changing_element_F = Fmat(dyn_index321(j)) *
-                ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+              changing_element_U = Umat(dyn_index321(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+              changing_element_F = Fmat(dyn_index321(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
             } else if (dyn_style(j) == 6) {
-              if (dyn_s3ow(j)) additive_limit_enforced = true;
+              additive_limit_enforced = true;
               
-              changing_element_U = Umat_sp(dyn_index321(j));
+              changing_element_U = Umat(dyn_index321(j));
               changing_element_F = Fmat(dyn_index321(j));
-              
-              double min_limit = dyn_beta(j);
-              
-              if (changing_element_F < min_limit) changing_element_F = min_limit;
             }
             
             if (substoch == 1 && dyn_type(j) == 1) {
@@ -7573,19 +7563,17 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
             double current_alpha = dyn_alpha(j);
             double current_beta = dyn_beta(j);
             double current_gamma = dyn_gamma(j);
-            double Nsum = sum(theseventhson);
+            double Nsum = accu(theseventhson);
+            double K_limit = current_alpha;
+            unsigned int current_stage = dyn_index_s3(j);
+            double current_stage_inds = theseventhson(current_stage);
+            double NK_diff = Nsum - current_stage_inds;
+            double max_limit = K_limit - NK_diff;
             
             if (dyn_style(j) == 5) { // Additive limit function
               //Rcout << "Found additive limit function" << endl;
               //double current_s3_total = theseventhson(dyn_index_s3(j));
               //double current_total_nots3 = accu(theseventhson) - current_s3_total;
-              
-              double K_limit = current_alpha;
-              
-              unsigned int current_stage = dyn_index_s3(j);
-              double current_stage_inds = theseventhson(current_stage);
-              double NK_diff = Nsum - current_stage_inds;
-              double max_limit = K_limit - NK_diff;
               
               double proposed_s3_total = current_beta * (current_alpha - pop_size);
               if (proposed_s3_total < current_gamma) {
@@ -7593,22 +7581,16 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
               } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
                 proposed_s3_total = max_limit;
               }
-              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+              theseventhson(current_stage) = proposed_s3_total;
+              
             } else if (dyn_style(j) == 6) {
-              double K_limit = current_alpha;
-              
-              unsigned int current_stage = dyn_index_s3(j);
-              double current_stage_inds = theseventhson(current_stage);
-              double NK_diff = Nsum - current_stage_inds;
-              double max_limit = K_limit - NK_diff;
-              
               double proposed_s3_total = current_stage_inds;
               if (proposed_s3_total < current_gamma) {
                 proposed_s3_total = current_gamma;
-              } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+              } else if (proposed_s3_total > max_limit && current_alpha > current_beta) {
                 proposed_s3_total = max_limit;
               }
-              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+              theseventhson(current_stage) = proposed_s3_total;
             }
           }
         }
@@ -7758,7 +7740,6 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
           dyn_index_s3 = as<arma::uvec>(dens_index(0));
           dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
           dyn_type = as<arma::uvec>(dens_input["type"]);
-          dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
           n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
         }
         
@@ -7810,21 +7791,15 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
               changing_element_F = Fmat_sp(dyn_index321(j)) * 
                 (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
             } else if (dyn_style(j) == 5) { // Additive limit function
-              if (dyn_s3ow(j)) additive_limit_enforced = true;
-              
-              changing_element_U = Umat_sp(dyn_index321(j)) + 
-                (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
-              changing_element_F = Fmat_sp(dyn_index321(j)) + 
-                (pop_size * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
-            } else if (dyn_style(j) == 6) {
-              if (dyn_s3ow(j)) additive_limit_enforced = true;
+              additive_limit_enforced = true;
               
               changing_element_U = Umat_sp(dyn_index321(j));
               changing_element_F = Fmat_sp(dyn_index321(j));
+            } else if (dyn_style(j) == 6) {
+              additive_limit_enforced = true;
               
-              double min_limit = dyn_beta(j);
-              
-              if (changing_element_F < min_limit) changing_element_F = min_limit;
+              changing_element_U = Umat_sp(dyn_index321(j));
+              changing_element_F = Fmat_sp(dyn_index321(j));
             }
             
             if (substoch == 1 && dyn_type(j) == 1) {
@@ -7894,42 +7869,36 @@ void f_projection3_single(List& fin_out, int format, bool prebreeding = true,
             double current_alpha = dyn_alpha(j);
             double current_beta = dyn_beta(j);
             double current_gamma = dyn_gamma(j);
-            double Nsum = sum(theseventhson);
+            double Nsum = accu(theseventhson_sp);
+            double K_limit = current_alpha;
+            unsigned int current_stage = dyn_index_s3(j);
+            double current_stage_inds = theseventhson_sp(current_stage);
+            double NK_diff = Nsum - current_stage_inds;
+            double max_limit = K_limit - NK_diff;
             
             if (dyn_style(j) == 5) { // Additive limit function
-              //Rcout << "Found additive limit function" << endl;
-              //double current_s3_total = theseventhson(dyn_index_s3(j));
-              //double current_total_nots3 = accu(theseventhson) - current_s3_total;
-              
-              double K_limit = current_alpha;
-              
-              unsigned int current_stage = dyn_index_s3(j);
-              double current_stage_inds = theseventhson(current_stage);
-              double NK_diff = Nsum - current_stage_inds;
-              double max_limit = K_limit - NK_diff;
-              
               double proposed_s3_total = current_beta * (current_alpha - pop_size);
               if (proposed_s3_total < current_gamma) {
                 proposed_s3_total = current_gamma;
               } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
                 proposed_s3_total = max_limit;
               }
-              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+              theseventhson_sp(current_stage) = proposed_s3_total;
             } else if (dyn_style(j) == 6) {
               double K_limit = current_alpha;
               
               unsigned int current_stage = dyn_index_s3(j);
-              double current_stage_inds = theseventhson(current_stage);
+              double current_stage_inds = theseventhson_sp(current_stage);
               double NK_diff = Nsum - current_stage_inds;
               double max_limit = K_limit - NK_diff;
               
               double proposed_s3_total = current_stage_inds;
               if (proposed_s3_total < current_gamma) {
                 proposed_s3_total = current_gamma;
-              } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+              } else if (proposed_s3_total > max_limit && current_alpha > current_beta) {
                 proposed_s3_total = max_limit;
               }
-              theseventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+              theseventhson_sp(current_stage) = proposed_s3_total;
             }
           }
         }
@@ -16679,7 +16648,6 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
   arma::vec dyn_gamma;
   arma::uvec dyn_delay;
   arma::uvec dyn_type;
-  LogicalVector dyn_s3ow;
   int n_dyn_elems;
   
   DataFrame equivalence_frame;
@@ -16698,7 +16666,6 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
     dyn_index_s3 = as<arma::uvec>(dens_index(0));
     dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
     dyn_type = as<arma::uvec>(dens_input["type"]);
-    dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
     n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
     
   } else if (dens_list_length == 1){
@@ -16712,7 +16679,6 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
     dyn_index_s3 = as<arma::uvec>(dens_index(0));
     dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
     dyn_type = as<arma::uvec>(dens_input["type"]);
-    dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
     n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
   } else {
     dens_input_list = as<List>(dens_RO);
@@ -16788,7 +16754,6 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
         dyn_index_s3 = as<arma::uvec>(dens_index(0));
         dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
         dyn_type = as<arma::uvec>(dens_input["type"]);
-        dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
         n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
       }
       
@@ -16832,17 +16797,13 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             changing_element = theprophecy(dyn_index321(j)) * 
               (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
           } else if (dyn_style(j) == 5) { // Additive limit function
-            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            additive_limit_enforced = true;
             
-            changing_element = theprophecy(dyn_index321(j)) * 
-              ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+            changing_element = theprophecy(dyn_index321(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
           } else if (dyn_style(j) == 6) {
-            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            additive_limit_enforced = true;
             
             changing_element = theprophecy(dyn_index321(j));
-            double min_limit = dyn_beta(j);
-            
-            if (changing_element < min_limit) changing_element = min_limit;
           }
           
           if (substoch == 1 && dyn_type(j) == 1) {
@@ -16926,7 +16887,7 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             double proposed_s3_total = current_stage_inds;
             if (proposed_s3_total < current_gamma) {
               proposed_s3_total = current_gamma;
-            } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+            } else if (proposed_s3_total > max_limit && current_alpha > current_beta) {
               proposed_s3_total = max_limit;
             }
             theseventhson(current_stage) = proposed_s3_total;
@@ -16989,7 +16950,6 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
         dyn_index_s3 = as<arma::uvec>(dens_index(0));
         dyn_delay = as<arma::uvec>(dens_input["time_delay"]);
         dyn_type = as<arma::uvec>(dens_input["type"]);
-        dyn_s3ow = as<LogicalVector>(dens_input["s3_overwrite"]);
         n_dyn_elems = static_cast<int>(dyn_index321.n_elem);
       }
       
@@ -17033,17 +16993,13 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             changing_element = sparse_prophecy(dyn_index321(j)) * 
               (1 - used_popsize / dyn_alpha(j)); // Fi*(1 - ALPHA/n)
           } else if (dyn_style(j) == 5) { // Additive limit function
-            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            additive_limit_enforced = true;
             
-            changing_element = theprophecy(dyn_index321(j)) * 
-              ((dyn_alpha(j) - pop_size) * dyn_beta(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
+            changing_element = theprophecy(dyn_index321(j)); // K + (beta * N) // but note that if the result is N > K, then stage3 will be reduced
           } else if (dyn_style(j) == 6) {
-            if (dyn_s3ow(j)) additive_limit_enforced = true;
+            additive_limit_enforced = true;
             
             changing_element = theprophecy(dyn_index321(j));
-            double min_limit = dyn_beta(j);
-            
-            if (changing_element < min_limit) changing_element = min_limit;
           }
           
           if (substoch == 1 && dyn_type(j) == 1) {
@@ -17122,16 +17078,16 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
             } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
               proposed_s3_total = max_limit;
             }
-            sparse_seventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            sparse_seventhson(current_stage) = proposed_s3_total;
             
           } else if (dyn_style(j) == 6) {
             double proposed_s3_total = current_stage_inds;
             if (proposed_s3_total < current_gamma) {
               proposed_s3_total = current_gamma;
-            } else if (proposed_s3_total > max_limit && max_limit > current_gamma) {
+            } else if (proposed_s3_total > max_limit && current_alpha > current_beta) {
               proposed_s3_total = max_limit;
             }
-            sparse_seventhson(static_cast<int>(dyn_index_s3(j))) = proposed_s3_total;
+            sparse_seventhson(current_stage) = proposed_s3_total;
           }
         }
       }
