@@ -30,7 +30,6 @@ using namespace arma;
 
 
 namespace LefkoMats {
-
   //' Create Element Index Meeting Condition for Sparse Matrix
   //' 
   //' This function takes a single sparse matrix (dgCMatrix) and creates a
@@ -4001,7 +4000,7 @@ namespace LefkoMats {
   
   //' Standardize Stageframe For MPM Analysis
   //' 
-  //' Function \code{sf_reassess()} takes a stageframe as input, and uses
+  //' Function \code{sf_reassess_internal()} takes a stageframe as input, and uses
   //' information supplied there and through the supplement, reproduction and
   //' overwrite tables to rearrange this into a format usable by the matrix
   //' creation functions, \code{mpm_create()}, \code{flefko3()},
@@ -4048,9 +4047,20 @@ namespace LefkoMats {
     arma::mat repmatrix_true;
     
     StringVector stagevec = as<StringVector>(stageframe["stage"]);
-    NumericVector origsizevec = as<NumericVector>(stageframe["size"]);
-    NumericVector origsizebvec = as<NumericVector>(stageframe["size_b"]);
-    NumericVector origsizecvec = as<NumericVector>(stageframe["size_c"]);
+    
+    NumericVector origsizevec;
+    NumericVector origsizebvec;
+    NumericVector origsizecvec;
+    if (stageframe.containsElementNamed("size")) {
+      origsizevec = as<NumericVector>(stageframe["size"]);
+      origsizebvec = as<NumericVector>(stageframe["size_b"]);
+      origsizecvec = as<NumericVector>(stageframe["size_c"]);
+    } else {
+      origsizevec = as<NumericVector>(stageframe["original_size"]);
+      origsizebvec = as<NumericVector>(stageframe["original_size_b"]);
+      origsizecvec = as<NumericVector>(stageframe["original_size_c"]);
+    }
+    
     NumericVector minagevec = as<NumericVector>(stageframe["min_age"]);
     NumericVector maxagevec = as<NumericVector>(stageframe["max_age"]);
     arma::uvec repvec = as<arma::uvec>(stageframe["repstatus"]);

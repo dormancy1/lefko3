@@ -64,7 +64,7 @@ using namespace LefkoMats;
 //' @name specialpatrolgroup
 //' 
 //' @param sge9l The Allstages data frame developed for \code{rlefko3()}
-//' covering stage pairs across times \emph{t}+1, \emph{t} and \emph{t}-1.
+//' covering stage triplets across times \emph{t}+1, \emph{t} and \emph{t}-1.
 //' Generally termed \code{stageexpansion9}.
 //' @param sge3index21 Integer index vector of stages in times \emph{t}-1 and
 //' \emph{t}, from \code{stageexpansion3}.
