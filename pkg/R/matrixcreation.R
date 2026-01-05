@@ -1436,7 +1436,8 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' covariate \code{c} as a random, categorical variable. Otherwise is treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param final_age The final age to model in the matrix, where the first age
-#' will be age 0. Defaults to the maximum age in the dataset.
+#' will be age \code{0} if post-breeding, and \code{1} if pre-breeding. Defaults
+#' to the maximum age in the dataset.
 #' @param continue A logical value designating whether to allow continued
 #' survival of individuals past the final age noted in the stageframe, using the 
 #' demographic characteristics of the final age. Defaults to \code{TRUE}.
@@ -2730,8 +2731,9 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' status. Only needed if \code{censor = TRUE}.
 #' @param censorkeep The value of the censor variable denoting data elements to
 #' keep. Defaults to \code{0}.
-#' @param final_age The final age to model in the matrix. Defaults to the
-#' maximum age in the dataset.
+#' @param final_age The final age to model in the matrix, where the first age
+#' will be age \code{0} if post-breeding, and \code{1} if pre-breeding. Defaults
+#' to the maximum age in the dataset.
 #' @param continue A logical value designating whether to allow continued
 #' survival of individuals past the final age noted in the stageframe, using the 
 #' demographic characteristics of the final age. Defaults to \code{TRUE}.

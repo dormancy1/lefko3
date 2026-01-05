@@ -311,7 +311,8 @@ covariate \code{c} as a random, categorical variable. Otherwise is treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{final_age}{The final age to model in the matrix, where the first age
-will be age 0. Defaults to the maximum age in the dataset.}
+will be age \code{0} if post-breeding, and \code{1} if pre-breeding. Defaults
+to the maximum age in the dataset.}
 
 \item{continue}{A logical value designating whether to allow continued
 survival of individuals past the final age noted in the stageframe, using the 

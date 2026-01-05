@@ -158,8 +158,9 @@ status. Only needed if \code{censor = TRUE}.}
 \item{censorkeep}{The value of the censor variable denoting data elements to
 keep. Defaults to \code{0}.}
 
-\item{final_age}{The final age to model in the matrix. Defaults to the
-maximum age in the dataset.}
+\item{final_age}{The final age to model in the matrix, where the first age
+will be age \code{0} if post-breeding, and \code{1} if pre-breeding. Defaults
+to the maximum age in the dataset.}
 
 \item{continue}{A logical value designating whether to allow continued
 survival of individuals past the final age noted in the stageframe, using the 

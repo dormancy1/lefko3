@@ -15,6 +15,8 @@
 
 * Function create_lM() no longer gives a warning that no supplements were
   provided to infer fecundity pathways.
+  
+* Fixed inaccurate documentation for functions aflefko2() and arlefko2().
 
 ## BUG FIXES
 
