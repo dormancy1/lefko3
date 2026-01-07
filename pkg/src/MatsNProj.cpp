@@ -17307,16 +17307,15 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
       throw Rcpp::exception("Object mpm does not appear to include matrices.", false);
     }
     
-    historical = false;
-    
-    if (hstages.length() > 1) {
+    format = LefkoInputs::format_check_lM(mpm);
+    if (format < 3 && format > 0) {
       historical = true;
-      format = 1;
+    } else if (format > 2){
+      historical = false;
     }
     
-    if (agestages.length() > 1) {
+    if (format == 4) {
       agestage_format = true;
-      format = 4;
     } 
     
     //Rcout << "projection3_single B" << endl;

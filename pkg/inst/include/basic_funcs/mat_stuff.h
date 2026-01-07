@@ -10,23 +10,30 @@ using namespace arma;
 // Function index:
 // 1. arma::uvec spmat_index  Create Element Index Meeting Condition for Sparse Matrix
 // 2. arma::uvec general_index  Create General Element Index for Any lefkoMat Matrix
+// 
 // 3. List decomp3  Full Eigen Analysis of a Single Dense Matrix
 // 4. List decomp3sp  Full Eigen Analysis of a Single Sparse Matrix
 // 5. List decomp3sp_inp  Full Eigen Analysis of a Single Sparse Matrix, with Sparse Input
+// 
 // 6. arma::mat ovreplace  Re-index Projection Matrix On Basis of Overwrite Table
+// 
 // 7. DataFrame sf_core  Creates Base Skeleton Stageframe
 // 8. DataFrame paramnames_skeleton  Base Skeleton Data Frame for Paramnames Objects
+// 
 // 9. List turbogeodiesel  Estimates Mean LefkoMat Object for Historical MPM
 // 10. List geodiesel  Estimates Mean LefkoMat Object for Ahistorical MPM
+// 
 // 11. int supp_decision1  Create Skeleton Plan of Expanded Supplemental Table
 // 12. String supp_decision2  Decide on Stage for Each Entry in Supplemental Table
 // 13. DataFrame supp_reassess  Expand Supplemental Table Given User Input
 // 14. DataFrame age_expanded  Expand Supplemental Table by Age Inputs
+// 
 // 15. void hst_maker  Creates hstages Data Frames
 // 16. DataFrame age_maker  Creates agestages Data Frames
+// 
 // 17. List theoldpizzle  Create Element Index for Matrix Estimation
-// 18. List sf_reassess_internal Standardize Stageframe For MPM Analysis
-// 19. List sf_leslie Create Stageframe for Population Matrix Projection Analysis
+// 18. List sf_reassess_internal  Standardize Stageframe For MPM Analysis
+// 19. List sf_leslie  Create Stageframe for Population Matrix Projection Analysis
 
 
 namespace LefkoMats {

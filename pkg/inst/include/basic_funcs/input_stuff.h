@@ -8,14 +8,20 @@ using namespace arma;
 
 
 // Function index:
-// 1. bool stringcompare_input  Compares Two Strings, Assessing Inclusion
-// 2. void RObj_TF_input_check  Take Generic RObject and Determine Value of 2 Boolean Variables With It
-// 3. void RObj_DFr_input_check  Take Generic RObject and Extract a Data Frame, with Boolean Response
-// 4. bool yesno_to_logic  Take Yes / No and Other Input to Yield a Boolean Value
-// 5. void yesnoauto_to_logic  Take Yes / No and Other Input to Yield a Boolean Value
-// 6. void integer_vectorizer  Create Standardized IntegerVectors Based on Non-Standard Input
-// 7. void numeric_vectorizer  Create Standardized NumericVectors Based on Non-Standard Input
-// 8. void integer_char_vectorizer  Create Standardized IntegerVectors Based on Non-Standard Integer and String Input
+// 1.  bool stringcompare_input  Compares Two Strings, Assessing Inclusion
+// 
+// 2.  void RObj_TF_input_check  Take Generic RObject and Determine Value of 2 Boolean Variables With It
+// 3.  void RObj_DFr_input_check  Take Generic RObject and Extract a Data Frame, with Boolean Response
+// 
+// 4.  bool yesno_to_logic  Take Yes / No and Other Input to Yield a Boolean Value
+// 5.  void yesnoauto_to_logic  Take Yes / No and Other Input to Yield a Boolean Value
+// 
+// 6.  void integer_vectorizer  Create Standardized IntegerVectors Based on Non-Standard Input
+// 7.  void numeric_vectorizer  Create Standardized NumericVectors Based on Non-Standard Input
+// 8.  void integer_char_vectorizer  Create Standardized IntegerVectors Based on Non-Standard Integer and String Input
+// 
+// 9.  bool is_arma_mat  Take a Generic Object and Test If It Is arma::mat
+// 10. int format_check_lM  Take a LefkoMat Object and Assess Its Format
 
 
 
@@ -912,6 +918,154 @@ namespace LefkoInputs {
       }
     }
     output = input_;
+  }
+  
+  //' Take a Generic Object and Test If It Is arma::mat
+  //' 
+  //' @name is_arma_mat
+  //' 
+  //' @param input The object to test.
+  //' 
+  //' @return A logical value indicating whether the input object is in
+  //' arma::mat format or not.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline bool is_arma_mat(RObject input) {
+    try {
+      arma::mat test = as<arma::mat>(input);
+      return true;
+    } catch (...) {
+      return false;
+    }
+  }
+  
+  //' Take a LefkoMat Object and Assess Its Format
+  //' 
+  //' @name format_check_lM
+  //' 
+  //' @param format_int A reference to the integer variable to modify.
+  //' @param mpm The MPM to check.
+  //' 
+  //' @return An integer giving the format, with the following possible values:
+  //' 1) Ehrlen-format historical stage-based MPM, 2) deVries-format historical
+  //' stage-based MPM, 3) ahistorial stage-based (Lefkovitch) MPM,
+  //' 4) age-by-stage MPM, and 5) age-based (Leslie) MPM. If not an MPM but a
+  //' list of matrices or sparse matrices, then will yield a value of -1 or -2,
+  //' respectively. Any other situation that does not throw an error yields 0.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline int format_check_lM (RObject mpm) {
+    
+    int format_int {0};
+    
+    bool found_lefkoMat {false};
+    bool found_ahstages {false};
+    bool found_hstages {false};
+    bool found_agestages {false};
+    
+    if (!is<List>(mpm)) {
+      throw Rcpp::exception("Argument mpm must be a lefkoMat object or a list of matrices.", false);
+    }
+    
+    List entered_mpm = as<List>(mpm);
+    int entered_mpm_length = static_cast<int>(entered_mpm.length());
+    
+    CharacterVector entered_mpm_classes = entered_mpm.attr("class");
+    int entered_mpm_classes_length = static_cast<int>(entered_mpm_classes.length());
+    
+    for (int i = 0; i < entered_mpm_classes_length; i++) {
+      if (entered_mpm_classes(i) == "lefkoMat") found_lefkoMat = true;
+    }
+    
+    if (!found_lefkoMat) {
+      for (int j = 0; j < entered_mpm_length; j++) {
+        RObject current_element = RObject(entered_mpm(j));
+        int sp_mat_counter {0};
+        int arma_mat_counter {0};
+        
+        if (current_element.isS4()) {
+          CharacterVector current_element_classes = current_element.attr("class");
+          
+          for (int k = 0; k < static_cast<int>(current_element_classes.length()); k++) {
+            if (current_element_classes(k) == "dgCMatrix") sp_mat_counter++;
+          }
+        } else if (is_arma_mat(current_element)) arma_mat_counter++;
+        
+        
+        if ((sp_mat_counter == 0 && arma_mat_counter == 0) || (sp_mat_counter > 0 && arma_mat_counter > 0)) {
+          throw Rcpp::exception("Some MPMs are not interpretable as lists of consistently numeric or sparse matrices.", false);
+        }
+        
+        if (sp_mat_counter > 0) format_int = -2;
+        if (arma_mat_counter > 0) format_int = -1;
+      }
+    } else {
+      
+      CharacterVector entered_mpm_names = as<CharacterVector>(entered_mpm.attr("names"));
+      int entered_mpm_names_length = static_cast<int>(entered_mpm_names.length());
+      
+      for (int i = 0; i < entered_mpm_names_length; i++) {
+        if (entered_mpm_names(i) == "ahstages") found_ahstages = true;
+        if (entered_mpm_names(i) == "hstages") found_hstages = true;
+        if (entered_mpm_names(i) == "agestages") found_agestages = true;
+      }
+      
+      if (!found_ahstages) {
+        throw Rcpp::exception("Entered mpm appears to be missing an ahstages object.", false);
+      }
+      if (!found_hstages) {
+        throw Rcpp::exception("Entered mpm appears to be missing an hstages object.", false);
+      }
+      if (!found_agestages) {
+        throw Rcpp::exception("Entered mpm appears to be missing an agestages object.", false);
+      }
+      
+      DataFrame mpm_ahstages = as<DataFrame>(entered_mpm["ahstages"]);
+      DataFrame mpm_hstages = as<DataFrame>(entered_mpm["hstages"]);
+      DataFrame mpm_agestages = as<DataFrame>(entered_mpm["agestages"]);
+      
+      int mpm_ahstages_length = static_cast<int>(mpm_ahstages.length());
+      int mpm_hstages_length = static_cast<int>(mpm_hstages.length());
+      int mpm_agestages_length = static_cast<int>(mpm_agestages.length());
+      
+      if (mpm_agestages_length > 1) {
+        format_int = 4;
+      } else if (mpm_hstages_length > 1) {
+        bool found_deVries {false};
+        
+        CharacterVector mpm_ahstages_stage = as<CharacterVector>(mpm_ahstages["stage"]);
+        int mpm_ahstages_no_stages = static_cast<int>(mpm_ahstages_stage.length());
+        
+        for (int j = 0; j < mpm_ahstages_no_stages; j++) {
+          bool found_almost_born = LefkoInputs::stringcompare_input(String(mpm_ahstages_stage(j)), "almostborn", true);
+          if (found_almost_born) found_deVries = true;
+        }
+        
+        if (found_deVries) {
+          format_int = 2;
+        } else format_int = 1;
+      } else if (mpm_ahstages_length > 1) {
+        bool found_all_ageclasses {true};
+        
+        CharacterVector mpm_ahstages_stage = as<CharacterVector>(mpm_ahstages["stage"]);
+        int mpm_ahstages_no_stages = static_cast<int>(mpm_ahstages_stage.length());
+        
+        for (int j = 0; j < mpm_ahstages_no_stages; j++) {
+          bool found_age_bool = LefkoInputs::stringcompare_input(String(mpm_ahstages_stage(j)), "age", true);
+          if (!found_age_bool) found_all_ageclasses = false;
+        }
+        
+        if (found_all_ageclasses) {
+          format_int = 5;
+        } else format_int = 3;
+      } else {
+        throw Rcpp::exception("Entered mpm format is not recognized.", false);
+      }
+    }
+    
+    return format_int;
   }
 }
 #endif
