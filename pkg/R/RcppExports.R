@@ -5762,6 +5762,24 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
     .Call('_lefko3_supplemental', PACKAGE = 'lefko3', historical, stagebased, agebased, stageframe, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12)
 }
 
+#' Create A Supplement Skeleton Data Frame
+#' 
+#' @name sup_skeleton
+#' 
+#' @param rows An integer giving the number of rows to include.
+#' 
+#' @return A data frame with the format of a supplement, of class
+#' \code{lefkoSD}.
+#' 
+#' @examples
+#' new_supp <- sup_skeleton(3)
+#' new_supp
+#' 
+#' @export sup_skeleton
+sup_skeleton <- function(rows = NULL) {
+    .Call('_lefko3_sup_skeleton', PACKAGE = 'lefko3', rows)
+}
+
 #' Edit lefkoMat or lefkoMatList Object based on Supplemental Data
 #' 
 #' Function \code{edit_lM()} edits existing \code{lefkoMat} and

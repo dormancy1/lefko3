@@ -13,8 +13,9 @@ using namespace LefkoUtils;
 // 3. DataFrame density_reassess  Check and Reorganize Density Input Table Into Usable Format
 // 4. DataFrame density_input  Set Density Dependence Relationships in Matrix Elements
 // 5. List supplemental  Create a Data Frame of Supplemental Data for MPM Development
-// 6. void edit_lM_single  Edit Single lefkoMat Object based on Supplemental Data
-// 7. List edit_lM  Edit lefkoMat or lefkoMatList Object based on Supplemental Data
+// 6. DataFrame sup_skeleton  Create A Supplement Skeleton Data Frame
+// 7. void edit_lM_single  Edit Single lefkoMat Object based on Supplemental Data
+// 8. List edit_lM  Edit lefkoMat or lefkoMatList Object based on Supplemental Data
 
 
 //' Create Stageframe for Population Matrix Projection Analysis
@@ -7289,6 +7290,48 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
   supplement.attr("row.names") = Rcpp::IntegerVector::create(NA_INTEGER, stage2_length);
   
   return supplement;
+}
+
+//' Create A Supplement Skeleton Data Frame
+//' 
+//' @name sup_skeleton
+//' 
+//' @param rows An integer giving the number of rows to include.
+//' 
+//' @return A data frame with the format of a supplement, of class
+//' \code{lefkoSD}.
+//' 
+//' @examples
+//' new_supp <- sup_skeleton(3)
+//' new_supp
+//' 
+//' @export sup_skeleton
+// [[Rcpp::export]]
+DataFrame sup_skeleton (Nullable<RObject> rows = R_NilValue) {
+  int num_rows {1};
+  
+  DataFrame new_supp;
+  
+  if (rows.isNotNull()) {
+    RObject rows_RO = RObject(rows);
+    
+    if (is<IntegerVector>(rows_RO) || is<NumericVector>(rows_RO)) {
+      IntegerVector rows_entered = as<IntegerVector>(rows_RO);
+      
+      num_rows = rows_entered(0);
+      
+      if (static_cast<int>(rows_entered.length()) > 1) {
+        Rf_warningcall(R_NilValue, "Using only the first value in vector rows.");
+      }
+      
+    } else {
+      throw Rcpp::exception("Argument rows in not recognized.", false);
+    }
+  }
+  
+  new_supp = LefkoInputs::sp_skeleton(num_rows);
+  
+  return new_supp;
 }
 
 //' Edit Single lefkoMat Object based on Supplemental Data

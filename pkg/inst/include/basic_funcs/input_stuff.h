@@ -22,6 +22,8 @@ using namespace arma;
 // 
 // 9.  bool is_arma_mat  Take a Generic Object and Test If It Is arma::mat
 // 10. int format_check_lM  Take a LefkoMat Object and Assess Its Format
+// 
+// 11. DataFrame sp_skeleton  Create A Skeleton Supplement (Core Function for sup_skeleton())
 
 
 
@@ -1066,6 +1068,64 @@ namespace LefkoInputs {
     }
     
     return format_int;
+  }
+  
+  //' Create A Skeleton Supplement (Core Function for sup_skeleton())
+  //' 
+  //' This function is the core function behind function \code{sup_skeleton()},
+  //' and creates skeleton supplement data frames.
+  //' 
+  //' @name sp_skeleton
+  //' 
+  //' @param rows An integer giving the number of rows to include.
+  //' 
+  //' @return A data frame with the format of a supplement, of class
+  //' \code{lefkoSD}.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline DataFrame sp_skeleton (int rows = 1) {
+    if (rows < 1) throw Rcpp::exception("Argument rows must be positive.", false);
+    
+    StringVector stage3_ (rows);
+    StringVector stage2_ (rows);
+    StringVector stage1_ (rows);
+    IntegerVector age2_ (rows);
+    StringVector eststage3_ (rows);
+    StringVector eststage2_ (rows);
+    StringVector eststage1_ (rows);
+    IntegerVector estage2_ (rows);
+    NumericVector givenrate_ (rows);
+    NumericVector offset_ (rows);
+    NumericVector multiplier_ (rows);
+    IntegerVector type_ (rows);
+    IntegerVector type_t12_ (rows);
+    
+    List supplement (13);
+    supplement(0) = stage3_;
+    supplement(1) = stage2_;
+    supplement(2) = stage1_;
+    supplement(3) = age2_;
+    supplement(4) = eststage3_;
+    supplement(5) = eststage2_;
+    supplement(6) = eststage1_;
+    supplement(7) = estage2_;
+    supplement(8) = givenrate_;
+    supplement(9) = offset_;
+    supplement(10) = multiplier_;
+    supplement(11) = type_;
+    supplement(12) = type_t12_;
+    
+    StringVector supp_names = {"stage3", "stage2", "stage1", "age2", "eststage3",
+      "eststage2", "eststage1", "estage2", "givenrate", "offset", "multiplier",
+      "convtype", "convtype_t12"};
+    StringVector supp_class = {"data.frame", "lefkoSD"};
+    
+    supplement.attr("class") = supp_class;
+    supplement.attr("names") = supp_names;
+    supplement.attr("row.names") = Rcpp::IntegerVector::create(NA_INTEGER, rows);
+    
+    return supplement;
   }
 }
 #endif

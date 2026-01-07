@@ -11,6 +11,8 @@
 * Function projection3() can use lists of density dependence inputs and
   stage weight inputs, with one entry per A matrix.
   
+* FNew function sup_skeleton() creates skeleton supplement data frames.
+  
 ## USER VISIBLE CHANGES
 
 * Function create_lM() no longer gives a warning that no supplements were

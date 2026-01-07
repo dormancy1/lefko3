@@ -1048,6 +1048,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sup_skeleton
+DataFrame sup_skeleton(Nullable<RObject> rows);
+RcppExport SEXP _lefko3_sup_skeleton(SEXP rowsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type rows(rowsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sup_skeleton(rows));
+    return rcpp_result_gen;
+END_RCPP
+}
 // edit_lM
 Rcpp::List edit_lM(const RObject mpm, Nullable<RObject> pop, Nullable<RObject> patch, Nullable<RObject> year2, Nullable<RObject> stage3, Nullable<RObject> stage2, Nullable<RObject> stage1, Nullable<RObject> age2, Nullable<RObject> eststage3, Nullable<RObject> eststage2, Nullable<RObject> eststage1, Nullable<RObject> estage2, Nullable<RObject> givenrate, Nullable<RObject> offset, Nullable<RObject> multiplier, Nullable<RObject> type, Nullable<RObject> type_t12, Nullable<RObject> target_mpm);
 RcppExport SEXP _lefko3_edit_lM(SEXP mpmSEXP, SEXP popSEXP, SEXP patchSEXP, SEXP year2SEXP, SEXP stage3SEXP, SEXP stage2SEXP, SEXP stage1SEXP, SEXP age2SEXP, SEXP eststage3SEXP, SEXP eststage2SEXP, SEXP eststage1SEXP, SEXP estage2SEXP, SEXP givenrateSEXP, SEXP offsetSEXP, SEXP multiplierSEXP, SEXP typeSEXP, SEXP type_t12SEXP, SEXP target_mpmSEXP) {
@@ -1229,6 +1240,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_actualstage3", (DL_FUNC) &_lefko3_actualstage3, 10},
     {"_lefko3_density_input", (DL_FUNC) &_lefko3_density_input, 12},
     {"_lefko3_supplemental", (DL_FUNC) &_lefko3_supplemental, 17},
+    {"_lefko3_sup_skeleton", (DL_FUNC) &_lefko3_sup_skeleton, 1},
     {"_lefko3_edit_lM", (DL_FUNC) &_lefko3_edit_lM, 18},
     {"_lefko3_bambi3", (DL_FUNC) &_lefko3_bambi3, 2},
     {"_lefko3_bambi2", (DL_FUNC) &_lefko3_bambi2, 1},
