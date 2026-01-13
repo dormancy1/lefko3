@@ -1463,10 +1463,54 @@ namespace LefkoMats {
     Nullable<DataFrame> overwrite = R_NilValue) {
     
     StringVector stagevec = as<StringVector>(stageframe["stage"]);
+    IntegerVector agevec = as<IntegerVector>(stageframe["min_age"]);
     
     arma::ivec groupvec = as<arma::ivec>(stageframe["group"]);
     int stageframe_length {static_cast<int>(stagevec.length())};
     IntegerVector stage_id = seq(1, stageframe_length);
+    
+    // Determine if MPM is a Leslie MPM based on the stageframe
+    bool Leslie_mpm {false};
+    int age_related_stages {0};
+    int age_related_min_ages {0};
+    bool min_age_fully_used {false};
+    int min_age_tracker {0};
+    bool cont_tracker {true};
+    
+    for (int i = 0; i < stageframe_length; i++) {
+      bool found_age_as_stage {false};
+      bool found_min_age {false};
+      
+      if (cont_tracker) {
+        if (LefkoUtils::stringcompare_simple(String(stagevec(i)), "age", true)) {
+          found_age_as_stage = true;
+          age_related_stages++;
+        }
+        
+        if (i > 0) {
+          if (!IntegerVector::is_na(agevec(i))) {
+            int found_age = agevec(i);
+            
+            if (found_age == (min_age_tracker + 1)) {
+              found_min_age = true;
+              age_related_min_ages++;
+              min_age_tracker = found_age;
+            }
+          }
+        
+        } else {
+          if (!IntegerVector::is_na(agevec(0))) {
+            min_age_tracker = agevec(0);
+            found_min_age = true;
+            age_related_min_ages++;
+          }
+        }
+        
+        if (!found_min_age && !found_age_as_stage) cont_tracker = false;
+      } else break;
+    }
+    
+    if (cont_tracker) Leslie_mpm = true;
     
     // Identify all groups
     arma::ivec all_groups = unique(groupvec);
@@ -1601,39 +1645,47 @@ namespace LefkoMats {
       int s3supp_count {0};
       int s2supp_count {0};
       int s1supp_count {0};
+      int a2supp_count {0};
       
       bool ests3_used {false};
       bool ests2_used {false};
       bool ests1_used {false};
+      bool esta2_used {false};
       
       for (int j = 0; j < static_cast<int>(all_possible_stage_terms.length()); j++) {
         if (stage3_supp(i) == all_possible_stage_terms(j)) s3supp_count++;
         if (stage2_supp(i) == all_possible_stage_terms(j)) s2supp_count++;
+        if (!IntegerVector::is_na(age2_supp(i))) {
+          if (age2_supp(i) > 0) a2supp_count++;
+        }
         
         if (!StringVector::is_na(eststage3_supp(i))) {
-          ests3_used = true;
+          if (!(String(eststage3_supp(i)) == "")) ests3_used = true;
         }
         if (!StringVector::is_na(eststage2_supp(i))) {
-          ests2_used = true;
+          if (!(String(eststage2_supp(i)) == "")) ests2_used = true;
+        }
+        if (!IntegerVector::is_na(estage2_supp(i))) {
+          if (estage2_supp(i) != 0) esta2_used = true;
         }
         
         if (historical) {
           if (stage1_supp(i) == all_possible_stage_terms(j)) s1supp_count++;
           
           if (!StringVector::is_na(eststage1_supp(i))) {
-            ests1_used = true;
+            if (!(String(eststage1_supp(i)) == "")) ests1_used = true;
           }
         } 
       }
       
-      if (s3supp_count == 0) {
+      if (s3supp_count == 0 && !Leslie_mpm && a2supp_count == 0) {
         String eat_my_shorts = "Stage names in supplement or overwrite table ";
         String eat_my_shorts1 = "(stage3) must match stageframe.";
         eat_my_shorts += eat_my_shorts1;
         
         throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
       }
-      if (s2supp_count == 0) {
+      if (s2supp_count == 0 && !Leslie_mpm && a2supp_count == 0) {
         String eat_my_shorts = "Stage names in supplement or overwrite table ";
         String eat_my_shorts1 = "(stage2) must match stageframe.";
         eat_my_shorts += eat_my_shorts1;

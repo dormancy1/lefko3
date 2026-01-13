@@ -20,6 +20,9 @@
   
 * Fixed inaccurate documentation for functions aflefko2() and arlefko2().
 
+* A number of underlying changes have been made to integrate lefko3 with adapt3.
+  These should lead to fewer fatal errors when users use less correct inputs.
+
 ## BUG FIXES
 
 * Fixed fatal error in historicalize3() caused under situations in which some
