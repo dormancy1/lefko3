@@ -135,8 +135,8 @@ transition.}
 occasion \emph{t}+1 is a survival transition probability (1), a fecundity
 rate (2), or a fecundity multiplier (3).}
 \item{convtype_t12}{Designates whether the transition from occasion
-\emph{t}-1 to occasion \emph{t} is a survival transition probability (1), a
-fecundity rate (2).}
+\emph{t}-1 to occasion \emph{t} is a survival transition probability (1), or
+a fecundity rate (2).}
 }
 \description{
 Function \code{supplemental()} provides all necessary supplemental data for

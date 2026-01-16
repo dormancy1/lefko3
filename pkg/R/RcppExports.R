@@ -5622,8 +5622,8 @@ density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2
 #' occasion \emph{t}+1 is a survival transition probability (1), a fecundity
 #' rate (2), or a fecundity multiplier (3).}
 #' \item{convtype_t12}{Designates whether the transition from occasion
-#' \emph{t}-1 to occasion \emph{t} is a survival transition probability (1), a
-#' fecundity rate (2).}
+#' \emph{t}-1 to occasion \emph{t} is a survival transition probability (1), or
+#' a fecundity rate (2).}
 #' 
 #' @section Notes:
 #' Negative values are not allowed in \code{givenrate} and \code{multiplier}

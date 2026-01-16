@@ -1101,6 +1101,17 @@ namespace LefkoInputs {
     IntegerVector type_ (rows);
     IntegerVector type_t12_ (rows);
     
+    for (int i = 0; i < rows; i ++) {
+      stage3_(i) = NA_STRING;
+      stage2_(i) = NA_STRING;
+      stage1_(i) = NA_STRING;
+      
+      eststage3_(i) = NA_STRING;
+      eststage2_(i) = NA_STRING;
+      eststage1_(i) = NA_STRING;
+      
+      multiplier_(i) = 1;
+    }
     List supplement (13);
     supplement(0) = stage3_;
     supplement(1) = stage2_;
