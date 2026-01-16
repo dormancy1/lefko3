@@ -1105,10 +1105,12 @@ namespace LefkoInputs {
       stage3_(i) = NA_STRING;
       stage2_(i) = NA_STRING;
       stage1_(i) = NA_STRING;
+      age2_(i) = NA_INTEGER;
       
       eststage3_(i) = NA_STRING;
       eststage2_(i) = NA_STRING;
       eststage1_(i) = NA_STRING;
+      estage2_(i) = NA_INTEGER;
       
       multiplier_(i) = 1;
     }
