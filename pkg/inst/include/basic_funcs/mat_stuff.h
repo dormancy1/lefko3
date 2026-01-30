@@ -1477,7 +1477,6 @@ namespace LefkoMats {
     bool Leslie_mpm {false};
     int age_related_stages {0};
     int age_related_min_ages {0};
-    bool min_age_fully_used {false};
     int min_age_tracker {0};
     bool cont_tracker {true};
     

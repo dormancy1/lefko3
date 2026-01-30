@@ -16648,7 +16648,7 @@ arma::mat proj3dens(const arma::vec& start_vec, const RObject& stage_weights,
   arma::vec dyn_gamma;
   arma::uvec dyn_delay;
   arma::uvec dyn_type;
-  int n_dyn_elems;
+  int n_dyn_elems {0};
   
   DataFrame equivalence_frame;
   NumericVector equivalence_vec;
