@@ -530,7 +530,7 @@ n _{1,4C}
   
   <p style="text-indent: 20px">The third form is spatial density dependence in vital rate models. This form of density dependence models spatial density rather population size, and is incorporated into vital rate model development in function-based MPMs.</p>
   
-  <p style="text-indent: 20px">Currently, `lefko3` includes four density dependence functions that can be chosen, with projections capable of including multiple functions and time delays. The first is the Ricker function, which is given as</p>
+  <p style="text-indent: 20px">Currently, `lefko3` includes five density dependence functions that can be chosen, with projections capable of including multiple functions and time delays. The first is the Ricker function, which is given as</p>
   
 \begin{equation}
 \tag{12}
@@ -560,14 +560,25 @@ where $\alpha$ and $\beta$ are, once again, the density dependence parameters, a
 \noindent
 where both $\alpha$ and $\beta$ give the strength of density dependence, though the former via an interaction with density and the latter via an addition to the exponential effect.
   
-  <p style="text-indent: 20px">Finally, `lefko3` also implements a form of the logistic equation, given as</p>
+  <p style="text-indent: 20px">The fourth function is a form of the logistic equation, given as</p>
   
 \begin{equation}
 \tag{15}
 \phi_{t+1} = \phi_t \times (1 - \frac{n_t}{K})
 \end{equation}
   
+\noindent
 where only one parameter, $K$, is needed.
+
+  <p style="text-indent: 20px">Finally, the fifth function is known as the additive limit function, given as</p>
+  
+\begin{equation}
+\tag{16}
+$\phi _{yx,t+1} = \beta (\alpha - \sum _{j} ^s \sum _{i \neq y} ^m n _{ij, t+1} ), \phi _{yx,t+1} \in [\gamma, (\alpha - \sum _{j} ^s \sum _{i \neq y} ^m n _{ij, t+1})]$
+\end{equation}
+  
+\noindent
+This function is based on a variant of the recruitment box model [@mahoney_streamflow_1998], as developed and used in @lytle_linking_2017. Here, $\phi _{yx}$ is the matrix transition element describing the rate of transition from stage $x$ in time $t$ to stage $y$ in time $t+1$, $\alpha$ is the maximum value of fecundity (equivalent to $K$ in equation 1 of @lytle_linking_2017), $\beta$ is a user-supplied real number ranging from 0 to 1 (equivalent to $p_j(h)g_j(h)$ in equation 1 of @lytle_linking_2017), $\gamma$ is a user-supplied minimum value, and $n$ is the number of individuals in time $t+1$ of all individuals in all $m$ stages other than the destinaton stage in the current species, and of all $s$ species or guilds (equivalent to $K_{ij}(t+1)$ in equation 1 of @lytle_linking_2017).
   
   <p style="text-indent: 20px">Package `lefko3` currently implements these analyses via the `projection3()` and `f_projection3()` functions. Settings for this function also allow the user to stipulate whether the projection should force matrices to remain substochastic. Two forms of substochasticity are allowed: 1) a simple form in which survival-transition probabilities can be prevented from moving outside of the interval [0, 1] and fecundity can be prevented from becoming negative, and 2) a more complicated form that keeps the column sums in survival-transitions matrices (equivalent to the survival probabilities of stages, stage-pairs, or age-stages) within the interval [0, 1] and prevents fecundity from becoming negative. We are currently developing functions to analyze density-dependent projection results, including sensitivity and elasticity analyses.</p>
   
@@ -578,7 +589,7 @@ where only one parameter, $K$, is needed.
   <p style="text-indent: 20px">The function `slambda3()` estimates the log stochastic population growth rate in its instantaneous form ($a = \text{log} \lambda _{S}$). This is estimated as the mean log discrete population growth rate across a user-specified number of random draws of the supplied annual matrices:</p>
   
 \begin{equation}
-\tag{16}
+\tag{17}
 a = \text{log} \lambda _{S} = \frac{1}{T} \sum _{t=1}^{T} \text{log} \frac{N _{t}}{N _{t-1}}
 \end{equation}
   
@@ -591,14 +602,14 @@ where $N _t$ is the population size in occasion $t$, and $T$ is the number of oc
   <p style="text-indent: 20px">The methods mentioned above apply to historical matrices as well. However, as described, they only provide the stable stage distribution and reproductive values of stage pairs. We provide two functions, `stablestage3()` and `repvalue3()`, to allow the estimation of these vectors for both ahistorical and historical MPMs. When provided with a historical MPM, these functions also estimate **historically-corrected** stable stage distributions and reproductive value vectors, which correspond to the original stages in the associated life history model rather than the stage pairs, and so are comparable against the ahistorical stable stage distributions and reproductive value vectors. The historically-corrected stable stage proportion for stage $j$ is estimated as the sum of all stable stage proportions for stage $j$ in occasion *t* across all stages in occasion *t*-1, as in:</p>
   
 \begin{equation}
-\tag{17}
+\tag{18}
 SS _j = \sum _{l=1}^{m} w _{jl}
 \end{equation}
   
 where $l$ is stage in occasion *t*-1, $m$ is the number of stages, $SS_j$ is the stable stage proportion of stage $j$, and $w _{jl}$ is the stable stage proportion of stage pair $jl$ given as the standardized right eigenvector corresponding to the dominant eigenvalue of the hMPM. The historically-corrected reproductive value of stage $j$ is calculated as the sum of all reproductive values for stage $j$ in occasion *t* across all stages in occasion *t*-1, weighted by the stable stage proportion of the respective stage pair divided by the stable stage proportion of stage $j$ at occasion *t* [@ehrlen_dynamics_2000], as in:
   
 \begin{equation}
-\tag{18}
+\tag{19}
 RV _j = \sum _{l=1}^{m} v _{jl} (w _{jl} /  SS _{j})
 \end{equation}
   
@@ -609,21 +620,21 @@ where $RV _j$ refers to reproductive value of stage $j$, and $v _{jl}$ refers to
   <p style="text-indent: 20px">The stochastic reproductive value is more complicated. Imagine a vector, $\mathbf{x}(t)$, which includes the expected number of offspring produced by each stage in occasion *t*+1. This is referred to as the *undiscounted reproductive value vector* because it is not standardized, and so is likely to eventually move to an extreme value such as infinity. It turns out that $\mathbf{x}(t)$ is related to other occasions in this projection via:</p>
   
 \begin{equation}
-\tag{19}
+\tag{20}
 \mathbf{x}^\top(t) = \mathbf{x}^\top(t+1)\mathbf{A}_t
 \end{equation}
   
 Standardizing leads to the *discounted reproductive value vector*, as below:
   
 \begin{equation}
-\tag{20}
+\tag{21}
 \mathbf{v}(t) = \frac{\mathbf{x}(t)}{\lVert \mathbf{x}(t) \rVert}
 \end{equation}
   
 The reproductive value vector can then be projected as well, as in
   
 \begin{equation}
-\tag{21}
+\tag{22}
 \mathbf{v}(t) = \frac{\mathbf{v}^\top(t+1)\mathbf{A}_t}{\lVert \mathbf{v}^\top(t+1)\mathbf{A}_t \rVert}
 \end{equation}
   
@@ -636,7 +647,7 @@ The reproductive value is projected backwards in time, and package `lefko3` take
   <p style="text-indent: 20px">The sensitivity of $\lambda$, the deterministic population growth rate, to a specific element in a projection matrix can be calculated using eigen analysis as</p>
   
 \begin{equation}
-\tag{22}
+\tag{23}
 \frac{\partial \lambda}{\partial a _{kj}} = \frac{\bar{v} _{k} w _{j}}{<\mathbf{w}, \mathbf{v}>}
 \end{equation}
   
@@ -645,7 +656,7 @@ Here, $\mathbf{w}$ is the stable stage distribution vector calculated as the rig
   <p style="text-indent: 20px">In the hMPM case, the basic method is essentially the same as in equation 22, although the equation itself changes somewhat, with the sensitivity of $\lambda$ to each matrix element given as</p>
   
 \begin{equation}
-\tag{23}
+\tag{24}
 \frac{\partial \lambda}{\partial a _{kjl}} = \frac{\bar{v} _{kj} w _{jl}}{<\mathbf{w}, \mathbf{v}>}
 \end{equation}
   
@@ -654,14 +665,14 @@ Here, $k$ is stage in occasion *t*+1, $j$ is stage in occasion *t*, $l$ is stage
   <p style="text-indent: 20px">Sensitivities show how much a small, additive change in a matrix element can alter $\lambda$, but do so by estimating the local slope of $\lambda$ given in terms of the matrix element [@caswell_matrix_2001]. Sensitivities are also typically non-zero even for impossible transitions represented by zeros in the matrix. Elasticities, in contrast, show the influence of small, proportional changes in matrix elements on $\lambda$, essentially given as local slopes of $log \lambda$ given in terms of the logarithms of matrix elements. This results in impossible transitions yielding elasticities equal to 0. In the ahistorical case, the elasticity, $e _{kj}$, of $\lambda$ to change in a matrix element $a _{kj}$ is given as</p>
   
 \begin{equation}
-\tag{24}
+\tag{25}
 e _{kj} = \frac{a _{kj}}{\lambda} \frac{\partial \lambda}{\partial a _{kj}}
 \end{equation}
   
 The historical case is just an extension of the above.
   
 \begin{equation}
-\tag{25}
+\tag{26}
 e _{kjl} = \frac{a _{kjl}}{\lambda} \frac{\partial \lambda}{\partial a _{kjl}}
 \end{equation}
   
@@ -670,7 +681,7 @@ Here, we use row and column definitions equivalent to those used in the historic
   <p style="text-indent: 20px">Elasticities calculated for hMPMs can be compared to those calculated in ahMPMs easily because elasticities may be added by stage or transition type, with all elasticities corresponding to a specific matrix necessarily summing to 1.0. Thus, we can calculate the stage pair elasticities resulting from a historical MPM analysis as</p>
   
 \begin{equation}
-\tag{26}
+\tag{27}
 e _{kj} = \sum_{i=1}^{m} e _{kji}
 \end{equation}
   
@@ -679,14 +690,14 @@ with all symbol definitions as before. We have provided a `summary()` function f
   <p style="text-indent: 20px">Stochastic sensitivity and elasticity analysis are also available. Per @caswell_matrix_2001, the sensitivity of $a = \text{log} \lambda _{S}$ to changes in a specific element is given as:</p>
   
 \begin{equation}
-\tag{27}
+\tag{28}
 \frac{\partial \text{log} \lambda _S}{\partial a _{kj}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1} \frac{\mathbf{v}(t+1) \mathbf{w}^\top(t)}{\mathbf{v}^\top(t+1) \mathbf{w}(t+1)}
 \end{equation}
   
 where $t$ refers to a specific monitoring occasion and $T$ refers to the number of occasions projected forward. Similarly, the stochastic elasticity of $a = \text{log} \lambda _{S}$ to changes in a specific element is given as:
   
 \begin{equation}
-\tag{28}
+\tag{29}
 \frac{\partial \text{log} \lambda _S}{\partial \text{log} a _{kj}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=0}^{T-1} \frac{\bigl(\mathbf{v}(t+1) \mathbf{w}^\top(t) \bigr) \circ \mathbf{A_t}}{\mathbf{v}^\top(t+1) \mathbf{w}(t+1)}
 \end{equation}
   
@@ -701,7 +712,7 @@ where $\mathbf{A_t}$ refers to the A matrix corresponding to occasion *t*. Stoch
   <p style="text-indent: 20px">Several forms of LTRE exist. The simplest and earliest developed is the fixed, one-way LTRE, which evaluates the impact of a single factor on the asymptotic population growth rate $\lambda$. Imagine two matrices, the first a matrix derived from some treatment such as a particular management regime, $\mathbf{A^{(m)}}$, and a reference matrix from a control regime, $\mathbf{A^{(R)}}$. Per @caswell_matrix_2001, if we estimate a matrix $\mathbf{A^{(m+R)/2}}$ that is the element-wise arithmetic mean matrix of $\mathbf{A^{(m)}}$ and $\mathbf{A^{(R)}}$, then:</p>
   
 \begin{equation}
-\tag{29}
+\tag{30}
 \Delta \lambda = \lambda^{(m)} - \lambda^{(R)} \approx \sum_{j,i} ((a_{ji}^{(m)} - a_{ji}^{(R)}) (\frac{\partial \lambda}{\partial a_{ji}})) | _\mathbf{A^{(m+R)/2}}
 \end{equation}
   
@@ -710,7 +721,7 @@ where $\mathbf{A_t}$ refers to the A matrix corresponding to occasion *t*. Stoch
   <p style="text-indent: 20px">Package `lefko3` currently implements two kinds of sLTRE. The first, which we refer to in the documentation as 'sLTRE', is the simulated sLTRE described in @davison_demographic_2010, where:</p>
   
 \begin{equation}
-\tag{30}
+\tag{31}
 \Delta \text{log} \lambda _{S} = log\lambda^{(m)} - log\lambda^{(R)} \approx \sum_{j,i} [log \mu_{ji}^{(m)} - log \mu_{ji}^{(R)}] E_{ji}^{\mu} + [log \sigma_{ji}^{(m)} - log \sigma_{ji}^{(R)}] E_{ji}^{\sigma}
 \end{equation}
   

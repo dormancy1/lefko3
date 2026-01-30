@@ -427,7 +427,7 @@ cypmodels2 <- modelsearch(vertdata, historical = FALSE, approach = "mixed",
 ``` r
 cypmatrix2 <- flefko2(stageframe = cypframe, supplement = cypsupp2, 
   modelsuite = cypmodels2, data = vertdata, patch = NULL)
-#summary(cypmatrix2)
+#summary(cypmatrix2, cycle_check = FALSE)
 ```
   
   <p style="text-indent: 20px">A glance at the summary highlights that these are large, dense matrices - here, 2,459 out of 2,916 total elements have been estimated (84.3%). In raw matrices, elements associated with transitions from specific stages are only estimated when individuals actually move through those transitions, and so the numbers of transitions estimated and of stages identified are strongly limited by the size of the dataset. In function-based matrices, in contrast, the linear models estimated allow the estimation of all elements that are theoretically possible (i.e. only structural zeros are not estimated), and so stages may be developed for the full range of sizes experienced by individuals.</p>
@@ -445,7 +445,7 @@ cypmatrix2 <- flefko2(stageframe = cypframe, supplement = cypsupp2,
 ``` r
 cypmatrix3 <- flefko3(stageframe = cypframe, supplement = cypsupp3, 
   modelsuite = cypmodels3, data = vertdata, sparse_output = TRUE)
-#summary(cypmatrix3)
+#summary(cypmatrix3, cycle_check = FALSE)
 ```
   
   <p style="text-indent: 20px">We see many more total elements per matrix (over 8.5 million, in contrast to 2,916 in the ahistorical case), and many more rows and columns (54 rows and columns in the ahistorical case, and 54^2^ = 2,916 rows and columns in the historical case). However, historical matrices are composed primarily of structural zeros. Thus, with only 117,908 + 2,352 = 120,260 elements estimated per matrix, only 1.4% of elements are non-zero. Note also that we used sparse matrix format to hold these matrices. The current size of object `cypmatrix3` should be around 14 MB, whereas the equivalent object using standard matrices would be over 1 GB in size (to compare, repeat the code above without the `sparse_output` argument, or set it to `FALSE`).</p>
@@ -494,11 +494,11 @@ This conditional matrix takes the theoretically possible elements in which stage
 
 ``` r
 lambda3(tmeans2r)
-#>   pop patch   lambda
-#> 1   1     1 0.960323
+#>   pop patch    lambda
+#> 1   1     1 0.9603356
 lambda3(tmeans3r)
 #>   pop patch    lambda
-#> 1   1  <NA> 0.9602332
+#> 1   1  <NA> 0.9602458
 
 set.seed(42)
 cypann2s <- slambda3(cypmatrix2)
@@ -506,11 +506,11 @@ set.seed(42)
 cypann3s <- slambda3(cypmatrix3)
 
 cypann2s
-#>   pop patch           a        var       sd         se
-#> 1   1     1 -0.04046598 0.01775049 0.133231 0.00133231
+#>   pop patch          a        var        sd          se
+#> 1   1     1 -0.0404529 0.01774991 0.1332288 0.001332288
 cypann3s
-#>   pop patch           a        var        sd          se
-#> 1   1  <NA> -0.04055829 0.01907353 0.1381069 0.001381069
+#>   pop patch          a        var        sd          se
+#> 1   1  <NA> -0.0405452 0.01907289 0.1381046 0.001381046
 ```
   
   <p style="text-indent: 20px">The ahistorical and historical $\lambda$ values are the same, as are the ahistorical and historical estimates of $a = \text{log} \lambda _{S}$. Let's estimate standard errors for these terms. Doing so will require bootstrapping our original dataset, creating new vital rate models for each bootstrap, creating bootstrapped MPMs to match the bootstrapped datasets and vital rate model sets, and then running functions `lambda3()` and `slambda3()` on these replicates. To limit the amount of time that this will take, we will only create 3 bootstrapped replicates, though normally we might create 100, 500, or 1000.</p>
@@ -601,6 +601,10 @@ cypmodels3_boot <- modelsearch(cypboot, historical = TRUE, approach = "mixed",
 #> 
 #> Developing global model of survival probability...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
+#> 
+#> Redeveloping global model of survival probability...
+#> 
 #> Global model of survival probability developed. Proceeding with model dredge...
 #> 
 #> Developing global model of observation probability...
@@ -683,15 +687,15 @@ cypann3s_boot <- slambda3(cypmatrix3_boot)
 
 # Standard errors for ahistorical and historical lambda
 sd(cyplambda2$lambdas) / sqrt(3)
-#> [1] 0.01637323
+#> [1] 0.01637293
 sd(cyplambda3$lambdas) / sqrt(3)
-#> [1] 2.468779e-05
+#> [1] 0.02338363
 
 # Standard errors for ahistorical and historical stochastic lambda
 sd(cypann2s_boot$a) / sqrt(3)
-#> [1] 0.0167771
+#> [1] 0.01677682
 sd(cypann3s_boot$a) / sqrt(3)
-#> [1] 2.099168e-05
+#> [1] 0.0242268
 ```
   
   <p style="text-indent: 20px">Next let's take a look at a plot of annual deterministic growth rates (stochastic growth rate is calculated as a single value across time, and so is not included). We find that annual $\lambda$ estimates differ only slightly between ahistorical and historical analyses.</p>
@@ -769,7 +773,7 @@ tm2sens_s <- sensitivity3(cypmatrix2, stochastic = TRUE, seed = 42)
 
 # The highest deterministic sensitivity value:
 max(tm2sens$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)])
-#> [1] 0.2005773
+#> [1] 0.2005747
 # This value is associated with element:
 which(tm2sens$ah_sensmats[[1]] == 
   max(tm2sens$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)]))
@@ -777,7 +781,7 @@ which(tm2sens$ah_sensmats[[1]] ==
 
 # The highest stochastic sensitivity value:
 max(tm2sens_s$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)])
-#> [1] 0.1774624
+#> [1] 0.17746
 # This value is associated with element:
 which(tm2sens_s$ah_sensmats[[1]] == 
   max(tm2sens_s$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)]))
@@ -796,31 +800,35 @@ tm3sens_s <- sensitivity3(cypmatrix3, stochastic = TRUE, times = 500, seed = 42)
 
 # The highest deterministic sensitivity value:
 max(as.matrix(tm3sens$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)])
-#> [1] 0.04982411
+#> [1] 0.04982395
 # This value is associated with element:
 which(as.matrix(tm3sens$h_sensmats[[1]]) == 
   max(as.matrix(tm3sens$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)]))
-#>  [1] 962658 962766 962820 962982 963252 963306 963630 963684 963846 964170 964224 964656 964872 964980
+#>  [1] 962658 962820 962874 963198 963252 963306 963468 963738 963792 963846
+#> [11] 963900 964116 964224 964332 964602 964656 964818 964872 964926 964980
+#> [21] 965088
 # The highest stochastic sensitivity value:
 max(as.matrix(tm3sens_s$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)])
-#> [1] 0.0415974
+#> [1] 0.04159724
 # This value is associated with element:
 which(as.matrix(tm3sens_s$h_sensmats[[1]]) == 
   max(as.matrix(tm3sens_s$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)]))
-#>  [1] 962604 962658 962712 962766 962820 962874 962928 962982 963036 963090 963144 963198 963252 963306 963360 963414 963468 963522
-#> [19] 963576 963630 963684 963738 963792 963846 963900 963954 964008 964062 964116 964170 964224 964278 964332 964386 964440 964494
-#> [37] 964548 964602 964656 964710 964764 964818 964872 964926 964980 965034 965088 965142 965196
+#>  [1] 962604 962658 962712 962766 962820 962874 962928 962982 963036 963090
+#> [11] 963144 963198 963252 963306 963360 963414 963468 963522 963576 963630
+#> [21] 963684 963738 963792 963846 963900 963954 964008 964062 964116 964170
+#> [31] 964224 964278 964332 964386 964440 964494 964548 964602 964656 964710
+#> [41] 964764 964818 964872 964926 964980 965034 965088 965142 965196
 
 # The highest deterministic sensitivity value (historically-corrected):
 max(as.matrix(tm3sens$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)])
-#> [1] 0.2003047
+#> [1] 0.2003021
 # This value is associated with element:
 which(as.matrix(tm3sens$ah_sensmats[[1]]) ==
   max(as.matrix(tm3sens$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)]))
 #> [1] 378
 # The highest stochastic sensitivity value (historically-corrected):
 max(as.matrix(tm3sens_s$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)])
-#> [1] 0.1780957
+#> [1] 0.1780934
 # This value is associated with element:
 which(as.matrix(tm3sens_s$ah_sensmats[[1]]) ==
   max(as.matrix(tm3sens_s$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)]))

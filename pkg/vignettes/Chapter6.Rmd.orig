@@ -168,14 +168,14 @@ lathmodels2ipm <- modelsearch(lathvertipm, historical = FALSE,
 lathmat3ipm <- flefko3(stageframe = lathframeipm, modelsuite = lathmodels3ipm,
   supplement = lathsupp3, data = lathvertipm, reduce = FALSE,
   sparse_output = TRUE)
-#summary(lathmat3ipm)
+#summary(lathmat3ipm, check_cycle = FALSE)
 ```
   
   <p style="text-indent: 20px">These are giant matrices. With 10,609 rows and columns, there are a total of 112,550,881 elements per matrix. But they are also amazingly sparse - with approximately 960,209 elements estimated per matrix, only 0.9% of elements per matrix are non-zero. The survival probability sums all look good, so we appear to have no problems with overly large given and proxy survival transitions provided through our supplemental tables. Let's now build the ahistorical IPMs.</p>
 ```{r Ch6.11}
 lathmat2ipm <- flefko2(stageframe = lathframeipm, modelsuite = lathmodels2ipm,
   supplement = lathsupp2, data = lathvertipm, reduce = FALSE)
-#summary(lathmat2ipm)
+#summary(lathmat2ipm, check_cycle = FALSE)
 ```
   
   <p style="text-indent: 20px">The ahistorical IPMs are certainly smaller than the historical IPMs, but are nonetheless quiet large. Although huge, these matrices are not sparse - an average of 9,180.3 elements out of 10,609 per matrix are estimated (86.5%; note that the summary() function only counts elements as estimated if they equal a value other than 0, leading the exact number of estimated elements to vary among matrices when elements are estimated at near 0).</p>
@@ -249,7 +249,7 @@ barplot(t(ss_put_together), beside=T, ylab = "Proportion", xlab = "Stage",
   col = c("black", "orangered", "grey", "darkred"), bty = "n")
 legend("topright", c("det ahist", "det hist", "sto ahist", "sto hist"),
   col = c("black", "orangered", "grey", "darkred"), pch = 15, bty = "n")
-par(lty = lty.o)
+par(lty = lty.o) # This statement returns plot parameters to the default
 ```
   
   <p style="text-indent: 20px">Both ahistorical and historical approaches show the stable stage distribution dominated by the dormant seed stage. The next highest is the seedling stage, followed by the adult dormant stage. Stochastic analysis shows similar patterns.</p>
@@ -276,7 +276,7 @@ barplot(t(elas_put_together), beside=T, ylab = "Elasticity", xlab = "Stage",
   col = c("black", "orangered", "grey", "darkred"), bty = "n")
 legend("topright", c("det ahist", "det hist", "sto ahist", "sto hist"),
   col = c("black", "orangered", "grey", "darkred"), pch = 15, bty = "n")
-par(lty = lty.o)
+par(lty = lty.o) # This statement returns plot parameters to the default
 ```
   
   <p style="text-indent: 20px">The plot of these distributions a strong influence of history, and also shows the strong importance of vegetative dormancy and small adults. Both environmental stochasticity and individual history increase the elasticity associated with larger, though still small, adults.</p>

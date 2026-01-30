@@ -276,7 +276,7 @@ cypmodels2 <- modelsearch(vertdata, historical = FALSE, approach = "mixed",
 ```{r Ch5.10}
 cypmatrix2 <- flefko2(stageframe = cypframe, supplement = cypsupp2, 
   modelsuite = cypmodels2, data = vertdata, patch = NULL)
-#summary(cypmatrix2)
+#summary(cypmatrix2, cycle_check = FALSE)
 ```
   
   <p style="text-indent: 20px">A glance at the summary highlights that these are large, dense matrices - here, 2,459 out of 2,916 total elements have been estimated (84.3%). In raw matrices, elements associated with transitions from specific stages are only estimated when individuals actually move through those transitions, and so the numbers of transitions estimated and of stages identified are strongly limited by the size of the dataset. In function-based matrices, in contrast, the linear models estimated allow the estimation of all elements that are theoretically possible (i.e. only structural zeros are not estimated), and so stages may be developed for the full range of sizes experienced by individuals.</p>
@@ -292,7 +292,7 @@ cypmatrix2 <- flefko2(stageframe = cypframe, supplement = cypsupp2,
 ```{r Ch5.12}
 cypmatrix3 <- flefko3(stageframe = cypframe, supplement = cypsupp3, 
   modelsuite = cypmodels3, data = vertdata, sparse_output = TRUE)
-#summary(cypmatrix3)
+#summary(cypmatrix3, cycle_check = FALSE)
 ```
   
   <p style="text-indent: 20px">We see many more total elements per matrix (over 8.5 million, in contrast to 2,916 in the ahistorical case), and many more rows and columns (54 rows and columns in the ahistorical case, and 54^2^ = 2,916 rows and columns in the historical case). However, historical matrices are composed primarily of structural zeros. Thus, with only 117,908 + 2,352 = 120,260 elements estimated per matrix, only 1.4% of elements are non-zero. Note also that we used sparse matrix format to hold these matrices. The current size of object `cypmatrix3` should be around 14 MB, whereas the equivalent object using standard matrices would be over 1 GB in size (to compare, repeat the code above without the `sparse_output` argument, or set it to `FALSE`).</p>

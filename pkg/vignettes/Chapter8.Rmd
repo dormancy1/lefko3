@@ -628,6 +628,10 @@ lathmodelsln2_boot <- modelsearch(lathboot, historical = FALSE,
 #> 
 #> Developing global model of juvenile primary size...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
+#> 
+#> Redeveloping global model of juvenile primary size...
+#> 
 #> Global model of juvenile primary size developed. Proceeding with model dredge...
 #> 
 #> Finished selecting best-fit models.
@@ -739,10 +743,6 @@ lathmodelsln2_boot <- modelsearch(lathboot, historical = FALSE,
 #> Finished selecting best-fit models.
 #> 
 #> Developing global model of survival probability...
-#> 
-#> Global model estimation failed. Dropping individual identity term.
-#> 
-#> Redeveloping global model of survival probability...
 #> 
 #> Global model of survival probability developed. Proceeding with model dredge...
 #> 
@@ -896,11 +896,11 @@ sl2_boot <- slambda3(lathmat2age_boot)
 
 # Standard error of deterministic lambda
 sd(lambda2_boot$lambdas) / sqrt(10)
-#> [1] 0.003979388
+#> [1] 0.003978824
 
 # Standard error of stochastic lambda
 sd(sl2_boot$a) / sqrt(10)
-#> [1] 0.003517201
+#> [1] 0.003501188
 ```
 
   <p style="text-indent: 20px">Now let's look at the stable stage distribution, using the population matrices rather than the patch matrices. The output for the ahistorical MPM is a data frame with matrix of origin, stage name, and stable stage proportion in each row. Because the default output for the `stablestage3()` function will give us the stable distribution of age-stages, we will collapse the output across age to produce a true stable stage distribution.</p>
@@ -963,7 +963,7 @@ lathmat2msens_s <- sensitivity3(lathmat2age, stochastic = TRUE, seed = 42)
 
 # The highest deterministic sensitivity value:
 max(lathmat2msens$ah_sensmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.1699623
+#> [1] 0.1699621
 # This value is associated with element: "
 which(lathmat2msens$ah_sensmats[[1]] == 
   max(lathmat2msens$ah_sensmats[[1]][which(lathmat2mean$A[[1]] > 0)]))
@@ -971,7 +971,7 @@ which(lathmat2msens$ah_sensmats[[1]] ==
 
 # The highest stochastic sensitivity value:
 max(lathmat2msens_s$ah_sensmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.4560655
+#> [1] 0.4560652
 # This value is associated with element:
 which(as.matrix(lathmat2msens_s$ah_sensmats[[1]]) ==
   max(as.matrix(lathmat2msens_s$ah_sensmats[[1]])[which(lathmat2mean$A[[1]] > 0)]))
@@ -990,13 +990,13 @@ lathmat2melas_s <- elasticity3(lathmat2age, stochastic = TRUE, seed = 42)
 
 # The highest deterministic elasticity value:
 max(lathmat2melas$ah_elasmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.03229501
+#> [1] 0.03229505
 # The largest determnistic elasticity is associated with element:
 which(lathmat2melas$ah_elasmats[[1]] == max(lathmat2melas$ah_elasmats[[1]]))
 #> [1] 3201
 # The highest stochastic elasticity value:
 max(lathmat2melas_s$ah_elasmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.2166822
+#> [1] 0.216682
 # The largest stochastic elasticity is associated with element:
 which(as.matrix(lathmat2melas_s$ah_elasmats[[1]]) == max(lathmat2melas_s$ah_elasmats[[1]]))
 #> [1] 3905

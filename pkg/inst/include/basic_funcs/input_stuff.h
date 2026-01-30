@@ -1112,6 +1112,8 @@ namespace LefkoInputs {
       eststage1_(i) = NA_STRING;
       estage2_(i) = NA_INTEGER;
       
+      givenrate_(i) = NA_REAL;
+      offset_(i) = 0.;
       multiplier_(i) = 1;
     }
     List supplement (13);

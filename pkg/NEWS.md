@@ -1,9 +1,9 @@
-# lefko3 6.7.0 (2025-XX-XX)
+# lefko3 6.7.0 (2025-01-30)
 
 ## NEW FEATURES
 
-* The additive limit and absolute limit functions are now usable as new density
-  dependence functions in projection via function density_input().
+* The additive limit function is now usable as a new density dependence function
+  in projection via function density_input().
   
 * Function projection3() can now handle density dependent projections using
   simple lists of matrices.
@@ -11,7 +11,7 @@
 * Function projection3() can use lists of density dependence inputs and
   stage weight inputs, with one entry per A matrix.
   
-* FNew function sup_skeleton() creates skeleton supplement data frames.
+* New function sup_skeleton() creates skeleton supplement data frames.
   
 ## USER VISIBLE CHANGES
 
@@ -22,6 +22,8 @@
 
 * A number of underlying changes have been made to integrate lefko3 with adapt3.
   These should lead to fewer fatal errors when users use less correct inputs.
+  
+* Vignettes have been updated to deal with changes to some functions.
 
 ## BUG FIXES
 

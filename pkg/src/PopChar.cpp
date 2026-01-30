@@ -5583,39 +5583,37 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' \emph{t}-1 in the transition to be affected by density. Only needed if a
 //' historical MPM is used. Abbreviations for groups of stages are also usable
 //' (see Notes).
-//' @param age2 A vector showing the age of the stage in occasion \emph{t} in the
-//' transition to be affected by density. Only needed if an age-by-stage MPM is
-//' used.
+//' @param age2 A vector showing the age of the stage in occasion \emph{t} in
+//' the transition to be affected by density. Only needed if an age-by-stage MPM
+//' is used.
 //' @param style A vector coding for the style of density dependence on each
 //' transition subject to density dependence. Options include \code{1},
 //' \code{ricker}, \code{ric}, or \code{r} for the Ricker function; \code{2},
 //' \code{beverton}, \code{bev}, and \code{b} for the Beverton-Holt function;
 //' \code{3}, \code{usher}, \code{ush}, and \code{u} for the Usher function;
 //' \code{4}, \code{logistic}, \code{log}, and \code{l} for the logistic
-//' function; \code{5}, \code{additive}, \code{add}, and \code{a} for the
-//' additive limit function; and \code{6}, \code{absolute}, or \code{abs} for
-//' the absolute limit function. If only a single code is provided, then all
+//' function; and \code{5}, \code{additive}, \code{add}, and \code{a} for the
+//' additive limit function. If only a single code is provided, then all
 //' noted transitions are assumed to be subject to this style of density
 //' dependence. Defaults to \code{ricker}.
 //' @param time_delay An integer vector indicating the number of occasions back
 //' on which density dependence operates. Defaults to \code{1}, and may not equal
 //' any integer less than 1. If a single number is input, then all noted
-//' transitions are assumed to be subject to this time delay.  Defaults to
-//' \code{1}.
+//' transitions are assumed to be subject to this time delay. Does not apply to
+//' the additive limit function, which uses only the current population.
 //' @param alpha A vector indicating the numeric values to use as the
 //' alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
-//' the value of the carrying capacity \emph{K} to use in the logistic, additive
-//' limit, or absolute limit functions (see \code{Notes} section for more on
-//' this term). If a single number is provided, then all noted transitions are
-//' assumed to be subject to this value of alpha. Defaults to \code{1}.
+//' the value of the carrying capacity \emph{K} to use in the logistic or
+//' additive limit functions (see \code{Notes} section for more on this term).
+//' If a single number is provided, then all noted transitions are assumed to be
+//' subject to this value of alpha. Defaults to \code{1}.
 //' @param beta A vector indicating the numeric values to use as the beta term
 //' in the two parameter Ricker, Beverton-Holt, or Usher function, or the
-//' multiplier on the previous population size in the additive limit function,
-//' or the minimum limit for the number of individuals in \code{stage3} in the
-//' absolute limit function. Also used to indicate whether to use \emph{K} as a
-//' hard limit in the logistic equation (see section \code{Notes} below). If a
-//' single number is provided, then all noted transitions are assumed to be
-//' subject to this value of \code{beta}. Defaults to \code{1}.
+//' multiplier on the previous population size in the additive limit function.
+//' Also used to indicate whether to use \emph{K} as a hard limit in the
+//' logistic equation (see section \code{Notes} below). If a single number is
+//' provided, then all noted transitions are assumed to be subject to this value
+//' of \code{beta}. Defaults to \code{1}.
 //' @param gamma A vector indicating the numeric values to use as the gamma term
 //' in any function using a third term. Currently, this is only used in the
 //' additive limit function, and denotes the minimum number of individuals
@@ -5643,14 +5641,15 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' if applicable.}
 //' \item{age2}{Age at occasion \emph{t} in the transition to be replaced, if
 //' applicable.}
-//' \item{style}{Style of density dependence, coded as 1, 2, 3, or 4 for the
-//' Ricker, Beverton-Holt, Usher, or logistic function, respectively.}
+//' \item{style}{Style of density dependence, coded as 1, 2, 3, 4, or 5 for the
+//' Ricker, Beverton-Holt, Usher, logistic, or additive limit function,
+//' respectively.}
 //' \item{time_delay}{The time delay on density dependence, in time steps.}
 //' \item{alpha}{The value of alpha in the Ricker, Beverton-Holt, or Usher
-//' function, or the value of carrying capacity, \emph{K}, in the logistic,
-//' additive limit, or absolute limit functions.}
+//' function, or the value of carrying capacity, \emph{K}, in the logistic or
+//' additive limit functions.}
 //' \item{beta}{The value of beta in the Ricker, Beverton-Holt, or Usher
-//' function, or the value of the minimum limit in the absolute limit function.}
+//' function, or the value of the multiplier in the additive limit function.}
 //' \item{gamma}{The value of gamma, if such a value exists, as in the additive
 //' limit function.}
 //' \item{type}{Designates whether the transition from occasion \emph{t} to
