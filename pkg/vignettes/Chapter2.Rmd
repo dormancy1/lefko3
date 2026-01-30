@@ -15,7 +15,7 @@ vignette: >
   
   <p style="text-indent: 20px">To reduce vignette size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls. In these cases, we include hashtagged versions of these calls, and we encourage the user to run these statements without hashtags to examine the output.</p>
   
-  <p style="text-indent: 20px">This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called <a href = "https://bookdown.org/cdorm/lefko3gentle/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
+  <p style="text-indent: 20px">This vignette is only a sample analysis. Detailed information and instructions on using `lefko3` are available through a free online e-book called <a href = "https://revolutionarydemography-lefko3gentle.share.connect.posit.cloud/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ### ORGANISM AND POPULATION 
   
