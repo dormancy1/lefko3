@@ -63,6 +63,7 @@ mpm_create(
   cont = TRUE,
   prebreeding = TRUE,
   stage_NRasRep = FALSE,
+  initial_nan = FALSE,
   sparse_output = FALSE
 )
 }
@@ -368,6 +369,11 @@ non-reproductive individuals as reproductive. Used only in raw, stage-based
 MPMs in cases where stage assignment must still be handled. Not used in
 function-based MPMs, and in stage-based MPMs in which a valid \code{hfvdata}
 class data frame with stages already assigned is provided.}
+
+\item{initial_nan}{A single logical value indicating whether to initialize
+matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
+only be used with raw MPMs not in sparse format, and should not be used to
+create normal MPMs intended for projection.}
 
 \item{sparse_output}{A logical value indicating whether to output matrices
 in sparse format. Defaults to \code{FALSE}, in which case all matrices are

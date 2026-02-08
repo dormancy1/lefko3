@@ -311,6 +311,10 @@
 #' identity in the data frame. Defaults to \code{"patchid"}.
 #' @param indivcol A string denoting the variable name coding for individual
 #' identity in the data frame. Defaults to \code{"individ"}.
+#' @param rename A logical value indicating whether to rename individuals as
+#' unique when bootstrapping by individual, even if that individual had been
+#' previously chosen. Defaults to \code{FALSE}, and can only be set to
+#'  \code{TRUE} if \code{by_indiv = TRUE}.
 #' 
 #' @return A list of class \code{hfvlist}, which is composed of data frames of
 #' class \code{hfvdata}.
@@ -355,8 +359,8 @@
 #'   supplement = lathsupp3, yearcol = "year2", indivcol = "individ")
 #' 
 #' @export bootstrap3
-bootstrap3 <- function(data, by_pop = NULL, by_patch = NULL, by_indiv = NULL, prop_size = NULL, max_limit = NULL, reps = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL) {
-    .Call('_lefko3_bootstrap3', PACKAGE = 'lefko3', data, by_pop, by_patch, by_indiv, prop_size, max_limit, reps, popcol, patchcol, indivcol)
+bootstrap3 <- function(data, by_pop = NULL, by_patch = NULL, by_indiv = NULL, prop_size = NULL, max_limit = NULL, reps = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL, rename = NULL) {
+    .Call('_lefko3_bootstrap3', PACKAGE = 'lefko3', data, by_pop, by_patch, by_indiv, prop_size, max_limit, reps, popcol, patchcol, indivcol, rename)
 }
 
 #' Core Engine for cond_hmpm()
@@ -1414,6 +1418,9 @@ cycle_check <- function(mpm, quiet = NULL) {
 #' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 #' Defaults to \code{FALSE}.
 #' 
@@ -1489,6 +1496,9 @@ NULL
 #' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 #' Defaults to \code{FALSE}.
 #' 
@@ -1541,6 +1551,9 @@ NULL
 #' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 #' Defaults to \code{FALSE}.
 #' 
@@ -1595,6 +1608,9 @@ NULL
 #' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then outputs matrices in sparse format.
 #' Defaults to \code{FALSE}.
 #' 
@@ -3158,6 +3174,10 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' MPMs in cases where stage assignment must still be handled. Not used in
 #' function-based MPMs, and in stage-based MPMs in which a valid \code{hfvdata}
 #' class data frame with stages already assigned is provided.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
+#' only be used with raw MPMs not in sparse format, and should not be used to
+#' create normal MPMs intended for projection.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
@@ -3364,8 +3384,8 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' }
 #' 
 #' @export mpm_create
-mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = FALSE, reduce = FALSE, simple = FALSE, err_check = FALSE, data = NULL, year = NULL, pop = NULL, patch = NULL, stageframe = NULL, supplement = NULL, overwrite = NULL, repmatrix = NULL, alive = NULL, obsst = NULL, size = NULL, sizeb = NULL, sizec = NULL, repst = NULL, matst = NULL, fec = NULL, stages = NULL, yearcol = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL, agecol = NULL, censorcol = NULL, modelsuite = NULL, paramnames = NULL, inda = NULL, indb = NULL, indc = NULL, annua = NULL, annub = NULL, annuc = NULL, dev_terms = NULL, density = NA_real_, CDF = TRUE, random_inda = FALSE, random_indb = FALSE, random_indc = FALSE, negfec = FALSE, exp_tol = 700L, theta_tol = 1e8L, censor = FALSE, censorkeep = NULL, start_age = NA_integer_, last_age = NA_integer_, fecage_min = NA_integer_, fecage_max = NA_integer_, fectime = 2L, fecmod = 1.0, cont = TRUE, prebreeding = TRUE, stage_NRasRep = FALSE, sparse_output = FALSE) {
-    .Call('_lefko3_mpm_create', PACKAGE = 'lefko3', historical, stage, age, devries, reduce, simple, err_check, data, year, pop, patch, stageframe, supplement, overwrite, repmatrix, alive, obsst, size, sizeb, sizec, repst, matst, fec, stages, yearcol, popcol, patchcol, indivcol, agecol, censorcol, modelsuite, paramnames, inda, indb, indc, annua, annub, annuc, dev_terms, density, CDF, random_inda, random_indb, random_indc, negfec, exp_tol, theta_tol, censor, censorkeep, start_age, last_age, fecage_min, fecage_max, fectime, fecmod, cont, prebreeding, stage_NRasRep, sparse_output)
+mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = FALSE, reduce = FALSE, simple = FALSE, err_check = FALSE, data = NULL, year = NULL, pop = NULL, patch = NULL, stageframe = NULL, supplement = NULL, overwrite = NULL, repmatrix = NULL, alive = NULL, obsst = NULL, size = NULL, sizeb = NULL, sizec = NULL, repst = NULL, matst = NULL, fec = NULL, stages = NULL, yearcol = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL, agecol = NULL, censorcol = NULL, modelsuite = NULL, paramnames = NULL, inda = NULL, indb = NULL, indc = NULL, annua = NULL, annub = NULL, annuc = NULL, dev_terms = NULL, density = NA_real_, CDF = TRUE, random_inda = FALSE, random_indb = FALSE, random_indc = FALSE, negfec = FALSE, exp_tol = 700L, theta_tol = 1e8L, censor = FALSE, censorkeep = NULL, start_age = NA_integer_, last_age = NA_integer_, fecage_min = NA_integer_, fecage_max = NA_integer_, fectime = 2L, fecmod = 1.0, cont = TRUE, prebreeding = TRUE, stage_NRasRep = FALSE, initial_nan = FALSE, sparse_output = FALSE) {
+    .Call('_lefko3_mpm_create', PACKAGE = 'lefko3', historical, stage, age, devries, reduce, simple, err_check, data, year, pop, patch, stageframe, supplement, overwrite, repmatrix, alive, obsst, size, sizeb, sizec, repst, matst, fec, stages, yearcol, popcol, patchcol, indivcol, agecol, censorcol, modelsuite, paramnames, inda, indb, indc, annua, annub, annuc, dev_terms, density, CDF, random_inda, random_indb, random_indc, negfec, exp_tol, theta_tol, censor, censorkeep, start_age, last_age, fecage_min, fecage_max, fectime, fecmod, cont, prebreeding, stage_NRasRep, initial_nan, sparse_output)
 }
 
 #' Estimate Stable Stage Distribution of Any Population Matrix

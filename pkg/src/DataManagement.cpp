@@ -5713,6 +5713,10 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
 //' identity in the data frame. Defaults to \code{"patchid"}.
 //' @param indivcol A string denoting the variable name coding for individual
 //' identity in the data frame. Defaults to \code{"individ"}.
+//' @param rename A logical value indicating whether to rename individuals as
+//' unique when bootstrapping by individual, even if that individual had been
+//' previously chosen. Defaults to \code{FALSE}, and can only be set to
+//'  \code{TRUE} if \code{by_indiv = TRUE}.
 //' 
 //' @return A list of class \code{hfvlist}, which is composed of data frames of
 //' class \code{hfvdata}.
@@ -5762,7 +5766,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   Nullable<RObject> by_patch = R_NilValue, Nullable<RObject> by_indiv = R_NilValue,
   Nullable<RObject> prop_size = R_NilValue, Nullable<RObject> max_limit = R_NilValue,
   Nullable<RObject> reps = R_NilValue, Nullable<RObject> popcol = R_NilValue,
-  Nullable<RObject> patchcol = R_NilValue, Nullable<RObject> indivcol = R_NilValue ) {
+  Nullable<RObject> patchcol = R_NilValue, Nullable<RObject> indivcol = R_NilValue,
+  Nullable<RObject> rename = R_NilValue) {
   
   DataFrame true_data;
   bool by_pop_bool {true};
@@ -5770,6 +5775,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   bool by_indiv_bool {true};
   bool prop_size_bool {true};
   bool max_limit_bool {false};
+  bool rename_bool {false};
   int reps_true {100};
   int default_sample_set {100};
   
@@ -5849,6 +5855,15 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       reps_true = reps_int(0);
     } else LefkoUtils::pop_error("reps", "an integer", "", 1);
   }
+  
+  if (rename.isNotNull()) {
+    RObject rename_RO (rename);
+    if (is<LogicalVector>(rename_RO)) {
+      LogicalVector rename_log = as<LogicalVector>(rename_RO);
+      rename_bool = rename_log(0);
+    } else LefkoUtils::pop_error("rename", "a logical value", "", 1);
+  }
+  if (!by_indiv_bool) rename_bool = false;
   
   List hfv_list (reps_true);
   

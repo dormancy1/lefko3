@@ -32,6 +32,7 @@ rleslie(
   reduce = FALSE,
   simple = FALSE,
   err_check = FALSE,
+  initial_nan = FALSE,
   sparse_output = FALSE
 )
 }
@@ -138,6 +139,10 @@ should generally not be used in age-based MPMs.}
 \item{err_check}{A logical value indicating whether to append extra
 information used in matrix calculation within the output list. Defaults to
 \code{FALSE}.}
+
+\item{initial_nan}{A single logical value indicating whether to initialize
+matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+be used with sparse matrices.}
 
 \item{sparse_output}{A logical value indicating whether to output matrices
 in sparse format. Defaults to \code{FALSE}, in which case all matrices are

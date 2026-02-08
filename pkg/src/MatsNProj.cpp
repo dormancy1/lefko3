@@ -95,6 +95,9 @@ using namespace LefkoMats;
 //' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 //' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 //' \code{FALSE}.
+//' @param initial_nan A single logical value indicating whether to initialize
+//' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+//' Cannot be used with sparse format MPMs.
 //' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 //' Defaults to \code{FALSE}.
 //' 
@@ -135,7 +138,8 @@ List specialpatrolgroup(const DataFrame& sge9l, const arma::ivec& sge3index21,
   int err_switch, StringVector loypop, StringVector loypatch,
   StringVector loyyear2, IntegerVector yearorder, const int pop_var_int,
   const int patch_var_int, const int year_var_int, const bool loy_pop_used,
-  const bool loy_patch_used, bool simplicity = false, bool sparse = false) {
+  const bool loy_patch_used, bool simplicity = false, bool initial_nan = false,
+  bool sparse = false) {
   
   arma::ivec sge9stage3 = as<arma::ivec>(sge9l["stage3"]);
   arma::vec sge9fec32 = as<arma::vec>(sge9l["repentry3"]);
@@ -275,11 +279,22 @@ List specialpatrolgroup(const DataFrame& sge9l, const arma::ivec& sge3index21,
       tmatrix_sp = tmatrix_chuck;
       fmatrix_sp = fmatrix_chuck;
     } else {
-      arma::mat tmatrix_chuck (matrixdim, matrixdim, fill::zeros);
-      arma::mat fmatrix_chuck (matrixdim, matrixdim, fill::zeros);
-      
-      tmatrix = tmatrix_chuck;
-      fmatrix = fmatrix_chuck;
+      if (!initial_nan) {
+        arma::mat tmatrix_chuck (matrixdim, matrixdim, fill::zeros);
+        arma::mat fmatrix_chuck (matrixdim, matrixdim, fill::zeros);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      } else {
+        arma::mat tmatrix_chuck (matrixdim, matrixdim);
+        arma::mat fmatrix_chuck (matrixdim, matrixdim);
+        
+        tmatrix_chuck.fill(arma::datum::nan);
+        fmatrix_chuck.fill(arma::datum::nan);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      }
     }
     
     // Loop counts individuals going through transitions, sums fecundities,
@@ -482,8 +497,10 @@ List specialpatrolgroup(const DataFrame& sge9l, const arma::ivec& sge3index21,
     }
     
     if (!sparse) {
-      tmatrix(find_nonfinite(tmatrix)).zeros();
-      fmatrix(find_nonfinite(fmatrix)).zeros();
+      if (!initial_nan) {
+        tmatrix(find_nonfinite(tmatrix)).zeros();
+        fmatrix(find_nonfinite(fmatrix)).zeros();
+      }
       
       U_output(i) = tmatrix;
       F_output(i) = fmatrix;
@@ -588,6 +605,9 @@ List specialpatrolgroup(const DataFrame& sge9l, const arma::ivec& sge3index21,
 //' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 //' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 //' \code{FALSE}.
+//' @param initial_nan A single logical value indicating whether to initialize
+//' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+//' Cannot be used with sparse format MPMs.
 //' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 //' Defaults to \code{FALSE}.
 //' 
@@ -603,7 +623,7 @@ List normalpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2stage2,
   StringVector loypop, StringVector loypatch, StringVector loyyear2,
   IntegerVector yearorder, const int pop_var_int, const int patch_var_int,
   const int year_var_int, const bool loy_pop_used, const bool loy_patch_used,
-  bool simplicity = false, bool sparse = false) {
+  bool simplicity = false, bool initial_nan = false, bool sparse = false) {
   
   arma::vec sge3fec32 = as<arma::vec>(sge3["repentry3"]);
   arma::uvec sge3rep2 = as<arma::uvec>(sge3["rep2n"]);
@@ -704,11 +724,22 @@ List normalpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2stage2,
     arma::sp_mat fmatrix_sp;
     
     if (!sparse) {
-      arma::mat tmatrix_chuck((nostages-1), (nostages-1), fill::zeros);
-      arma::mat fmatrix_chuck((nostages-1), (nostages-1), fill::zeros);
-      
-      tmatrix = tmatrix_chuck;
-      fmatrix = fmatrix_chuck;
+      if (!initial_nan) {
+        arma::mat tmatrix_chuck((nostages-1), (nostages-1), fill::zeros);
+        arma::mat fmatrix_chuck((nostages-1), (nostages-1), fill::zeros);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      } else {
+        arma::mat tmatrix_chuck ((nostages-1), (nostages-1));
+        arma::mat fmatrix_chuck ((nostages-1), (nostages-1));
+        
+        tmatrix_chuck.fill(arma::datum::nan);
+        fmatrix_chuck.fill(arma::datum::nan);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      }
     } else { 
       arma::sp_mat tmatrix_chuck((nostages-1), (nostages-1));
       arma::sp_mat fmatrix_chuck((nostages-1), (nostages-1));
@@ -867,8 +898,10 @@ List normalpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2stage2,
     }
     
     if (!sparse) {
-      tmatrix(find_nonfinite(tmatrix)).zeros();
-      fmatrix(find_nonfinite(fmatrix)).zeros();
+      if (!initial_nan) {
+        tmatrix(find_nonfinite(tmatrix)).zeros();
+        fmatrix(find_nonfinite(fmatrix)).zeros();
+      }
       
       U_output(i) = tmatrix;
       F_output(i) = fmatrix;
@@ -969,6 +1002,9 @@ List normalpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2stage2,
 //' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 //' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 //' \code{FALSE}.
+//' @param initial_nan A single logical value indicating whether to initialize
+//' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+//' Cannot be used with sparse format MPMs.
 //' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 //' Defaults to \code{FALSE}.
 //' 
@@ -985,7 +1021,7 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
   StringVector loypatch, StringVector loyyear2, IntegerVector yearorder,
   const int pop_var_int, const int patch_var_int, const int year_var_int,
   const bool loy_pop_used, const bool loy_patch_used, bool simplicity = false,
-  bool sparse = false) {
+  bool initial_nan = false, bool sparse = false) {
   
   //Rcout << "minorpatrolgroup 1" << endl;
   
@@ -1100,11 +1136,22 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
     arma::sp_mat fmatrix_sp;
     
     if (!sparse) {
-      arma::mat tmatrix_chuck (noages, noages, fill::zeros);
-      arma::mat fmatrix_chuck (noages, noages, fill::zeros);
-      
-      tmatrix = tmatrix_chuck;
-      fmatrix = fmatrix_chuck;
+      if (!initial_nan) {
+        arma::mat tmatrix_chuck (noages, noages, fill::zeros);
+        arma::mat fmatrix_chuck (noages, noages, fill::zeros);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      } else {
+        arma::mat tmatrix_chuck (noages, noages);
+        arma::mat fmatrix_chuck (noages, noages);
+        
+        tmatrix_chuck.fill(arma::datum::nan);
+        fmatrix_chuck.fill(arma::datum::nan);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      }
     } else {
       arma::sp_mat tmatrix_chuck (noages, noages);
       arma::sp_mat fmatrix_chuck (noages, noages);
@@ -1264,8 +1311,10 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
     //Rcout << "minorpatrolgroup 14" << endl;
     
     if (!sparse) {
-      tmatrix(find_nonfinite(tmatrix)).zeros();
-      fmatrix(find_nonfinite(fmatrix)).zeros();
+      if (!initial_nan) {
+        tmatrix(find_nonfinite(tmatrix)).zeros();
+        fmatrix(find_nonfinite(fmatrix)).zeros();
+      }
       
       U_output(i) = tmatrix;
       F_output(i) = fmatrix;
@@ -1367,6 +1416,9 @@ Rcpp::List minorpatrolgroup(const DataFrame& MainData,
 //' @param simplicity If \code{TRUE}, then only outputs matrices \code{U} and
 //' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 //' \code{FALSE}.
+//' @param initial_nan A single logical value indicating whether to initialize
+//' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+//' Cannot be used with sparse format MPMs.
 //' @param sparse If \code{TRUE}, then outputs matrices in sparse format.
 //' Defaults to \code{FALSE}.
 //' 
@@ -1382,7 +1434,8 @@ List subvertedpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2index21,
   bool cont, int err_switch, StringVector loypop, StringVector loypatch,
   StringVector loyyear2, IntegerVector yearorder, const int pop_var_int,
   const int patch_var_int, const int year_var_int, const bool loy_pop_used,
-  const bool loy_patch_used, bool simplicity = false, bool sparse = false) {
+  const bool loy_patch_used, bool simplicity = false, bool initial_nan = false,
+  bool sparse = false) {
   
   arma::vec sge3fec32 = as<arma::vec>(sge3["repentry3"]);
   arma::uvec sge3rep2 = as<arma::uvec>(sge3["rep2n"]);
@@ -1487,11 +1540,22 @@ List subvertedpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2index21,
     arma::sp_mat fmatrix_sp;
     
     if (!sparse) {
-      arma::mat tmatrix_chuck(((nostages-1) * totalages), ((nostages-1) * totalages), fill::zeros);
-      arma::mat fmatrix_chuck(((nostages-1) * totalages), ((nostages-1) * totalages), fill::zeros);
-      
-      tmatrix = tmatrix_chuck;
-      fmatrix = fmatrix_chuck;
+      if (!initial_nan) {
+        arma::mat tmatrix_chuck(((nostages-1) * totalages), ((nostages-1) * totalages), fill::zeros);
+        arma::mat fmatrix_chuck(((nostages-1) * totalages), ((nostages-1) * totalages), fill::zeros);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      } else {
+        arma::mat tmatrix_chuck (((nostages-1) * totalages), ((nostages-1) * totalages));
+        arma::mat fmatrix_chuck (((nostages-1) * totalages), ((nostages-1) * totalages));
+        
+        tmatrix_chuck.fill(arma::datum::nan);
+        fmatrix_chuck.fill(arma::datum::nan);
+        
+        tmatrix = tmatrix_chuck;
+        fmatrix = fmatrix_chuck;
+      }
     } else {
       arma::sp_mat tmatrix_chuck(((nostages-1) * totalages), ((nostages-1) * totalages));
       arma::sp_mat fmatrix_chuck(((nostages-1) * totalages), ((nostages-1) * totalages));
@@ -1655,8 +1719,10 @@ List subvertedpatrolgroup(const DataFrame& sge3, const arma::ivec& sge2index21,
     }
     
     if (!sparse) {
-      tmatrix(find_nonfinite(tmatrix)).zeros();
-      fmatrix(find_nonfinite(fmatrix)).zeros();
+      if (!initial_nan) {
+        tmatrix(find_nonfinite(tmatrix)).zeros();
+        fmatrix(find_nonfinite(fmatrix)).zeros();
+      }
       
       U_output(i) = tmatrix;
       F_output(i) = fmatrix;
@@ -8959,6 +9025,10 @@ Rcpp::List f_projection3(int format, bool prebreeding = true, int start_age = NA
 //' MPMs in cases where stage assignment must still be handled. Not used in
 //' function-based MPMs, and in stage-based MPMs in which a valid \code{hfvdata}
 //' class data frame with stages already assigned is provided.
+//' @param initial_nan A single logical value indicating whether to initialize
+//' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
+//' only be used with raw MPMs not in sparse format, and should not be used to
+//' create normal MPMs intended for projection.
 //' @param sparse_output A logical value indicating whether to output matrices
 //' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 //' output in standard matrix format.
@@ -9192,7 +9262,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
   bool censor = false, Nullable<RObject> censorkeep = R_NilValue, int start_age = NA_INTEGER,
   int last_age = NA_INTEGER, int fecage_min = NA_INTEGER, int fecage_max = NA_INTEGER,
   int fectime = 2, double fecmod = 1.0, bool cont = true, bool prebreeding = true,
-  bool stage_NRasRep = false, bool sparse_output = false) {
+  bool stage_NRasRep = false, bool initial_nan = false, bool sparse_output = false) {
   
   //Rcout << "mpm_create A.     " << endl;
   
@@ -14463,7 +14533,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
             as<arma::ivec>(mel_sid), current_df, melchett_stageframe_, err_check,
             loy_pop_, loy_patch_, loy_year2_, yearorder_, pop_var_int,
             patch_var_int, year_var_int, loy_pop_used, loy_patch_used, simple,
-            sparse_output);
+            initial_nan, sparse_output);
           
           IntegerVector mat_qc = {0, 0, 0};
           LefkoUtils::matrix_reducer(madsexmadrigal, mat_qc, ahstages_now, NA_empty_df,
@@ -14618,7 +14688,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
             as<arma::ivec>(mel_idx21), current_df, melchett_stageframe_, start_age,
             last_age, cont, err_check, loy_pop_, loy_patch_, loy_year2_,
             yearorder_, pop_var_int, patch_var_int, year_var_int, loy_pop_used,
-            loy_patch_used, simple, sparse_output);
+            loy_patch_used, simple, initial_nan, sparse_output);
           
           IntegerVector mat_qc = {0, 0, 0};
           LefkoUtils::matrix_reducer(madsexmadrigal, mat_qc, ahstages_now, NA_empty_df,
@@ -14683,7 +14753,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
             melchett_ovtable_, start_age, last_age, cont, fecmod, err_check,
             loy_pop_, loy_patch_, loy_year2_, yearorder_, pop_var_int,
             patch_var_int, year_var_int, loy_pop_used, loy_patch_used, simple,
-            sparse_output);
+            initial_nan, sparse_output);
           
           IntegerVector mat_qc = {0, 0, 0};
           LefkoUtils::matrix_reducer(madsexmadrigal, mat_qc, ahstages, NA_empty_df,
@@ -15033,7 +15103,7 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
             as<arma::ivec>(se3_index21), current_df, melchett_stageframe_, format_int,
             err_check, loy_pop_, loy_patch_, loy_year2_, yearorder_, pop_var_int,
             patch_var_int, year_var_int, loy_pop_used, loy_patch_used, simple,
-            sparse_output);
+            initial_nan, sparse_output);
           
           IntegerVector mat_qc = {0, 0, 0};
           LefkoUtils::matrix_reducer(madsexmadrigal, mat_qc, ahstages_now, hstages_now,

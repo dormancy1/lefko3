@@ -14,7 +14,8 @@ bootstrap3(
   reps = NULL,
   popcol = NULL,
   patchcol = NULL,
-  indivcol = NULL
+  indivcol = NULL,
+  rename = NULL
 )
 }
 \arguments{
@@ -61,6 +62,11 @@ identity in the data frame. Defaults to \code{"patchid"}.}
 
 \item{indivcol}{A string denoting the variable name coding for individual
 identity in the data frame. Defaults to \code{"individ"}.}
+
+\item{rename}{A logical value indicating whether to rename individuals as
+unique when bootstrapping by individual, even if that individual had been
+previously chosen. Defaults to \code{FALSE}, and can only be set to
+ \code{TRUE} if \code{by_indiv = TRUE}.}
 }
 \value{
 A list of class \code{hfvlist}, which is composed of data frames of

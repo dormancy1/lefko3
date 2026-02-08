@@ -2147,6 +2147,9 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' @param err_check A logical value indicating whether to append extra
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
@@ -2320,7 +2323,8 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
   fec = c("feca3", "feca2", "feca1"), supplement = NULL, repmatrix = NULL,
   overwrite = NULL, yearcol = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL,
   censorcol = NULL, censorkeep = 0, NRasRep = FALSE, format = "ehrlen",
-  reduce = FALSE, simple = FALSE, err_check = FALSE, sparse_output = FALSE) {
+  reduce = FALSE, simple = FALSE, err_check = FALSE, initial_nan = FALSE,
+  sparse_output = FALSE) {
   
   format_dev <- FALSE
   
@@ -2337,7 +2341,7 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
     popcol = popcol, patchcol = patchcol, indivcol = indivcol,
     censorcol = censorcol, censor = censor, censorkeep = censorkeep,
     stage_NRasRep = NRasRep, simple = simple, err_check = err_check,
-    sparse_output = sparse_output)
+    initial_nan = initial_nan, sparse_output = sparse_output)
   
   return(output)
 }
@@ -2452,6 +2456,9 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param err_check A logical value indicating whether to append extra
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
@@ -2609,7 +2616,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
   fec = c("feca3", "feca2"), supplement = NULL, repmatrix = NULL,
   overwrite = NULL, yearcol = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL,
   censorcol = NULL, censorkeep = 0, NRasRep = FALSE, reduce = FALSE, simple = FALSE,
-  err_check = FALSE, sparse_output = FALSE) {
+  err_check = FALSE, initial_nan = FALSE, sparse_output = FALSE) {
 
   output <- mpm_create(historical = FALSE, stage = TRUE, age = FALSE,
     devries = FALSE, reduce = reduce, data = data, year = year, pop = pop,
@@ -2620,7 +2627,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
     popcol = popcol, patchcol = patchcol, indivcol = indivcol,
     censorcol = censorcol, censor = censor, censorkeep = censorkeep,
     stage_NRasRep = NRasRep, simple = simple, err_check = err_check,
-    sparse_output = sparse_output)
+    initial_nan = initial_nan, sparse_output = sparse_output)
   
   return(output)
 }
@@ -2752,6 +2759,9 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param err_check A logical value indicating whether to append extra
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
@@ -2883,7 +2893,7 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
   overwrite = NULL, agecol = "obsage", yearcol = NULL, popcol = NULL, patchcol = NULL,
   indivcol = NULL, censorcol = NULL, censorkeep = 0, final_age = NA,
   continue = TRUE, prebreeding = TRUE, NRasRep = FALSE, reduce = FALSE, simple = FALSE,
-  err_check = FALSE, sparse_output = FALSE) {
+  err_check = FALSE, initial_nan = FALSE, sparse_output = FALSE) {
 
   output <- mpm_create(historical = FALSE, stage = TRUE, age = TRUE,
     reduce = reduce, data = data, year = year, pop = pop,
@@ -2895,7 +2905,7 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
     censorcol = censorcol, censor = censor, censorkeep = censorkeep,
     last_age = final_age, cont = continue, prebreeding = prebreeding,
     stage_NRasRep = NRasRep, simple = simple, err_check = err_check,
-    sparse_output = sparse_output)
+    initial_nan = initial_nan, sparse_output = sparse_output)
   
   return(output)
 }
@@ -2985,6 +2995,9 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param err_check A logical value indicating whether to append extra
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
+#' @param initial_nan A single logical value indicating whether to initialize
+#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
@@ -3069,7 +3082,7 @@ rleslie <- function(data, start_age = NA, last_age = NA, continue = TRUE,
   supplement = NULL, pop = NULL, patch = NULL, yearcol = NULL, popcol = NULL,
   patchcol = NULL, indivcol = NULL, censor = FALSE, censorcol = NULL,
   censorkeep = 0, fectime = 2, fecmod = 1.0, prebreeding = TRUE, reduce = FALSE,
-  simple = FALSE, err_check = FALSE, sparse_output = FALSE) {
+  simple = FALSE, err_check = FALSE, initial_nan = FALSE, sparse_output = FALSE) {
 
   output <- mpm_create(historical = FALSE, stage = FALSE, age = TRUE,
     devries = FALSE, reduce = reduce, data = data, supplement = supplement,
@@ -3079,7 +3092,8 @@ rleslie <- function(data, start_age = NA, last_age = NA, continue = TRUE,
     censor = censor, censorkeep = censorkeep, start_age = start_age,
     last_age = last_age, fecage_min = fecage_min, fecage_max = fecage_max,
     fectime = fectime, fecmod = fecmod, cont = continue, prebreeding = prebreeding,
-    simple = simple, err_check = err_check, sparse_output = sparse_output)
+    simple = simple, err_check = err_check, initial_nan = initial_nan,
+    sparse_output = sparse_output)
   
   return(output)
 }

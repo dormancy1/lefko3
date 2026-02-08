@@ -143,8 +143,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // bootstrap3
-Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop, Nullable<RObject> by_patch, Nullable<RObject> by_indiv, Nullable<RObject> prop_size, Nullable<RObject> max_limit, Nullable<RObject> reps, Nullable<RObject> popcol, Nullable<RObject> patchcol, Nullable<RObject> indivcol);
-RcppExport SEXP _lefko3_bootstrap3(SEXP dataSEXP, SEXP by_popSEXP, SEXP by_patchSEXP, SEXP by_indivSEXP, SEXP prop_sizeSEXP, SEXP max_limitSEXP, SEXP repsSEXP, SEXP popcolSEXP, SEXP patchcolSEXP, SEXP indivcolSEXP) {
+Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop, Nullable<RObject> by_patch, Nullable<RObject> by_indiv, Nullable<RObject> prop_size, Nullable<RObject> max_limit, Nullable<RObject> reps, Nullable<RObject> popcol, Nullable<RObject> patchcol, Nullable<RObject> indivcol, Nullable<RObject> rename);
+RcppExport SEXP _lefko3_bootstrap3(SEXP dataSEXP, SEXP by_popSEXP, SEXP by_patchSEXP, SEXP by_indivSEXP, SEXP prop_sizeSEXP, SEXP max_limitSEXP, SEXP repsSEXP, SEXP popcolSEXP, SEXP patchcolSEXP, SEXP indivcolSEXP, SEXP renameSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -158,7 +158,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Nullable<RObject> >::type popcol(popcolSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type patchcol(patchcolSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type indivcol(indivcolSEXP);
-    rcpp_result_gen = Rcpp::wrap(bootstrap3(data, by_pop, by_patch, by_indiv, prop_size, max_limit, reps, popcol, patchcol, indivcol));
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type rename(renameSEXP);
+    rcpp_result_gen = Rcpp::wrap(bootstrap3(data, by_pop, by_patch, by_indiv, prop_size, max_limit, reps, popcol, patchcol, indivcol, rename));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -467,8 +468,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // mpm_create
-Rcpp::List mpm_create(bool historical, bool stage, bool age, bool devries, bool reduce, bool simple, bool err_check, Nullable<RObject> data, Nullable<RObject> year, Nullable<RObject> pop, Nullable<RObject> patch, Nullable<RObject> stageframe, Nullable<RObject> supplement, Nullable<RObject> overwrite, Nullable<RObject> repmatrix, Nullable<RObject> alive, Nullable<RObject> obsst, Nullable<RObject> size, Nullable<RObject> sizeb, Nullable<RObject> sizec, Nullable<RObject> repst, Nullable<RObject> matst, Nullable<RObject> fec, Nullable<RObject> stages, Nullable<RObject> yearcol, Nullable<RObject> popcol, Nullable<RObject> patchcol, Nullable<RObject> indivcol, Nullable<RObject> agecol, Nullable<RObject> censorcol, Nullable<RObject> modelsuite, Nullable<RObject> paramnames, Nullable<RObject> inda, Nullable<RObject> indb, Nullable<RObject> indc, Nullable<RObject> annua, Nullable<RObject> annub, Nullable<RObject> annuc, Nullable<RObject> dev_terms, double density, bool CDF, bool random_inda, bool random_indb, bool random_indc, bool negfec, int exp_tol, int theta_tol, bool censor, Nullable<RObject> censorkeep, int start_age, int last_age, int fecage_min, int fecage_max, int fectime, double fecmod, bool cont, bool prebreeding, bool stage_NRasRep, bool sparse_output);
-RcppExport SEXP _lefko3_mpm_create(SEXP historicalSEXP, SEXP stageSEXP, SEXP ageSEXP, SEXP devriesSEXP, SEXP reduceSEXP, SEXP simpleSEXP, SEXP err_checkSEXP, SEXP dataSEXP, SEXP yearSEXP, SEXP popSEXP, SEXP patchSEXP, SEXP stageframeSEXP, SEXP supplementSEXP, SEXP overwriteSEXP, SEXP repmatrixSEXP, SEXP aliveSEXP, SEXP obsstSEXP, SEXP sizeSEXP, SEXP sizebSEXP, SEXP sizecSEXP, SEXP repstSEXP, SEXP matstSEXP, SEXP fecSEXP, SEXP stagesSEXP, SEXP yearcolSEXP, SEXP popcolSEXP, SEXP patchcolSEXP, SEXP indivcolSEXP, SEXP agecolSEXP, SEXP censorcolSEXP, SEXP modelsuiteSEXP, SEXP paramnamesSEXP, SEXP indaSEXP, SEXP indbSEXP, SEXP indcSEXP, SEXP annuaSEXP, SEXP annubSEXP, SEXP annucSEXP, SEXP dev_termsSEXP, SEXP densitySEXP, SEXP CDFSEXP, SEXP random_indaSEXP, SEXP random_indbSEXP, SEXP random_indcSEXP, SEXP negfecSEXP, SEXP exp_tolSEXP, SEXP theta_tolSEXP, SEXP censorSEXP, SEXP censorkeepSEXP, SEXP start_ageSEXP, SEXP last_ageSEXP, SEXP fecage_minSEXP, SEXP fecage_maxSEXP, SEXP fectimeSEXP, SEXP fecmodSEXP, SEXP contSEXP, SEXP prebreedingSEXP, SEXP stage_NRasRepSEXP, SEXP sparse_outputSEXP) {
+Rcpp::List mpm_create(bool historical, bool stage, bool age, bool devries, bool reduce, bool simple, bool err_check, Nullable<RObject> data, Nullable<RObject> year, Nullable<RObject> pop, Nullable<RObject> patch, Nullable<RObject> stageframe, Nullable<RObject> supplement, Nullable<RObject> overwrite, Nullable<RObject> repmatrix, Nullable<RObject> alive, Nullable<RObject> obsst, Nullable<RObject> size, Nullable<RObject> sizeb, Nullable<RObject> sizec, Nullable<RObject> repst, Nullable<RObject> matst, Nullable<RObject> fec, Nullable<RObject> stages, Nullable<RObject> yearcol, Nullable<RObject> popcol, Nullable<RObject> patchcol, Nullable<RObject> indivcol, Nullable<RObject> agecol, Nullable<RObject> censorcol, Nullable<RObject> modelsuite, Nullable<RObject> paramnames, Nullable<RObject> inda, Nullable<RObject> indb, Nullable<RObject> indc, Nullable<RObject> annua, Nullable<RObject> annub, Nullable<RObject> annuc, Nullable<RObject> dev_terms, double density, bool CDF, bool random_inda, bool random_indb, bool random_indc, bool negfec, int exp_tol, int theta_tol, bool censor, Nullable<RObject> censorkeep, int start_age, int last_age, int fecage_min, int fecage_max, int fectime, double fecmod, bool cont, bool prebreeding, bool stage_NRasRep, bool initial_nan, bool sparse_output);
+RcppExport SEXP _lefko3_mpm_create(SEXP historicalSEXP, SEXP stageSEXP, SEXP ageSEXP, SEXP devriesSEXP, SEXP reduceSEXP, SEXP simpleSEXP, SEXP err_checkSEXP, SEXP dataSEXP, SEXP yearSEXP, SEXP popSEXP, SEXP patchSEXP, SEXP stageframeSEXP, SEXP supplementSEXP, SEXP overwriteSEXP, SEXP repmatrixSEXP, SEXP aliveSEXP, SEXP obsstSEXP, SEXP sizeSEXP, SEXP sizebSEXP, SEXP sizecSEXP, SEXP repstSEXP, SEXP matstSEXP, SEXP fecSEXP, SEXP stagesSEXP, SEXP yearcolSEXP, SEXP popcolSEXP, SEXP patchcolSEXP, SEXP indivcolSEXP, SEXP agecolSEXP, SEXP censorcolSEXP, SEXP modelsuiteSEXP, SEXP paramnamesSEXP, SEXP indaSEXP, SEXP indbSEXP, SEXP indcSEXP, SEXP annuaSEXP, SEXP annubSEXP, SEXP annucSEXP, SEXP dev_termsSEXP, SEXP densitySEXP, SEXP CDFSEXP, SEXP random_indaSEXP, SEXP random_indbSEXP, SEXP random_indcSEXP, SEXP negfecSEXP, SEXP exp_tolSEXP, SEXP theta_tolSEXP, SEXP censorSEXP, SEXP censorkeepSEXP, SEXP start_ageSEXP, SEXP last_ageSEXP, SEXP fecage_minSEXP, SEXP fecage_maxSEXP, SEXP fectimeSEXP, SEXP fecmodSEXP, SEXP contSEXP, SEXP prebreedingSEXP, SEXP stage_NRasRepSEXP, SEXP initial_nanSEXP, SEXP sparse_outputSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -530,8 +531,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type cont(contSEXP);
     Rcpp::traits::input_parameter< bool >::type prebreeding(prebreedingSEXP);
     Rcpp::traits::input_parameter< bool >::type stage_NRasRep(stage_NRasRepSEXP);
+    Rcpp::traits::input_parameter< bool >::type initial_nan(initial_nanSEXP);
     Rcpp::traits::input_parameter< bool >::type sparse_output(sparse_outputSEXP);
-    rcpp_result_gen = Rcpp::wrap(mpm_create(historical, stage, age, devries, reduce, simple, err_check, data, year, pop, patch, stageframe, supplement, overwrite, repmatrix, alive, obsst, size, sizeb, sizec, repst, matst, fec, stages, yearcol, popcol, patchcol, indivcol, agecol, censorcol, modelsuite, paramnames, inda, indb, indc, annua, annub, annuc, dev_terms, density, CDF, random_inda, random_indb, random_indc, negfec, exp_tol, theta_tol, censor, censorkeep, start_age, last_age, fecage_min, fecage_max, fectime, fecmod, cont, prebreeding, stage_NRasRep, sparse_output));
+    rcpp_result_gen = Rcpp::wrap(mpm_create(historical, stage, age, devries, reduce, simple, err_check, data, year, pop, patch, stageframe, supplement, overwrite, repmatrix, alive, obsst, size, sizeb, sizec, repst, matst, fec, stages, yearcol, popcol, patchcol, indivcol, agecol, censorcol, modelsuite, paramnames, inda, indb, indc, annua, annub, annuc, dev_terms, density, CDF, random_inda, random_indb, random_indc, negfec, exp_tol, theta_tol, censor, censorkeep, start_age, last_age, fecage_min, fecage_max, fectime, fecmod, cont, prebreeding, stage_NRasRep, initial_nan, sparse_output));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1192,7 +1194,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_pfj", (DL_FUNC) &_lefko3_pfj, 42},
     {"_lefko3_jpf", (DL_FUNC) &_lefko3_jpf, 54},
     {"_lefko3_density3", (DL_FUNC) &_lefko3_density3, 5},
-    {"_lefko3_bootstrap3", (DL_FUNC) &_lefko3_bootstrap3, 10},
+    {"_lefko3_bootstrap3", (DL_FUNC) &_lefko3_bootstrap3, 11},
     {"_lefko3_hoffmannofstuttgart", (DL_FUNC) &_lefko3_hoffmannofstuttgart, 4},
     {"_lefko3_hoffmannofstuttgart_sp", (DL_FUNC) &_lefko3_hoffmannofstuttgart_sp, 4},
     {"_lefko3_cond_hmpm", (DL_FUNC) &_lefko3_cond_hmpm, 3},
@@ -1210,7 +1212,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_add_stage", (DL_FUNC) &_lefko3_add_stage, 4},
     {"_lefko3_cycle_check", (DL_FUNC) &_lefko3_cycle_check, 2},
     {"_lefko3_f_projection3", (DL_FUNC) &_lefko3_f_projection3, 58},
-    {"_lefko3_mpm_create", (DL_FUNC) &_lefko3_mpm_create, 59},
+    {"_lefko3_mpm_create", (DL_FUNC) &_lefko3_mpm_create, 60},
     {"_lefko3_ss3matrix", (DL_FUNC) &_lefko3_ss3matrix, 2},
     {"_lefko3_ss3matrix_sp", (DL_FUNC) &_lefko3_ss3matrix_sp, 1},
     {"_lefko3_rv3matrix", (DL_FUNC) &_lefko3_rv3matrix, 2},
