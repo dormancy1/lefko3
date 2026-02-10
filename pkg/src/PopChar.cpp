@@ -3864,10 +3864,10 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
       for (int k = 0; k < static_cast<int>(s3used.size()); k++) {
         s3used[k] = tolower(s3used[k]);
       }
-      for (int k = 0; k < static_cast<int>(s3used.size()); k++) {
+      for (int k = 0; k < static_cast<int>(s2used.size()); k++) {
         s2used[k] = tolower(s2used[k]);
       }
-      for (int k = 0; k < static_cast<int>(s3used.size()); k++) {
+      for (int k = 0; k < static_cast<int>(s1used.size()); k++) {
         s1used[k] = tolower(s1used[k]);
       }
       
