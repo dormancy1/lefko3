@@ -1,4 +1,4 @@
-# lefko3 6.7.2 (2026-03-XX)
+# lefko3 6.7.2 (2026-02-11)
 
 ## NEW FEATURES
 
