@@ -2,6 +2,7 @@
 
 <!-- badges: start -->
 [![cran version](http://www.r-pkg.org/badges/version/lefko3)](https://cran.r-project.org/package=lefko3)
+[![r-universe](https://dormancy1.r-universe.dev/lefko3/badges/version)](https://dormancy1.r-universe.dev/lefko3/badges/version)
 [![total downloads](http://cranlogs.r-pkg.org/badges/grand-total/lefko3)](http://cranlogs.r-pkg.org/badges/grand-total/lefko3)
 <!-- badges: end -->
 
