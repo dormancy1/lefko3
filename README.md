@@ -22,6 +22,8 @@ This GitHub site maintains the current development version of `lefko3` and relie
 
 Please see [`lefko3`'s r-universe page](https://dormancy1.r-universe.dev/lefko3) to see the current status of the package.
 
+Read [`lefko3: a gentle introduction`](https://revolutionarydemography-lefko3gentle.share.connect.posit.cloud/) for insights on using `lefko3`.
+
 See the [{r}evolutionary demography Projects](https://revolutionarydemography.com/projects.html) page for further documentation.
 
 Issues may be reported in `lefko3`'s [Issue Reporting page](https://github.com/dormancy1/lefko3/issues).
