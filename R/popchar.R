@@ -3440,7 +3440,7 @@ stage_weight <- function(mpm, stage2 = NA, stage1 = NA, age2 = NA, value = 1.0) 
       shrubbery <- cbind.data.frame(stage2 = shrubbery$stage2, stage1 = shrubbery$stage1,
         age2 = shrubbery$age2, value = shrubbery$value, stringsAsFactors = FALSE)
     } else {
-      stop("Input stage1 codes do not conform to accepted inputs.", call. = FALSE)
+      stop("Input age2 codes do not conform to accepted inputs.", call. = FALSE)
     }
   }
   
