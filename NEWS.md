@@ -1,3 +1,10 @@
+# lefko3 6.X.X (2026-XX-XX)
+
+## BUG FIXES
+
+* Corrected issue in which ahistorical or age-by-stage MPMs can be misidentified
+  as historical by function stage_weight().
+
 # lefko3 6.7.2 (2026-02-11)
 
 ## NEW FEATURES

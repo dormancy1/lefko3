@@ -3120,6 +3120,7 @@ hfv_qc <- function(data, stageframe = NULL, historical = TRUE, suite = "size",
 stage_weight <- function(mpm, stage2 = NA, stage1 = NA, age2 = NA, value = 1.0) {
   
   mpmrows <- stage2_id <- stage1_id <- start_vec <- full_length <- NULL
+  historical <- agebystage <- FALSE
   
   if (all(!is(mpm, "lefkoMat"))) {
     stop("A regular lefkoMat object is required as input.", call. = FALSE)
@@ -3140,12 +3141,16 @@ stage_weight <- function(mpm, stage2 = NA, stage1 = NA, age2 = NA, value = 1.0) 
   if (all(is.na(mpm$hstages)) | all(is.null(mpm$hstages))) {
     historical <- FALSE
   } else {
-    historical <- TRUE
+    if (is.data.frame(mpm$hstages)) {
+      if (length(mpm$hstages) > 1) historical <- TRUE
+    }
   }
   if (all(is.na(mpm$agestages)) | all(is.null(mpm$agestages))) {
     agebystage <- FALSE
   } else {
-    agebystage <- TRUE
+    if (is.data.frame(mpm$agestages)) {
+      if (length(mpm$agestages) > 1) agebystage <- TRUE
+    }
   }
   
   if (historical & all(is.na(stage1))) {
