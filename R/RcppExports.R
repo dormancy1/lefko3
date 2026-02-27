@@ -6091,6 +6091,11 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' @param mpm A \code{lefkoMat} object, a \code{lefkoMatList} object, a list of
 #' projection matrices, a \code{lefkoProj} object, or a single projection
 #' matrix in either standard or sparse format.
+#' @param style If \code{mpm} is either a \code{lefkoMat} or
+#' \code{lefkoMatList} object, then style determines whether the dominant
+#' eigenvalues will be calculated for the \code{A} matrices (the default),
+#' the \code{U} matrices (if \code{style = "U"}), or the \code{F} matrices (if
+#' \code{style = "F"}).
 #' @param force_sparse A logical value or string detailing whether to force
 #' sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},
 #' which only forces sparse matrix coding if simple matrices are input that are
@@ -6212,8 +6217,8 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' lambda3(cypmatrix2r)
 #' 
 #' @export lambda3
-lambda3 <- function(mpm, force_sparse = NULL) {
-    .Call('_lefko3_lambda3', PACKAGE = 'lefko3', mpm, force_sparse)
+lambda3 <- function(mpm, style = NULL, force_sparse = NULL) {
+    .Call('_lefko3_lambda3', PACKAGE = 'lefko3', mpm, style, force_sparse)
 }
 
 #' Arranges Matrix Elements in Order of Magnitude for Interpretation

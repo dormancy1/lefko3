@@ -5778,6 +5778,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   bool rename_bool {false};
   int reps_true {100};
   int default_sample_set {100};
+  int individ_if_renamed {1};
   
   StringVector popcol_str;
   StringVector patchcol_str;
@@ -6201,9 +6202,27 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                   
                   if (j == 0 && k == 0) {
                     new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     hfv_list(i) = clone(new_sampled_data_frame);
                   } else {
                     DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
                     hfv_list(i) = clone(new_sampled_data_frame);
                   }
@@ -6252,9 +6271,27 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                   
                   if (j == 0 && k == 0) {
                     new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     hfv_list(i) = clone(new_sampled_data_frame);
                   } else {
                     DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
                     hfv_list(i) = clone(new_sampled_data_frame);
                   }
@@ -6286,14 +6323,31 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                 
                 if (k == 0) {
                   new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                  
+                  if (rename_bool) {
+                    for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                      current_individ(new_sel) = individ_if_renamed;
+                    }
+                  }
+                  individ_if_renamed++;
+                  
                   hfv_list(i) = clone(new_sampled_data_frame);
                 } else {
                   DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                  
+                  if (rename_bool) {
+                    for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                      current_individ(new_sel) = individ_if_renamed;
+                    }
+                  }
+                  individ_if_renamed++;
+                  
                   new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
                   hfv_list(i) = clone(new_sampled_data_frame);
                 }
               }
-              
             }
           }
         } else {
@@ -6348,9 +6402,27 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                   
                   if (j == 0 && k == 0) {
                     new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     hfv_list(i) = clone(new_sampled_data_frame);
                   } else {
                     DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
                     hfv_list(i) = clone(new_sampled_data_frame);
                   }
@@ -6400,14 +6472,31 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                   
                   if (j == 0 && k == 0) {
                     new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     hfv_list(i) = clone(new_sampled_data_frame);
                   } else {
                     DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                    
+                    if (rename_bool) {
+                      for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                        current_individ(new_sel) = individ_if_renamed;
+                      }
+                    }
+                    individ_if_renamed++;
+                    
                     new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
                     hfv_list(i) = clone(new_sampled_data_frame);
                   }
                 }
-                
               }
             }
           } else {
@@ -6434,9 +6523,27 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                 
                 if (k == 0) {
                   new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                  
+                  if (rename_bool) {
+                    for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                      current_individ(new_sel) = individ_if_renamed;
+                    }
+                  }
+                  individ_if_renamed++;
+                  
                   hfv_list(i) = clone(new_sampled_data_frame);
                 } else {
                   DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
+                  IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                  
+                  if (rename_bool) {
+                    for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
+                      current_individ(new_sel) = individ_if_renamed;
+                    }
+                  }
+                  individ_if_renamed++;
+                  
                   new_sampled_data_frame = df_rbind(new_sampled_data_frame, new_sampled_data_frame_next);
                   hfv_list(i) = clone(new_sampled_data_frame);
                 }
@@ -6445,8 +6552,20 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
             }
           }
         }
+        
+        if (rename_bool) {
+          for (int i = 0; i < reps_true; i++) {
+            DataFrame current_hfv = as<DataFrame>(hfv_list(i));
+            IntegerVector current_individ = as<IntegerVector>(current_hfv(indivcol_int));
+            
+            IntegerVector sorted_current_individ = sort_unique(current_individ);
+            current_individ.attr("class") = "factor";
+            current_individ.attr("levels") = as<CharacterVector>(sorted_current_individ);
+          }
+        }
+      
       } else {
-        // By row
+        // By row (not by indiv)
         if (prop_size_bool) {
           // Equal sample proportions, by row
           if (length_of_max_limit_int > 1) {

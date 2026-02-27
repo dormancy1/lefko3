@@ -1125,6 +1125,11 @@ Rcpp::List demolition3sp(const arma::sp_mat& e_amat, const DataFrame& bambesque,
 //' @param mpm A \code{lefkoMat} object, a \code{lefkoMatList} object, a list of
 //' projection matrices, a \code{lefkoProj} object, or a single projection
 //' matrix in either standard or sparse format.
+//' @param style If \code{mpm} is either a \code{lefkoMat} or
+//' \code{lefkoMatList} object, then style determines whether the dominant
+//' eigenvalues will be calculated for the \code{A} matrices (the default),
+//' the \code{U} matrices (if \code{style = "U"}), or the \code{F} matrices (if
+//' \code{style = "F"}).
 //' @param force_sparse A logical value or string detailing whether to force
 //' sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},
 //' which only forces sparse matrix coding if simple matrices are input that are
@@ -1247,14 +1252,58 @@ Rcpp::List demolition3sp(const arma::sp_mat& e_amat, const DataFrame& bambesque,
 //' 
 //' @export lambda3
 // [[Rcpp::export(lambda3)]]
-Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> force_sparse = R_NilValue) {
+Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> style = R_NilValue,
+  Nullable<RObject> force_sparse = R_NilValue) {
   
   RObject output;
   
   int sparse_check {2};
   bool matrix_class_input {false};
   bool lefkoMatList_input {false};
+  bool u_only {false};
+  bool f_only {false};
   //bool lefkoMat_input {false};
+  
+  if (style.isNotNull()) {
+    RObject style_ = RObject(style);
+    
+    if (is<StringVector>(style_)) {
+      StringVector u_bits = {"u", "U", "s", "S", "sur", "SUR", "Sur"};
+      StringVector f_bits = {"f", "F", "fec", "FEC", "Fec", "fe", "FE"};
+      
+      StringVector style_vec = as<StringVector>(style_);
+      String style_check = String(style_vec(0));
+      
+      int u_check {0};
+      int f_check {0};
+      
+      for (int i = 0; i < 7; i++) {
+        if (LefkoInputs::stringcompare_input(style_check, String(u_bits(i)), true)) u_check++;
+        if (LefkoInputs::stringcompare_input(style_check, String(f_bits(i)), true)) f_check++;
+      }
+      
+      if (u_check > 0) {
+        u_only = true;
+      } else if (f_check > 0) {
+        f_only = true;
+      } else {
+        String err_out = "Argument style is invalid.";
+        throw Rcpp::exception(err_out.get_cstring(), false);
+      }
+    } else if (is<NumericVector>(style_) || is<IntegerVector>(style_)) {
+        IntegerVector style_check_vec = as<IntegerVector>(style_);
+        int style_first = static_cast<int>(style_check_vec(0));
+        
+        if (style_first == 1) {
+          u_only = true;
+        } else if (style_first == 2) {
+          f_only = true;
+        }
+    } else {
+      String err_out = "Argument style is invalid.";
+      throw Rcpp::exception(err_out.get_cstring(), false);
+    }
+  }
   
   if (force_sparse.isNotNull()) {
     if (is<LogicalVector>(force_sparse)) {
@@ -1422,7 +1471,14 @@ Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> force_sparse = R_NilValue)
           
           if (A_check) {
             // lefkoMat input
-            List A_list = current_mpm["A"];
+            List A_list;
+            
+            if (u_only) {
+              A_list = current_mpm["U"];
+            } else if (f_only) {
+              A_list = current_mpm["F"];
+            } else A_list = current_mpm["A"];
+            
             if (is<NumericMatrix>(A_list(0))) { 
               matrix_class_input = true;
             } else if (is<S4>(A_list(0))) { 
@@ -1678,7 +1734,9 @@ Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> force_sparse = R_NilValue)
       CharacterVector go_names = {"lambdas", "summaries"};
       general_output.attr("names") = go_names;
       output = general_output;
+    
     } else {
+      // Single MPM, either as a list of matrices or as a single lefkoMat object
       CharacterVector mpm_names;
       if (mpm_.hasAttribute("names")) mpm_names = mpm_.attr("names");
       int no_mpm_names = mpm_names.length();
@@ -1798,7 +1856,14 @@ Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> force_sparse = R_NilValue)
         
         if (A_check) {
           // lefkoMat input
-          List A_list = mpm_["A"];
+          List A_list;
+          
+          if (u_only) {
+            A_list = mpm_["U"];
+          } else if (f_only) {
+            A_list = mpm_["F"];
+          } else A_list = mpm_["A"];
+            
           if (is<NumericMatrix>(A_list(0))) { 
             matrix_class_input = true;
           } else if (is<S4>(A_list(0))) { 

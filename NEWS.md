@@ -1,5 +1,13 @@
 # lefko3 6.X.X (2026-XX-XX)
 
+## NEW FEATURES
+
+* Function `lambda3()` can now calculate the dominant eigenvalue of the `A`,
+  `U`, or `F` matrices, using the `style` argument.
+  
+* Function `bootstrap3()` now replaces individual identity with unique values if
+  `rename = TRUE`.
+
 ## BUG FIXES
 
 * Corrected issue in which ahistorical or age-by-stage MPMs can be misidentified

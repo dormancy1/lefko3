@@ -4,12 +4,18 @@
 \alias{lambda3}
 \title{Estimate Actual or Deterministic Population Growth Rate}
 \usage{
-lambda3(mpm, force_sparse = NULL)
+lambda3(mpm, style = NULL, force_sparse = NULL)
 }
 \arguments{
 \item{mpm}{A \code{lefkoMat} object, a \code{lefkoMatList} object, a list of
 projection matrices, a \code{lefkoProj} object, or a single projection
 matrix in either standard or sparse format.}
+
+\item{style}{If \code{mpm} is either a \code{lefkoMat} or
+\code{lefkoMatList} object, then style determines whether the dominant
+eigenvalues will be calculated for the \code{A} matrices (the default),
+the \code{U} matrices (if \code{style = "U"}), or the \code{F} matrices (if
+\code{style = "F"}).}
 
 \item{force_sparse}{A logical value or string detailing whether to force
 sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},

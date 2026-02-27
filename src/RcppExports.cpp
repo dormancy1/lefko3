@@ -1152,14 +1152,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // lambda3
-Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> force_sparse);
-RcppExport SEXP _lefko3_lambda3(SEXP mpmSEXP, SEXP force_sparseSEXP) {
+Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> style, Nullable<RObject> force_sparse);
+RcppExport SEXP _lefko3_lambda3(SEXP mpmSEXP, SEXP styleSEXP, SEXP force_sparseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RObject& >::type mpm(mpmSEXP);
+    Rcpp::traits::input_parameter< Nullable<RObject> >::type style(styleSEXP);
     Rcpp::traits::input_parameter< Nullable<RObject> >::type force_sparse(force_sparseSEXP);
-    rcpp_result_gen = Rcpp::wrap(lambda3(mpm, force_sparse));
+    rcpp_result_gen = Rcpp::wrap(lambda3(mpm, style, force_sparse));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1249,7 +1250,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_lefko3_demolition4", (DL_FUNC) &_lefko3_demolition4, 1},
     {"_lefko3_demolition3", (DL_FUNC) &_lefko3_demolition3, 4},
     {"_lefko3_demolition3sp", (DL_FUNC) &_lefko3_demolition3sp, 4},
-    {"_lefko3_lambda3", (DL_FUNC) &_lefko3_lambda3, 2},
+    {"_lefko3_lambda3", (DL_FUNC) &_lefko3_lambda3, 3},
     {"_lefko3_matrix_interp", (DL_FUNC) &_lefko3_matrix_interp, 4},
     {"_lefko3_append_lP", (DL_FUNC) &_lefko3_append_lP, 2},
     {NULL, NULL, 0}
