@@ -8,6 +8,11 @@
 * Function `bootstrap3()` now replaces individual identity with unique values if
   `rename = TRUE`.
 
+## USER VISIBLE CHANGES
+
+* Matrix creation functions now give more meaningful error messages when
+  lefkoMod objects are input without their original hfvdata sets.
+  
 ## BUG FIXES
 
 * Corrected issue in which ahistorical or age-by-stage MPMs can be misidentified

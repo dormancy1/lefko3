@@ -11284,11 +11284,27 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
     }
   } else if (nodata && modelsuite_provided) {
     // Section for vrm_input
-    DataFrame year_frame = as<DataFrame>(modelsuite_["year_frame"]);
-    DataFrame patch_frame = as<DataFrame>(modelsuite_["patch_frame"]);
+    CharacterVector modelsuite_name_check = as<CharacterVector>(modelsuite_.names());
     
-    mainyears_ = as<StringVector>(year_frame["years"]);
-    mainpatches_ = as<StringVector>(patch_frame["patches"]);
+    bool found_vrm_msnc {false};
+    bool found_ms_msnc {false};
+    
+    for (int i = 0; i < static_cast<int>(modelsuite_name_check.length()); i++) {
+      if (modelsuite_name_check(i) == "survival_model") found_ms_msnc = true;
+      if (modelsuite_name_check(i) == "vrm_frame") found_vrm_msnc = true;
+    }
+    
+    if (found_vrm_msnc) {
+      DataFrame year_frame = as<DataFrame>(modelsuite_["year_frame"]);
+      DataFrame patch_frame = as<DataFrame>(modelsuite_["patch_frame"]);
+      
+      mainyears_ = as<StringVector>(year_frame["years"]);
+      mainpatches_ = as<StringVector>(patch_frame["patches"]);
+    } else if (found_ms_msnc) {
+      throw Rcpp::exception("Original hfvdata frame is missing.", false); 
+    } else {
+      throw Rcpp::exception("Object entered in argument modelsuite is not recognized.", false);
+    } 
   } else {
     // Guided by paramnames when both data and modelsuites are provided
     if (pop_var_int > -1) {
