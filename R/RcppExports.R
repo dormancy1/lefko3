@@ -273,7 +273,8 @@
 #' Bootstrap Standardized hfv_data Datasets
 #' 
 #' Function \code{bootstrap3()} takes already standardized \code{hfvdata}
-#' datasets and bootstraps them by individual identity, or by row.
+#' datasets and bootstraps them by individual identity, or by row. All
+#' bootstrapping is conducted with replacement.
 #' 
 #' @name bootstrap3
 #' 

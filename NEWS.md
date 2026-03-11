@@ -17,6 +17,9 @@
 
 * Corrected issue in which ahistorical or age-by-stage MPMs can be misidentified
   as historical by function stage_weight().
+  
+* Function bootstrap3() no longer throws an exception when using string-based
+  individual identities.
 
 # lefko3 6.7.2 (2026-02-11)
 

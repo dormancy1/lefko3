@@ -5675,7 +5675,8 @@ Rcpp::NumericVector density3(Rcpp::DataFrame data, int xcol, int ycol,
 //' Bootstrap Standardized hfv_data Datasets
 //' 
 //' Function \code{bootstrap3()} takes already standardized \code{hfvdata}
-//' datasets and bootstraps them by individual identity, or by row.
+//' datasets and bootstraps them by individual identity, or by row. All
+//' bootstrapping is conducted with replacement.
 //' 
 //' @name bootstrap3
 //' 
@@ -5769,6 +5770,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   Nullable<RObject> patchcol = R_NilValue, Nullable<RObject> indivcol = R_NilValue,
   Nullable<RObject> rename = R_NilValue) {
   
+  // Rcout << "bootstrap3 A" << endl;
+  
   DataFrame true_data;
   bool by_pop_bool {true};
   bool by_patch_bool {true};
@@ -5808,6 +5811,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   
   CharacterVector df_class_lel = {"data.frame", "hfvdata"};
   
+  // Rcout << "bootstrap3 B1" << endl;
+  
   if (by_pop.isNotNull()) {
     RObject by_pop_RO (by_pop);
     if (is<LogicalVector>(by_pop_RO)) {
@@ -5815,6 +5820,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       by_pop_bool = by_pop_log(0);
     } else LefkoUtils::pop_error("by_pop", "a logical value", "", 1);
   }
+  
+  // Rcout << "bootstrap3 B2" << endl;
   
   if (by_patch.isNotNull()) {
     RObject by_patch_RO (by_patch);
@@ -5824,6 +5831,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
     } else LefkoUtils::pop_error("by_patch", "a logical value", "", 1);
   }
   
+  // Rcout << "bootstrap3 B3" << endl;
+  
   if (by_indiv.isNotNull()) {
     RObject by_indiv_RO (by_indiv);
     if (is<LogicalVector>(by_indiv_RO)) {
@@ -5832,6 +5841,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
     } else LefkoUtils::pop_error("by_indiv", "a logical value", "", 1);
   }
   
+  // Rcout << "bootstrap3 B4" << endl;
+  
   if (prop_size.isNotNull()) {
     RObject prop_size_RO (prop_size);
     if (is<LogicalVector>(prop_size_RO)) {
@@ -5839,6 +5850,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       prop_size_bool = prop_size_log(0);
     } else LefkoUtils::pop_error("prop_size", "a logical value", "", 1);
   }
+  
+  // Rcout << "bootstrap3 B5" << endl;
   
   if (max_limit.isNotNull()) {
     RObject max_limit_RO (max_limit);
@@ -5849,6 +5862,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
     } else LefkoUtils::pop_error("max_limit", "an integer", "", 1);
   }
   
+  // Rcout << "bootstrap3 B6" << endl;
+  
   if (reps.isNotNull()) {
     RObject reps_RO (reps);
     if (is<IntegerVector>(reps_RO) || is<NumericVector>(reps_RO)) {
@@ -5856,6 +5871,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       reps_true = reps_int(0);
     } else LefkoUtils::pop_error("reps", "an integer", "", 1);
   }
+  
+  // Rcout << "bootstrap3 B7" << endl;
   
   if (rename.isNotNull()) {
     RObject rename_RO (rename);
@@ -5868,12 +5885,16 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
   
   List hfv_list (reps_true);
   
+  // Rcout << "bootstrap3 C" << endl;
+  
   if (is<DataFrame>(data)) {
     true_data = as<DataFrame>(data);
     total_rows = static_cast<int>(true_data.nrows());
     
     CharacterVector data_names = true_data.attr("names");
     int df_var_num = static_cast<int>(data_names.length());
+    
+    // Rcout << "bootstrap3 C1" << endl;
     
     if (true_data.hasAttribute("class")) {
       CharacterVector true_data_classes = wrap(true_data.attr("class"));
@@ -5885,6 +5906,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       if (!found_hfv) {
         LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
       }
+      
+      // Rcout << "bootstrap3 C2" << endl;
       
       if (popcol.isNotNull()) {
         RObject popcol_RO (popcol);
@@ -5963,6 +5986,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         pops_allrows_str = pops_allrows_str_temp;
         unique_pops_str = sort_unique(pops_allrows_str);
       }
+      
+      // Rcout << "bootstrap3 C3" << endl;
       
       if (patchcol.isNotNull()) {
         RObject patchcol_RO (patchcol);
@@ -6043,6 +6068,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         unique_patches_str = sort_unique(patches_allrows_str); // Should be redone as pop-patches
       }
       
+      // Rcout << "bootstrap3 C4" << endl;
+      
       if (by_patch_bool && !found_patch_col) {
         LefkoUtils::pop_error("patch identity", "", "", 16);
       }
@@ -6056,6 +6083,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       StringVector unique_poppatches_str = sort_unique(poppatches_allrows_str);
       total_poppatches = static_cast<int>(unique_poppatches_str.length());
       
+      // Rcout << "bootstrap3 C5" << endl;
+      
       arma::uvec pop_by_row = zeros<uvec>(total_rows);
       arma::uvec poppatch_by_row = zeros<uvec>(total_rows);
       for (int i = 0; i < total_rows; i++) {
@@ -6066,6 +6095,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
           if (poppatches_allrows_str(i) == unique_poppatches_str(j)) poppatch_by_row(i) = j;
         }
       }
+      
+      // Rcout << "bootstrap3 C6" << endl;
       
       int length_of_max_limit_int = static_cast<int>(max_limit_int.length());
       if (!prop_size_bool && length_of_max_limit_int > 1) {
@@ -6098,6 +6129,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         }
       }
       
+      // Rcout << "bootstrap3 C7" << endl;
+      
       if (indivcol.isNotNull()) {
         RObject indivcol_RO (indivcol);
         if (is<StringVector>(indivcol_RO)) {
@@ -6110,6 +6143,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         StringVector new_indivcol_str = {"individ"};
         indivcol_str = new_indivcol_str;
       }
+      
+      // Rcout << "bootstrap3 C8" << endl;
       
       if (popcol_int >= 0 && popcol_int <= df_var_num) found_pop_col = true;
       if (patchcol_int >= 0 && patchcol_int <= df_var_num) found_patch_col = true;
@@ -6131,6 +6166,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       if (by_indiv_bool && !found_indiv_col) {
         LefkoUtils::pop_error("individual identity", "", "", 16);
       }
+      
+      // Rcout << "bootstrap3 C9" << endl;
       
       if (by_indiv_bool) {
         if (is<IntegerVector>(true_data(indivcol_int))) {
@@ -6162,6 +6199,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
           }
           
           if (by_patch_bool) {
+            // Rcout << "bootstrap3 D1" << endl;
+            
             for (int i = 0; i < reps_true; i++) {
               DataFrame new_sampled_data_frame;
               for (int j = 0; j < total_poppatches; j++) {
@@ -6202,7 +6241,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                   
                   if (j == 0 && k == 0) {
                     new_sampled_data_frame = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
-                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame(indivcol_int));
+                    CharacterVector current_individ = as<CharacterVector>(new_sampled_data_frame(indivcol_int));
                     
                     if (rename_bool) {
                       for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
@@ -6214,7 +6253,7 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                     hfv_list(i) = clone(new_sampled_data_frame);
                   } else {
                     DataFrame new_sampled_data_frame_next = LefkoUtils::df_subset_byrow(true_data, found_rows_for_indiv);
-                    IntegerVector current_individ = as<IntegerVector>(new_sampled_data_frame_next(indivcol_int));
+                    CharacterVector current_individ = as<CharacterVector>(new_sampled_data_frame_next(indivcol_int));
                     
                     if (rename_bool) {
                       for (int new_sel = 0; new_sel < static_cast<int>(current_individ.length()); new_sel++) {
@@ -6227,10 +6266,11 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
                     hfv_list(i) = clone(new_sampled_data_frame);
                   }
                 }
-                
               }
             }
           } else if (by_pop_bool) {
+            // Rcout << "bootstrap3 D2" << endl;
+            
             for (int i = 0; i < reps_true; i++) {
               DataFrame new_sampled_data_frame;
               for (int j = 0; j < total_pops; j++) {
@@ -6352,6 +6392,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
           }
         } else {
           // User-set sample number, by individual
+          // Rcout << "bootstrap3 D3" << endl;
+          
           if (by_patch_bool) {
             if (length_of_max_limit_int > 1 && length_of_max_limit_int != total_poppatches) {
               String eat_my_shorts = "If prop_size is FALSE, then argument ";
@@ -6553,6 +6595,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
           }
         }
         
+        // Rcout << "bootstrap3 D4" << endl;
+        
         if (rename_bool) {
           for (int i = 0; i < reps_true; i++) {
             DataFrame current_hfv = as<DataFrame>(hfv_list(i));
@@ -6565,6 +6609,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
         }
       
       } else {
+        // Rcout << "bootstrap3 E1" << endl;
+        
         // By row (not by indiv)
         if (prop_size_bool) {
           // Equal sample proportions, by row
@@ -6660,6 +6706,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
           }
         } else {
           // User-set sample number, by individual
+          // Rcout << "bootstrap3 E2" << endl;
+          
           if (by_patch_bool) {
             if (length_of_max_limit_int > 1 && length_of_max_limit_int != total_poppatches) {
               String eat_my_shorts = "If prop_size is FALSE, then argument ";
@@ -6668,7 +6716,6 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
               
               throw Rcpp::exception(eat_my_shorts.get_cstring(), false);
             }
-            
             
             for (int i = 0; i < reps_true; i++) {
               DataFrame new_sampled_data_frame;
@@ -6768,6 +6815,8 @@ Rcpp::List bootstrap3(RObject data, Nullable<RObject> by_pop = R_NilValue,
       }
     } else LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
   } else LefkoUtils::pop_error("data", "an hfvdata object", "", 1);
+  
+  // Rcout << "bootstrap3 F" << endl;
   
   for (int i = 0; i < reps_true; i++) {
     DataFrame new_sampled_data_frame = as<DataFrame>(hfv_list(i));
