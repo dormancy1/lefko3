@@ -13,67 +13,68 @@ using namespace arma;
 // Index of functions
 // 1. NumericVector concat_dbl  Append NumericVector to the End of Another NumericVector
 // 2. IntegerVector concat_int  Append IntegerVector to the End of Another IntegerVector
-// 3. std::string stringremove  Remove One String From Another
-// 4. StringVector concat_str  Append StringVector to the End of Another StringVector
+// 3. LogicalVector concat_log  Append IntegerVector to the End of Another LogicalVector
+// 4. std::string stringremove  Remove One String From Another
+// 5. StringVector concat_str  Append StringVector to the End of Another StringVector
 // 
-// 5. bool stringcompare_hard  Compares Two Strings Literally
-// 6. List stringcompare_soft  Compares Two Strings, Assessing Inclusion
-// 7. bool stringcompare_simple  Compares Two Strings, Assessing Inclusion
-// 8. bool stringcompare_x  Compares Three Strings for Interaction Notation
-// 9. CharacterVector stringsort  Sort String Elements
+// 6. bool stringcompare_hard  Compares Two Strings Literally
+// 7. List stringcompare_soft  Compares Two Strings, Assessing Inclusion
+// 8. bool stringcompare_simple  Compares Two Strings, Assessing Inclusion
+// 9. bool stringcompare_x  Compares Three Strings for Interaction Notation
+// 10. CharacterVector stringsort  Sort String Elements
 // 
-// 10. IntegerVector int_sort  Sort Integer Elements
-// 11. IntegerMatrix refsort_num  Index a Numeric Vector According to a Reference Vector
-// 12. IntegerVector refsort_str  Index a String Vector According to a Reference Vector
-// 13. IntegerMatrix refsort_str_m  Index a String Matrix According to a Reference Vector
+// 11. IntegerVector int_sort  Sort Integer Elements
+// 12. IntegerMatrix refsort_num  Index a Numeric Vector According to a Reference Vector
+// 13. IntegerVector refsort_str  Index a String Vector According to a Reference Vector
+// 14. IntegerMatrix refsort_str_m  Index a String Matrix According to a Reference Vector
 // 
-// 14. arma::sp_mat spmat_log  Calculate Logarithms of Non-Zero Elements of Sparse Matrix
-// 15. Rcpp::IntegerVector shrink  Resize an IntegerVector
-// 16. IntegerVector index_l3  Find Indices of a Matching String in a StringVector
+// 15. arma::sp_mat spmat_log  Calculate Logarithms of Non-Zero Elements of Sparse Matrix
+// 16. Rcpp::IntegerVector shrink  Resize an IntegerVector
+// 17. IntegerVector index_l3  Find Indices of a Matching String in a StringVector
 // 
-// 17. List df_subset  Subset Data Frame By A Specific Variable
-// 18. bool df_compare  Check If Two Data Frames Are Equal
-// 19. List df_subset_byrow  Subset Data Frame By Integer Vector of Row Numbers
-// 20. List df_remove  Remove Rows With Specific Index Values From Data Frame
-// 21. List df_shedrows  Shrink Data Frame According to Index Vector
-// 22. bool df_duplicates  Search for Duplicate Data Frame Values
-// 23. DataFrame df_rbind  Bind Two Data Frames By Row
+// 18. List df_subset  Subset Data Frame By A Specific Variable
+// 19. bool df_compare  Check If Two Data Frames Are Equal
+// 20. List df_subset_byrow  Subset Data Frame By Integer Vector of Row Numbers
+// 21. List df_remove  Remove Rows With Specific Index Values From Data Frame
+// 22. List df_shedrows  Shrink Data Frame According to Index Vector
+// 23. bool df_duplicates  Search for Duplicate Data Frame Values
+// 24. DataFrame df_rbind  Bind Two Data Frames By Row
 // 
-// 24. List exp_grd  Repeat First Vector for Each Element of Second Vector
+// 25. List exp_grd  Repeat First Vector for Each Element of Second Vector
 // 
-// 25. List numeric_extractor  Extract Key Components From Simple Numerical Model
-// 26. List glm_extractor  Extract Key Components of lm/glm/negbin Objects
-// 27. List vglm_extractor  Extract Key Components of vglm Objects
-// 28. List zeroinfl_extractor  Extract Key Components of zeroinfl Objects
-// 29. List lme4_extractor  Extract Key Components of merMod Objects
-// 30. List glmmTMB_extractor  Extract Key Components of glmmTMB Objects
-// 31. List S3_extractor  Extract Core Components From S3 Vital Rate Models
-// 32. List S4_extractor  Extract Core Components From S4 Vital Rate Models
-// 33. List vrm_extractor  Extract Core Components of vrm_input Models
+// 26. List numeric_extractor  Extract Key Components From Simple Numerical Model
+// 27. List glm_extractor  Extract Key Components of lm/glm/negbin Objects
+// 28. List vglm_extractor  Extract Key Components of vglm Objects
+// 29. List zeroinfl_extractor  Extract Key Components of zeroinfl Objects
+// 30. List lme4_extractor  Extract Key Components of merMod Objects
+// 31. List glmmTMB_extractor  Extract Key Components of glmmTMB Objects
+// 32. List S3_extractor  Extract Core Components From S3 Vital Rate Models
+// 33. List S4_extractor  Extract Core Components From S4 Vital Rate Models
+// 34. List vrm_extractor  Extract Core Components of vrm_input Models
 // 
-// 34. NumericMatrix revelations  Create Matrices of Year and Patch Terms in Models
-// 35. double rimeotam  Create a Summation of Most Terms Needed in Vital Rate Calculation
-// 36. arma::ivec foi_counter  Count Elements in Each Random Individual Covariate Portion of Model
-// 37. NumericVector flightoficarus  Create Vector of Random Individual Covariate Terms
-// 38. StringVector bootson  Create Concatenated Vector of Random Individual Covariate Term Names
-// 39. NumericVector zero_flightoficarus  Create Vector of Random Individual Covariate Terms for Zero-Inflated Models
-// 40. StringVector zero_bootson  Create Concatenated Vector of Random Individual Covariate Term Names from a Zero-Inflated Model
-// 41. arma::imat foi_index  Create Index of Element Numbers for Random Individual Covariate Terms
-// 42. NumericMatrix revelations_leslie  Create Matrices of Year and Patch Terms in Models in Leslie Models
-// 43. arma::imat foi_index_leslie  Create Index of Element Numbers for Random Individual Covariate Terms in Leslie Models
-// 44. List modelextract  Extract Coefficients from Linear Vital Rate Models
+// 35. NumericMatrix revelations  Create Matrices of Year and Patch Terms in Models
+// 36. double rimeotam  Create a Summation of Most Terms Needed in Vital Rate Calculation
+// 37. arma::ivec foi_counter  Count Elements in Each Random Individual Covariate Portion of Model
+// 38. NumericVector flightoficarus  Create Vector of Random Individual Covariate Terms
+// 39. StringVector bootson  Create Concatenated Vector of Random Individual Covariate Term Names
+// 40. NumericVector zero_flightoficarus  Create Vector of Random Individual Covariate Terms for Zero-Inflated Models
+// 41. StringVector zero_bootson  Create Concatenated Vector of Random Individual Covariate Term Names from a Zero-Inflated Model
+// 42. arma::imat foi_index  Create Index of Element Numbers for Random Individual Covariate Terms
+// 43. NumericMatrix revelations_leslie  Create Matrices of Year and Patch Terms in Models in Leslie Models
+// 44. arma::imat foi_index_leslie  Create Index of Element Numbers for Random Individual Covariate Terms in Leslie Models
+// 45. List modelextract  Extract Coefficients from Linear Vital Rate Models
 // 
-// 45. double preouterator  Estimate Value for Vital Rate Based on Inputs
-// 46. List jerzeibalowski  Estimate All Elements of Function-based Population Projection Matrix
-// 47. List motherbalowski  Estimate All Elements of Function-based Leslie Population Projection Matrix
+// 46. double preouterator  Estimate Value for Vital Rate Based on Inputs
+// 47. List jerzeibalowski  Estimate All Elements of Function-based Population Projection Matrix
+// 48. List motherbalowski  Estimate All Elements of Function-based Leslie Population Projection Matrix
 // 
-// 48. DataFrame loy_inator  Converts Labels Element to LOY Data Frame
-// 49. void matrix_reducer  Reduces Matrices In A Function-based lefkoMat Object
-// 50. int whichbrew  Assess if MPM is ahistorical, historical, age-by-stage, or Leslie
-// 51. void pop_error  Standardized Error Messages
+// 49. DataFrame loy_inator  Converts Labels Element to LOY Data Frame
+// 50. void matrix_reducer  Reduces Matrices In A Function-based lefkoMat Object
+// 51. int whichbrew  Assess if MPM is ahistorical, historical, age-by-stage, or Leslie
+// 52. void pop_error  Standardized Error Messages
 // 
-// 52. void density_prep  Format All Density-related Variables Based on Density Inputs
-// 53. void equivalence_prep  Format All Equivalence Weight-related Variables Based on Input
+// 53. void density_prep  Format All Density-related Variables Based on Density Inputs
+// 54. void equivalence_prep  Format All Equivalence Weight-related Variables Based on Input
 
 
 
@@ -136,7 +137,36 @@ namespace LefkoUtils {
     
     Rcpp::IntegerVector zconv(z.begin(), z.end());
     
-    return zconv ;
+    return zconv;
+  }
+  
+  //' Append LogicalVector to the End of Another LogicalVector
+  //' 
+  //' Returns a new LogicalVector with elements of vector A followed by
+  //' elements of vector B.
+  //' 
+  //' @name concat_log
+  //' 
+  //' @param A Any LogicalVector.
+  //' @param B Any other LogicalVector.
+  //' 
+  //' @return Returns a new LogicalVector with elements of vector A followed by
+  //' elements of vector B.
+  //' 
+  //' @keywords internal
+  //' @noRd
+  inline LogicalVector concat_log(const IntegerVector& x,
+    const IntegerVector& y) {
+    
+    int x_size = static_cast<int>(x.size());
+    int y_size = static_cast<int>(y.size());
+    
+    LogicalVector new_xy (x_size + y_size);
+    
+    std::copy(x.begin(), x.end(), new_xy.begin());
+    std::copy(y.begin(), y.end(), new_xy.begin() + x_size);
+    
+    return new_xy;
   }
   
   //' Remove One String From Another
