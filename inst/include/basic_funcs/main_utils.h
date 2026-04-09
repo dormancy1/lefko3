@@ -155,8 +155,8 @@ namespace LefkoUtils {
   //' 
   //' @keywords internal
   //' @noRd
-  inline LogicalVector concat_log(const IntegerVector& x,
-    const IntegerVector& y) {
+  inline LogicalVector concat_log(const LogicalVector& x,
+    const LogicalVector& y) {
     
     int x_size = static_cast<int>(x.size());
     int y_size = static_cast<int>(y.size());
