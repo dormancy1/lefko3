@@ -1,4 +1,4 @@
-# lefko3 6.X.X (2026-XX-XX)
+# lefko3 6.7.3 (2026-04-24)
 
 ## NEW FEATURES
 
@@ -11,7 +11,7 @@
 ## USER VISIBLE CHANGES
 
 * Matrix creation functions now give more meaningful error messages when
-  lefkoMod objects are input without their original hfvdata sets.
+  lefkoMod objects are input without their original `hfvdata` datasets.
   
 ## BUG FIXES
 
