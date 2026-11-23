@@ -50,16 +50,16 @@ A, U, and F matrices in the output \code{lefkoElas} object.}
 This function returns an object of class \code{lefkoElas}, which is a
 list with 8 elements. The first, \code{h_elasmats}, is a list of historical
 elasticity matrices (\code{NULL} if an ahMPM is used as input). The second,
-\code{ah_elasmats}, is a list of either ahistorical elasticity matrices if an
+\code{ah_sensmats}, is a list of either ahistorical elasticity matrices if an
 ahMPM is used as input, or, if an hMPM is used as input, then the result is a
 list of elasticity matrices in which historical elasticities have been summed
 by the stage in occasions \emph{t} and \emph{t}+1 to produce
 historically-corrected elasticity matrices, which are equivalent in dimension
 to ahistorical elasticity matrices but reflect the effects of stage in
 occasion \emph{t}-1. The third element, \code{hstages}, is a data frame
-showing historical stage pairs (NULL if ahMPM used as input). The fourth
+showing historical stage pairs (NULL if an ahMPM is used as input). The fourth
 element, \code{agestages}, shows age-stage combinations in the order used in
-age-by-stage MPMs, if suppled. The fifth element, \code{ahstages}, is a data
+age-by-stage MPMs, if supplied. The fifth element, \code{ahstages}, is a data
 frame showing the order of ahistorical stages. The last 3 elements are the A,
 U, and F portions of the input.
 }

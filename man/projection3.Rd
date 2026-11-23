@@ -29,7 +29,7 @@ projection3(
 \arguments{
 \item{mpm}{A matrix projection model of class \code{lefkoMat}, a list of
 class \code{lefkoMatList} including bootstrapped MPMs, or a list of full
-matrix projection matrices.}
+projection matrices.}
 
 \item{nreps}{The number of replicate projections.}
 
@@ -56,12 +56,12 @@ population size at each occasion. Defaults to \code{TRUE}.}
 individuals projected in each stage at each occasion to the nearest
 integer. Defaults to \code{FALSE}.}
 
-\item{substoch}{An integer value indicating whether to force survival-
-transition matrices to be substochastic in density dependent simulations.
+\item{substoch}{An integer value indicating whether to force
+survival-transition matrices to be substochastic in density dependent simulations.
 Defaults to \code{0}, which does not force substochasticity. Alternatively,
 \code{1} forces all survival-transition elements to range from 0.0 to 1.0,
-and forces fecundity to be non-negative; and \code{2} forces all column rows
-in the survival-transition matrices to total no more than 1.0, in addition
+and forces fecundity to be non-negative; and \code{2} forces all columns
+in the survival-transition matrices to sum to no more than 1.0, in addition
 to the actions outlined for option \code{1}.}
 
 \item{exp_tol}{A numeric value used to indicate a maximum value to set
@@ -127,9 +127,8 @@ objects include matrices of class \code{dgCMatrix}.}
 \value{
 If a \code{lefkoMat} object or a simple list of matrices is used as
 input, then this function will produce a list of class \code{lefkoProj},
-which always includes the first three elements of the following, and also
-includes the remaining elements below when a \code{lefkoMat} object is used
-as input:
+which always includes the first three elements of the following,  and may
+include the elements following:
 \item{projection}{A list of lists of matrices showing the total number of
 individuals per stage per occasion. The first list corresponds to each
 pop-patch followed by each population. The inner list corresponds to
@@ -170,7 +169,7 @@ replicates if set.
 }
 \section{Notes}{
 
-Users are encourage to run density dependent projections with
+Users are encouraged to run density dependent projections with
 \code{lefkoMat} objects as inputs. Users using simple lists of matrices
 should first develop a life history model and import matrices using
 function \code{\link{create_lM}()}. Lists of matrices can still be run in
@@ -187,7 +186,7 @@ weightings used will be based on the proportion per element of the sum of
 elements in the user-supplied vector.
 
 Starting vectors can be input in one of two ways: 1) as \code{start_vec}
-input, which is a vector of numbers of the numbers of individuals in each
+input, which is a vector of the numbers of individuals in each
 stage, stage pair, or age-stage, with the length of the vector necessarily
 as long as there are rows in the matrices of the MPM; or 2) as
 \code{start_frame} input, which is a data frame showing only those stages,
@@ -248,9 +247,8 @@ Defaults work best when matrices are very small and dense, or very large and
 sparse. Speed can also be maximized by keeping the default setting,
 \code{integeronly = TRUE}, since the default behavior is to run each
 projection (replicate) until either the end, or the population size drops
-to 0. Setting \code{integeronly = FALSE} may increase runtime dramatically,
-since the population size can reach extremely small levels without dropping
-to 0.
+to 0. Setting \code{integeronly = TRUE} may decrease runtime dramatically,
+since the population will go extinct once a fractional individual is left.
 }
 
 \examples{

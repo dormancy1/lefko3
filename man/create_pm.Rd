@@ -12,7 +12,7 @@ name as \code{none} if \code{FALSE}, or as the default \code{modelparams}
 name if \code{TRUE}. Defaults to \code{FALSE}.}
 }
 \value{
-A three column data frame, of which the first describes the
+A three-column data frame, of which the first describes the
 parameters in reasonably plain English, the second gives the name of the
 parameter within the MPM generating functions, and the third is to be
 edited with the names of the variables as they appear in the models.

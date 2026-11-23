@@ -31,7 +31,7 @@ greatest to lowest absolute magnitude (\code{3}). Defaults to type \code{3}.}
 }
 \value{
 A data frame arranging all elements in the matrix chosen from
-greatest and smallest. This can be a data frame of only positive elements,
+greatest to smallest. This can be a data frame of only positive elements,
 of only negative elements, or all elements in order of absolute magnitude.
 }
 \description{

@@ -69,15 +69,15 @@ into a list object. The \code{hist} element describes the historical
 stage-pair distribution, while the \code{ahist} element describes the stage
 distribution. If deterministic, then \code{hist} contains a data frame
 including the matrix number (\code{matrix}), the numeric stage designations for
-stages in occasions \emph{t} and \emph{t}-1, (\code{stage_id_2} and
-\code{stage_id_1}, respectively), followed by the respective stage names (
-\code{stage_2} and \code{stage_1}), and ending with the estimated stable
+stages in occasions \emph{t} and \emph{t}-1 (\code{stage_id_2} and
+\code{stage_id_1}, respectively), followed by the respective stage names
+(\code{stage_2} and \code{stage_1}), and ending with the estimated stable
 stage-pair distribution. The associated \code{ahist} element is as before. If
 stochastic, then the \code{hist} element contains a single data frame with
 the number of the population-patch (\code{matrix_set}), a string
 concatenating the names of the population and the patch (\code{poppatch}),
-the assigned stage id numbers in times \emph{t} and \emph{t}-1 (
-\code{stage_id_2} and \code{stage_id_2}, respectively), and the associated
+the assigned stage id numbers in times \emph{t} and \emph{t}-1
+(\code{stage_id_2} and \code{stage_id_2}, respectively), and the associated
 stage names (\code{stage_2} and \code{stage_1}, respectively), and the
 long-run average stage distribution (\code{ss_prop}). The associated
 \code{ahist} element is as before in the ahistorical, stochastic case.

@@ -14,7 +14,7 @@
 \value{
 A list of data frames. In all cases, the first data frame is one
 showing the positive, negative, and total contributions of elements in
-each LTRE contribution matrix. If not a SNA-LTRE, then there are an
+each LTRE contribution matrix. If not an SNA-LTRE, then there are an
 additional two (if deterministic) or four (if stochastic) data frames. If
 deterministic, then \code{hist_det} is a data frame showing the summed LTRE
 contributions for all 16 kinds of historical transition per matrix, with each

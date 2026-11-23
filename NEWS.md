@@ -1,3 +1,18 @@
+# lefko3 X.X.X (20XX-XX-XX)
+
+## NEW FEATURES
+
+* 
+
+## USER VISIBLE CHANGES
+
+* Typos, grammatical errors, and inconsistencies fixed in all help files and
+  function definitions.
+  
+## BUG FIXES
+
+* 
+
 # lefko3 6.7.3 (2026-04-24)
 
 ## NEW FEATURES

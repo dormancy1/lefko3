@@ -47,12 +47,12 @@ be forced to the interval [0, 1].}
 if phi is to be treated as different from N in the two-parameter model.}
 }
 \value{
-A numeric vector of values showing values projected under the two-
-parameter Beverton-Holt function.
+A numeric vector of values showing values projected under the
+two-parameter Beverton-Holt function.
 }
 \description{
-Function \code{beverton3()} creates a vector of values produced by the two-
-parameter Beverton-Holt function as applied with a user-specified time lag.
+Function \code{beverton3()} creates a vector of values produced by the
+two-parameter Beverton-Holt function as applied with a user-specified time lag.
 The two-parameter Beverton-Holt function is given as 
 \eqn{\phi_{t+1} = \phi_t \alpha / (1 + \beta n_t)}. Here, if no
 \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.

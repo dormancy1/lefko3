@@ -38,11 +38,11 @@ matrix, the mean number of unique transitions in the bootstrapped datasets,
 the mean number of individuals, and summaries of the column sums of the survival-transition
 matrices across all \code{lefkoMat} objects.
 
-if \code{elem_summaries = TRUE}, then \code{\link{summary.lefkoMat}{}} output
+If \code{elem_summaries = TRUE}, then \code{\link{summary.lefkoMat}{}} output
 is also shown for each \code{lefkoMat} object per entered \code{lefkoMatList}
 object.
 
-Stage discontinuities may also be also checked across all \code{lefkoMat}
+Stage discontinuities may also be checked across all \code{lefkoMat}
 objects with function \code{cycle_check}. This function will also yield
 warnings if any survival-transition matrices include elements outside of the
 interval [0,1], if any fecundity matrices contain negative elements, and if
@@ -61,8 +61,8 @@ bootstrapped matrices produced through functions \code{\link{flefko3}()},
 Under the Gaussian and gamma size distributions, the number of estimated
 parameters may differ between the two \code{ipm_method} settings. Because
 the midpoint method has a tendency to incorporate upward bias in the
-estimation of size transition probabilities, it is more likely to yield non-
-zero values when the true probability is extremely close to 0. This will
+estimation of size transition probabilities, it is more likely to yield
+non-zero values when the true probability is extremely close to 0. This will
 result in the \code{summary.lefkoMat} function yielding higher numbers of
 estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 }

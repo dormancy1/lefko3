@@ -20,7 +20,7 @@ the \code{U} matrices (if \code{style = "U"}), or the \code{F} matrices (if
 \item{force_sparse}{A logical value or string detailing whether to force
 sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},
 which only forces sparse matrix coding if simple matrices are input that are
-both sparse (i.e, percentage of matrix elements that are non-zero <= 50%)
+both sparse (i.e, percentage of matrix elements that are non-zero <= 50)
 and have more than 20 rows. Can also be set to \code{"yes"}, \code{"no"},
 \code{TRUE}, or \code{FALSE}. Note that sparse matrix coding is always used
 for \code{lefkoMat} objects with matrices in sparse format (class
@@ -31,7 +31,7 @@ The value returned depends on the class of the \code{mpm} argument.
 If a \code{lefkoMat} object is provided, then this function will return the
 \code{labels} data frame with a new column named \code{lambda} showing the
 dominant eigenvalues for each matrix. If a \code{lefkoMatList} object is
-provided, then a two element list in which the first element is a vector
+provided, then a two-element list in which the first element is a vector
 composed of the mean lambda values of each \code{lefkoMat} element within
 the list is provided, and the second element is a list of \code{lefkoMat}
 lambda summaries as previously described. If a list of matrices is provided,
@@ -42,7 +42,7 @@ the largest real parts of the eigenvalues are returned.
 
 If a \code{lefkoProj} object is provided, then the output consists of a list
 with three elements. The second and third elements are lists of matrices
-with each lower-level list elements corresponding to \code{labels} rows,
+with each lower-level list element corresponding to \code{labels} rows,
 and matrices within these lists showing the actual \eqn{\lambda} and
 \code{log} \eqn{\lambda} for each consecutive year or time index (columns)
 within each replicate (row).
@@ -55,7 +55,7 @@ set of dominant eigenvalues for a \code{lefkoMat} object, or actual
 large and sparse matrices supplied as \code{lefkoMat} objects or as
 individual matrices, and can be used with large historical matrices, IPMs, 
 age x stage matrices, as well as smaller ahistorical matrices, and general
-projetions.
+projections.
 }
 \examples{
 # Lathyrus example

@@ -35,8 +35,9 @@ least one of these characteristics, then the function will yield a fatal
 error.
 
 If the lengths and dimensions of the input \code{lefkoMat} objects are the
-same, then this will check if the \code{labels} element is essentially the
-same. If not, then the function will yield a warning, but will still operate.
+same, then this function will check whether the \code{labels} element is
+essentially the same. If not, then the function will yield a warning, but
+will still operate.
 }
 
 \examples{

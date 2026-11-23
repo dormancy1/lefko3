@@ -40,7 +40,7 @@ Defaults to \code{FALSE}.}
 simulation. Defaults to \code{10000}.}
 
 \item{burnin}{The number of initial steps to ignore in stochastic projection
-when calculating stochastic elasticities. Must be smaller than \code{steps}.
+when calculating stochastic elasticities. Must be smaller than \code{times}.
 Defaults to \code{3000}.}
 
 \item{tweights}{An optional numeric vector or matrix denoting the
@@ -91,7 +91,7 @@ contributions of temporal variation in matrix elements; \code{cont_corr},
 which provides the contributions of temporal correlations in matrix elements;
 \code{r_values_m}, which provides a vector of log deterministic lambda values
 for treatment populations; and \code{r_values_ref}, which provides the log
-deterministic lambda of the mean reference matrix.This is followed by the
+deterministic lambda of the mean reference matrix. This is followed by the
 stageframe as object \code{ahstages}, the order of historical stages as
 object \code{hstages}, the age-by-stage order as object \code{agestages}, the
 order of matrices as object \code{labels}, and, if requested, the original A,
@@ -121,7 +121,7 @@ reference matrices are performed as spatial tests of the population dynamics
 among patches.
 
 Default behavior for stochastic LTRE uses the full population provided in
-\code{mats} as the reference if no \code{refmats} and \code{ref} is provided.
+\code{mats} as the reference if neither \code{refmats} nor \code{ref} is provided.
 If no \code{refmats} is provided but \code{ref} is, then the matrices noted
 in \code{ref} are used as the reference matrix set. Year and patch order is
 utilized from object \code{mats}, but not from object \code{refmats}, in
@@ -133,8 +133,8 @@ populations are designated as patches instead).
 If \code{sparse = "auto"}, the default, then sparse matrix encoding
 will be used if the size of the input matrices is at least 50 columns by 50
 rows for deterministic and stochastic LTREs and 10 columns by 10 rows for
-small noise approximation LTREs, in all cases as long as 50\% of the elements
-in the first matrix are non-zero.
+small noise approximation LTREs, in all cases as long as no more than 50\% of
+the elements in the first matrix are non-zero.
 
 Stochastic LTREs do not test for the impact of temporal change in vital
 rates. An MPM with a single population, a single patch, and only annual

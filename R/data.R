@@ -11,13 +11,13 @@
 #' @usage data(cypdata)
 #' 
 #' @format A data frame with 77 individuals and 29 variables. Each row 
-#' corresponds to an unique individual, and each variable from \code{size.04} 
+#' corresponds to a unique individual, and each variable from \code{size.04} 
 #' on refers to the state of the individual in a particular year.
 #' 
 #' \describe{
 #'   \item{plantid}{A numeric variable giving a unique number to each 
 #'   individual.}
-#'   \item{patch}{A variable refering to patch within the population.}
+#'   \item{patch}{A variable referring to patch within the population.}
 #'   \item{X}{An X coordinate for the plant within the population.}
 #'   \item{Y}{A Y coordinate for the plant within the population.}
 #'   \item{censor}{A variable coding for whether the data point is valid. An
@@ -119,7 +119,7 @@
 #' \describe{
 #'   \item{plantid}{A numeric variable giving a unique number to each 
 #'   individual.}
-#'   \item{patch}{A variable refering to patch within the population.}
+#'   \item{patch}{A variable referring to patch within the population.}
 #'   \item{X}{An X coordinate for the plant within the population.}
 #'   \item{Y}{A Y coordinate for the plant within the population.}
 #'   \item{censor}{A variable coding for whether the data point is valid. An
@@ -197,12 +197,12 @@
 #' 
 #' @usage data(lathyrus)
 #' 
-#' @format A data frame with 1119 individuals and 34 variables. Each row
+#' @format A data frame with 1119 individuals and 38 variables. Each row
 #' corresponds to a unique individual, and each variable from \code{Volume88}
 #' on refers to the state of the individual in a given year.
 #' 
 #' \describe{
-#'   \item{SUBPLOT}{A variable refering to patch within the population.}
+#'   \item{SUBPLOT}{A variable referring to patch within the population.}
 #'   \item{GENET}{A numeric variable giving a unique number to each 
 #'   individual.}
 #'   \item{Volume88}{Aboveground volume in cubic mm in 1988.}
@@ -217,14 +217,14 @@
 #'   dormant in 1988.}
 #'   \item{Missing1988}{Marked as 1 if not found in 1988.}
 #'   \item{Seedling1988}{Marked as 1, 2, or 3 if observed as a seedling in year
-#'   \emph{t}. Numbers refer to certainty of assignment: 1 = certain that plant
+#'   1988. Numbers refer to certainty of assignment: 1 = certain that plant
 #'   is a seedling in 1988, 2 = likely that plant is a seedling in 1988,
 #'   3 = probable that plant is a seedling in 1988.}
 #'   \item{Volume89}{Aboveground volume in cubic mm in 1989.}
 #'   \item{lnVol89}{Natural logarithm of \code{Volume89}.}
 #'   \item{FCODE89}{Equals 1 if flowering and 0 if not flowering in 1989.}
 #'   \item{Flow89}{Number of flowers in 1989.}
-#'   \item{Intactseed89}{NZumber of intact mature seeds produced in 1989.
+#'   \item{Intactseed89}{Number of intact mature seeds produced in 1989.
 #'   Not always an integer, as in some cases seed number was estimated via
 #'   linear modeling.}
 #'   \item{Dead1989}{Marked as 1 if known to be dead in 1989.}
@@ -232,14 +232,14 @@
 #'   dormant in 1989.}
 #'   \item{Missing1989}{Marked as 1 if not found in 1989.}
 #'   \item{Seedling1989}{Marked as 1, 2, or 3 if observed as a seedling in
-#'   year \emph{t}. Numbers refer to certainty of assignment: 1 = certain 
+#'   1989. Numbers refer to certainty of assignment: 1 = certain 
 #'   that plant is a seedling in 1989, 2 = likely that plant is a seedling 
 #'   in 1989, 3 = probable that plant is a seedling in 1989.}
-#'   \item{Volume90}{Aboveground volume in mm<sup>3</sup> in 1990.}
+#'   \item{Volume90}{Aboveground volume in cubic mm in 1990.}
 #'   \item{lnVol90}{Natural logarithm of \code{Volume90}.}
 #'   \item{FCODE90}{Equals 1 if flowering and 0 if not flowering in 1990.}
 #'   \item{Flow90}{Number of flowers in 1990.}
-#'   \item{Intactseed90}{NZumber of intact mature seeds produced in 1990.
+#'   \item{Intactseed90}{Number of intact mature seeds produced in 1990.
 #'   Not always an integer, as in some cases seed number was estimated via 
 #'   linear modeling.}
 #'   \item{Dead1990}{Marked as 1 if known to be dead in 1990.}
@@ -247,14 +247,14 @@
 #'   dormant in 1990.}
 #'   \item{Missing1990}{Marked as 1 if not found in 1990.}
 #'   \item{Seedling1990}{Marked as 1, 2, or 3 if observed as a seedling in
-#'   year \emph{t}. Numbers refer to certainty of assignment: 1 = certain 
+#'   1990. Numbers refer to certainty of assignment: 1 = certain 
 #'   that plant is a seedling in 1990, 2 = likely that plant is a seedling
 #'   in 1990, 3 = probable that plant is a seedling in 1990.}
 #'   \item{Volume91}{Aboveground volume in mm<sup>3</sup> in 1991.}
 #'   \item{lnVol91}{Natural logarithm of \code{Volume91}.}
 #'   \item{FCODE91}{Equals 1 if flowering and 0 if not flowering in 1991.}
 #'   \item{Flow91}{Number of flowers in 1991.}
-#'   \item{Intactseed91}{NZumber of intact mature seeds produced in 1991.
+#'   \item{Intactseed91}{Number of intact mature seeds produced in 1991.
 #'   Not always an integer, as in some cases seed number was estimated via
 #'   linear modeling.}
 #'   \item{Dead1991}{Marked as 1 if known to be dead in 1991.}
@@ -262,7 +262,7 @@
 #'   dormant in 1991.}
 #'   \item{Missing1991}{Marked as 1 if not found in 1991.}
 #'   \item{Seedling1991}{Marked as 1, 2, or 3 if observed as a seedling 
-#'   in year \emph{t}. Numbers refer to certainty of assignment: 
+#'   in 1991. Numbers refer to certainty of assignment: 
 #'   1 = certain that plant is a seedling in 1991, 2 = likely that plant 
 #'   is a seedling in 1991, 3 = probable that plant is a seedling in 
 #'   1991.}
@@ -334,19 +334,19 @@
 #' 
 #' @usage data(pyrola)
 #' 
-#' @format A data frame with 454 individuals and 57 variables. Each row 
-#' corresponds to an unique individual, and each variable from
+#' @format A data frame with 454 individuals and 51 variables. Each row 
+#' corresponds to a unique individual, and each variable from
 #' \code{sprouted.2015} on refers to the state of the individual in a particular
 #' year.
 #' 
 #' \describe{
 #'   \item{species}{String denoting which of the two species the individual
 #'   belongs to.}
-#'   \item{population}{Integer denoting whcih population the individual belongs
+#'   \item{population}{Integer denoting which population the individual belongs
 #'   to. Synonymous with species in this dataset.}
 #'   \item{id}{A numeric variable giving a unique number to each 
-#'   individual within each species. Note that numbers are reused among the two
-#'   species.}
+#'   individual within each species. Note that numbers are reused between the
+#'   two species.}
 #'   \item{sprouted.2015}{A binomial indicating whether the individual had
 #'   living aboveground tissue observable in the 2015 census.}
 #'   \item{lvs.num.2015}{Number of leaves in 2015.}
@@ -403,9 +403,10 @@
 #'   \item{frt.tot.2020}{Number of fruits in 2020.}
 #' }
 #' 
-#' @source Shefferson, R.P., K. Shutoh, and K. Suetsugu. \emph{In review}.
-#' Vegetative dormancy and the evolution of mycoheterotrophy in sister
-#' \emph{Pyrola} species. \emph{Journal of Ecology}.
+#' @source Shefferson, R.P., K. Shutoh, and K. Suetsugu. 2024. Life history
+#' costs drive the evolution of mycoheterotrophs: increased sprouting and
+#' flowering in a strongly mycoheterotrophic \emph{Pyrola} species.
+#' \emph{Journal of Ecology} 112(6):1287-1300.
 #' 
 #' @examples
 #' 

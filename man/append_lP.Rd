@@ -14,8 +14,7 @@ as \code{proj1}.}
 }
 \value{
 A list of class \code{lefkoProj}, which always includes the first
-three elements of the following, and also includes the remaining elements
-below when a \code{lefkoMat} object is used as input:
+three elements of the following, and may include the elements following:
 \item{projection}{A list of lists of matrices showing the total number of
 individuals per stage per occasion. The first list corresponds to each
 pop-patch followed by each population (this top-level list is a single

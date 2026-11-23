@@ -8,8 +8,7 @@ elasticity3(mats, ...)
 }
 \arguments{
 \item{mats}{A lefkoMat object, a population projection matrix, or a list of
-population projection matrices for which the stable stage distribution is
-desired.}
+population projection matrices for which elasticites are desired.}
 
 \item{...}{Other parameters.}
 }

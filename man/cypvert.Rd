@@ -14,7 +14,7 @@ identify occasion \emph{t} and \code{.3} to identify occasion \emph{t}+1.
 \describe{
   \item{plantid}{A numeric variable giving a unique number to each 
   individual.}
-  \item{patch}{A variable refering to patch within the population.}
+  \item{patch}{A variable referring to patch within the population.}
   \item{X}{An X coordinate for the plant within the population.}
   \item{Y}{A Y coordinate for the plant within the population.}
   \item{censor}{A variable coding for whether the data point is valid. An

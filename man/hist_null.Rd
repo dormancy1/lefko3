@@ -27,7 +27,7 @@ used to determine matrix element index values is also exported.
 \description{
 Function \code{hist_null()} uses ahistorical MPMs to create the equivalent
 MPMs in the structure of historical MPMs. These MPMs have the same
-dimensions and stage structure of hMPMs but assume no influence of
+dimensions and stage structure as hMPMs but assume no influence of
 individual history, and so can be compared to actual hMPMs.
 }
 \section{Notes}{

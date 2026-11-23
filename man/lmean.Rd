@@ -20,7 +20,7 @@ matrices in sparse format, if input as standard matrices.}
 }
 \value{
 Yields a \code{lefkoMat} object, a \code{lefkoMatList} object, or
-a list of matrices. If a \code{lefkoMat} object. then will have the
+a list of matrices. If a \code{lefkoMat} object, then it will have the
 following characteristics:
 
 \item{A}{A list of full mean projection matrices in order of sorted

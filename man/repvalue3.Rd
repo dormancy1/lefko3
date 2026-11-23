@@ -18,7 +18,7 @@ The value returned depends on the class of the \code{mats} argument.
 See related functions for details.
 }
 \description{
-\code{repvalue3()} is a generic function that estimates returns the
+\code{repvalue3()} is a generic function that estimates the
 reproductive values of stages in a population projection matrix or a set of
 matrices. The specifics of estimation vary with the class of input object.
 This function is made to handle very large and sparse matrices supplied as

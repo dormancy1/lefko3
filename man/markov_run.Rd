@@ -11,7 +11,7 @@ markov_run(main_times, mat, times = 10000L, start = NULL)
 
 \item{mat}{A matrix giving the transition probabilities from each time to
 each time. Must have the same number of columns and rows as there are
-elements in vector \code{times}.}
+elements in vector \code{main_times}.}
 
 \item{times}{The number of times to project forward. Defaults to 10000.}
 

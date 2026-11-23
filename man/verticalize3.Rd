@@ -148,13 +148,13 @@ individual covariate to be used in analysis. Can refer to the only instance,
 the first instance, or all instances of these variables. In the last case,
 the values should be entered as a vector.}
 
-\item{indcovbcol}{A variable name(s) or column number(s) corresponding to an
-individual covariate to be used in analysis. Can refer to the only instance,
+\item{indcovbcol}{A variable name(s) or column number(s) corresponding to a
+second individual covariate to be used in analysis. Can refer to the only instance,
 the first instance, or all instances of these variables. In the last case,
 the values should be entered as a vector.}
 
-\item{indcovccol}{A second variable name(s) or column number(s) corresponding
-to an individual covariate to be used in analysis. Can refer to the only
+\item{indcovccol}{A variable name(s) or column number(s) corresponding to a
+third individual covariate to be used in analysis. Can refer to the only
 instance, the first instance, or all instances of these variables. In the
 last case, the values should be entered as a vector.}
 
@@ -236,7 +236,7 @@ be censored using the variable defined in \code{censorcol}. Defaults to
 \code{FALSE}.}
 
 \item{coordsRepeat}{A logical value indicating whether X and Y coordinates
-correspond to single X and Y columns. If \code{TRUE}, then each observation
+repeat across occasion blocks. If \code{TRUE}, then each observation
 occasion has its own X and Y variables. Defaults to \code{FALSE}.}
 
 \item{spacing}{The spacing at which density should be estimated, if density
@@ -252,13 +252,13 @@ clear that this substitution is biologically realistic. Defaults to
 
 \item{NRasRep}{If \code{TRUE}, then will treat non-reproductive but mature 
 individuals as reproductive during stage assignment. This can be useful when
-a MPM is desired without separation of reproductive and non-reproductive but
+an MPM is desired without separation of reproductive and non-reproductive but
 mature stages of the same size. Only used if \code{stageassign} is set to a
 stageframe. Defaults to \code{FALSE}.}
 
 \item{NOasObs}{If \code{TRUE}, then will treat individuals that are
 interpreted as not observed in the dataset as though they were observed
-during stage assignment. This can be useful when a MPM is desired without
+during stage assignment. This can be useful when an MPM is desired without
 separation of observable and unobservable stages. Only used if
 \code{stageassign} is set to a stageframe. Defaults to \code{FALSE}.}
 
@@ -309,7 +309,7 @@ corresponds to age = 0.}
 \emph{t}, and \emph{t}+1, respectively.}
 \item{sizeb1,sizeb2,sizeb3}{Secondary size measurement in occasions
 \emph{t}-1, \emph{t}, and \emph{t}+1, respectively.}
-\item{sizec1,sizec2,sizec3}{Tertiary measurement in occasions \emph{t}-1, 
+\item{sizec1,sizec2,sizec3}{Tertiary size measurement in occasions \emph{t}-1, 
 \emph{t}, and \emph{t}+1, respectively.}
 \item{size1added,size2added,size3added}{Sum of primary, secondary, and 
 tertiary size measurements in occasions \emph{t}-1, \emph{t}, and \emph{t}+1, 
@@ -358,7 +358,7 @@ In some datasets on species with unobservable stages, observation status
 is used that does not yield sizes greater than 0 in all cases in which
 individuals were observed. Such situations may arise, for example, in plants
 when leaf number is the dominant size variable used, but individuals
-occasionally occur with inflorescences but no leaves. In this instances,
+occasionally occur with inflorescences but no leaves. In these instances,
 it helps to mark related variables as \code{sizeb} and \code{sizec}, because
 observation status will be interpreted in relation to all 3 size variables.
 Further analysis can then utilize only a single size variable, of the user's
@@ -388,7 +388,7 @@ algorithms rather than actual measured data. Variables holding negative
 values can conflict with data management algorithms in ways that are
 difficult to predict.
 
-Unusual errors (e.g. \code{"Error in .pfj..."}) may occur in cases where the
+Unusual errors (e.g. \code{"Error in pfj..."}) may occur in cases where the
 variables are improperly passed, where seemingly numeric variables include
 text, or where the \code{blocksize} is improperly set.
 

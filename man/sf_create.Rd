@@ -42,7 +42,7 @@ life history stage. If making function-based MPMs, then this may be a
 vector composed of the midpoints of each size bin, or simply of sizes
 characteristic of the size bins. If denoting the boundary of an automated
 size classification group, then should denote the absolute minimum size of
-that group, or the absolute size of that group (see \code{Notes}).}
+that group, or the absolute maximum size of that group (see \code{Notes}).}
 
 \item{stagenames}{A vector of stage names, in the same order as elements in
 sizes. Can also be set to \code{ipm} for automated size classification (see
@@ -180,7 +180,7 @@ stage group classification, raw bin half-width, and the minimum,
 center, and maximum of each size bin, as well as its width. If minimum and
 maximum ages were specified, then these are also included. Also includes an 
 empty string variable that can be used to describe stages meaningfully. This
-object can be used as the \code{stageframe} input for \code{\link{flefko3}()} 
+object can be used as the \code{stageframe} input for \code{\link{flefko3}()}, 
 \code{\link{flefko2}()}, \code{\link{rlefko3}()}, and \code{\link{rlefko2}()}.
 
 Variables in this data frame include the following:

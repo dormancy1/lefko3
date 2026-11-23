@@ -35,12 +35,12 @@
 #' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 #' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 #' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-#' fecundity transitions. Defaults to \code{1} for survival transition, with
+#' fecundity transition. Defaults to \code{1} for survival transition, with
 #' impacts only on the construction of deVries-format hMPMs.
 #'
 #' @return A data frame that puts the above vectors together and can be used as
 #' input in \code{\link{flefko3}()}, \code{\link{flefko2}()},
-#' \code{\link{rlefko3}()},\code{\link{rlefko2}()}, and
+#' \code{\link{rlefko3}()}, \code{\link{rlefko2}()}, and
 #' \code{\link{aflefko2}()}.
 #' 
 #' Variables in this data frame include the following:
@@ -58,7 +58,7 @@
 #' occasion \emph{t}+1 is a survival-transition probability (1) or a fecundity
 #' rate (2).}
 #' \item{convtype_t12}{Designates whether the transition from occasion
-#' \emph{t}-1 to occasion \emph{t} is a survival transition probability (1), a
+#' \emph{t}-1 to occasion \emph{t} is a survival transition probability (1) or a
 #' fecundity rate (2).}
 #' 
 #' @section Notes:
@@ -171,7 +171,7 @@ overwrite <- function(stage3, stage2, stage1 = NA, eststage3 = NA,
 
 #' Test Overdispersion and Zero Inflation in Size and Fecundity Distributions
 #' 
-#' Function \code{sf_distrib} takes a historically formatted vertical data as
+#' Function \code{sf_distrib} takes a historically formatted vertical dataset as
 #' input and tests whether size and fecundity data are dispersed according to a
 #' Poisson distribution (where mean = variance), and whether the number of 0s
 #' exceeds expectations. This function is now deprecated in favor of function
@@ -194,8 +194,8 @@ overwrite <- function(stage3, stage2, stage1 = NA, eststage3 = NA,
 #' observation status in occasion \emph{t}+1. This should be used if observation
 #' status will be used as a vital rate to absorb states of size = 0.
 #' @param fec A vector holding the names or column numbers of the variables
-#' corresponding to in occasions \emph{t}+1 and \emph{t}. Input only if 
-#' \code{fec} is to be tested.
+#' corresponding to fecundity in occasions \emph{t}+1 and \emph{t}. Input only
+#' if \code{fec} is to be tested.
 #' @param repst A vector holding the names or column numbers of the variables
 #' corresponding to reproductive status in occasions \emph{t}+1 and \emph{t}.
 #' If not provided, then fecundity will be tested without subsetting to only
@@ -220,7 +220,8 @@ overwrite <- function(stage3, stage2, stage1 = NA, eststage3 = NA,
 #' from expected dispersion, and the degree and significance of zero inflation.
 #' The tests are chi-squared score tests based on the expectations of 
 #' mean = variance, and 0s as abundant as predicted by the value of lambda
-#' estimated from the dataset. See van der Broek (1995) for more details.
+#' estimated from the dataset. See van den Broek (1995; Biometrics 51:738-743)
+#' for more details.
 #' 
 #' @section Notes:
 #' This function subsets the data in the same way as \code{\link{modelsearch}()}
@@ -234,7 +235,7 @@ overwrite <- function(stage3, stage2, stage1 = NA, eststage3 = NA,
 #' distribution.
 #' 
 #' The specific test used for zero-inflation is the chi-squared test presented
-#' in van der Broek (1995).
+#' in van den Broek (1995; Biometrics 51:738-743).
 #' 
 #' @examples
 #' data(lathyrus)
@@ -546,22 +547,22 @@ sf_distrib <- function(data, sizea = NA, sizeb = NA, sizec = NA, obs3 = NA,
 #' transition, juvenile tertiary size transition, juvenile reproductive status
 #' probability, and juvenile maturity status probability. Defaults to a vector
 #' of 14 \code{FALSE} values.
-#' @param style A 14 element vector coding for the style of density dependence
+#' @param style A 14-element vector coding for the style of density dependence
 #' on each vital rate. Options include \code{0}: no density dependence,
 #' \code{1}, \code{ricker}, \code{ric}, or \code{r} for the Ricker function;
 #' \code{2}, \code{beverton}, \code{bev}, and \code{b} for the Beverton-Holt
 #' function; \code{3}, \code{usher}, \code{ush}, and \code{u} for the Usher
 #' function; and \code{4}, \code{logistic}, \code{log}, and \code{l} for the
 #' logistic function. Defaults to 14 values of \code{0}.
-#' @param time_delay A 14 element vector indicating the number of occasions back
+#' @param time_delay A 14-element vector indicating the number of occasions back
 #' on which density dependence operates. Defaults to 14 values of \code{1}, and
 #' may not include any number less than 1.
-#' @param alpha A 14 element vector indicating the numeric values to use as the
-#' alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
+#' @param alpha A 14-element vector indicating the numeric values to use as the
+#' alpha term in the two-parameter Ricker, Beverton-Holt, or Usher function, or
 #' the value of the carrying capacity \emph{K} to use in the logistic equation
 #' (see \code{Notes} for more on this term). Defaults to 14 values of \code{0}.
-#' @param beta A 14 element vector indicating the numeric values to use as the
-#' beta term in the two parameter Ricker, Beverton-Holt, or Usher function. Used
+#' @param beta A 14-element vector indicating the numeric values to use as the
+#' beta term in the two-parameter Ricker, Beverton-Holt, or Usher function. Used
 #' to indicate whether to use \emph{K} as a hard limit in the logistic equation
 #' (see \code{Notes} below). Defaults to 14 values of \code{0}.
 #' 
@@ -881,7 +882,7 @@ density_vr <- function(density_yn = c(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
 #' \item{value}{Number of individuals in corresponding stage or stage-pair.}
 #' 
 #' @section Notes:
-#' Entries in \code{stage2}, and \code{stage1} can include abbreviations for
+#' Entries in \code{stage2} and \code{stage1} can include abbreviations for
 #' groups of stages. Use \code{rep} if all reproductive stages are to be used,
 #' \code{nrep} if all mature but non-reproductive stages are to be used,
 #' \code{mat} if all mature stages are to be used, \code{immat} if all immature
@@ -1556,7 +1557,7 @@ start_input <- function(mpm, stage2 = NA, stage1 = NA, age2 = NA, value = 1) {
 #' variables within these datasets. The input format is equivalent to the input
 #' format of function \code{\link{modelsearch}()}, allowing users to assess
 #' vital rate variable distributions assuming the same internal dataset
-#' subsetting used by the latter function and simply copy and pasting the
+#' subsetting used by the latter function and simply copying and pasting the
 #' parameter options from one function to the other.
 #' 
 #' @name hfv_qc
@@ -3022,7 +3023,7 @@ hfv_qc <- function(data, stageframe = NULL, historical = TRUE, suite = "size",
 #' \code{1}.
 #' 
 #' @return A list of class \code{lefkoEq}, with four objects, which can be
-#' used as input in function \code{\link{projection3}()} and
+#' used as input in functions \code{\link{projection3}()} and
 #' \code{\link{f_projection3}()}. The last three include the \code{ahstages},
 #' \code{hstages}, and \code{agestages} objects from the \code{lefkoMat} object
 #' supplied in \code{mpm}. The first element in the list is a data frame with
@@ -3046,7 +3047,7 @@ hfv_qc <- function(data, stageframe = NULL, historical = TRUE, suite = "size",
 #' example might be the dormant seed stage in some plant species. These stage
 #' weight values should be set to \code{0}.
 #' 
-#' Entries in \code{stage2}, and \code{stage1} can include abbreviations for
+#' Entries in \code{stage2} and \code{stage1} can include abbreviations for
 #' groups of stages. Use \code{rep} if all reproductive stages are to be used,
 #' \code{nrep} if all mature but non-reproductive stages are to be used,
 #' \code{mat} if all mature stages are to be used, \code{immat} if all immature

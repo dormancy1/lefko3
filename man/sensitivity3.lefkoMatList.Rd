@@ -53,15 +53,15 @@ of the bootstrapped sensitivity matrices. The second is a list containing
 \code{lefkoSens} objects giving the sensitivity matrices of all bootstrapped
 matrices.
 
-Within these lists are objects of class \code{lefkoSens}, which are comprised
-of lists of 8 elements. The first, \code{h_sensmats}, is a list of historical
+Within these lists are objects of class \code{lefkoSens}, which are
+lists of 8 elements. The first, \code{h_sensmats}, is a list of historical
 sensitivity matrices (\code{NULL} if an ahMPM is used as input). The second,
-\code{ah_elasmats}, is a list of either ahistorical sensitivity matrices if
+\code{ah_sensmats}, is a list of either ahistorical sensitivity matrices if
 an ahMPM is used as input, or, if an hMPM is used as input, then the result
 is a list of ahistorical matrices based on the equivalent historical
 dependencies assumed in the input historical matrices. The third element,
 \code{hstages}, is a data frame showing historical stage pairs (\code{NULL}
-if an ahMPM used as input). The fourth element, \code{agestages}, show the
+if an ahMPM is used as input). The fourth element, \code{agestages}, shows the
 order of age-stage combinations, if age-by-stage MPMs have been supplied. The
 fifth element, \code{ahstages}, is a data frame showing the order of
 ahistorical stages. The last 3 elements are the A, U, and F portions of the

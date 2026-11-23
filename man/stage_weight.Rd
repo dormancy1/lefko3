@@ -33,7 +33,7 @@ individuals set for the stage or stage-pair in question. Defaults to
 }
 \value{
 A list of class \code{lefkoEq}, with four objects, which can be
-used as input in function \code{\link{projection3}()} and
+used as input in functions \code{\link{projection3}()} and
 \code{\link{f_projection3}()}. The last three include the \code{ahstages},
 \code{hstages}, and \code{agestages} objects from the \code{lefkoMat} object
 supplied in \code{mpm}. The first element in the list is a data frame with
@@ -65,7 +65,7 @@ with regards to the kind and value of density dependence decided on. An
 example might be the dormant seed stage in some plant species. These stage
 weight values should be set to \code{0}.
 
-Entries in \code{stage2}, and \code{stage1} can include abbreviations for
+Entries in \code{stage2} and \code{stage1} can include abbreviations for
 groups of stages. Use \code{rep} if all reproductive stages are to be used,
 \code{nrep} if all mature but non-reproductive stages are to be used,
 \code{mat} if all mature stages are to be used, \code{immat} if all immature

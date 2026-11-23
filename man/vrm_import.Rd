@@ -204,19 +204,19 @@ values should be set to non-zero values equal to the respective slope from
 the appropriate linear model, and any vital rate model to be used should
 have its distribution set to \code{"binom"}, \code{"gaussian"},
 \code{"gamma"}, \code{"poisson"}, or \code{"negbin"}. Unused vital rates
-should be set to \code{"constant"}, and the first element of the correspoding
+should be set to \code{"constant"}, and the first element of the corresponding
 column in \code{vrm_frame} (corresponding to the y-intercept) should be set
 to the constant value to utilize (generally \code{1}). If no values are
 manually edited, then function-based MPM generator functions will not be able
 to generate valid MPMs.
 
 Users should never change the labels or the order of terms in the data frames
-and vectors produced via this function, nor should they ever changes the
+and vectors produced via this function, nor should they ever change the
 names of core list elements in the \code{vrm_input} object. Doing so will
 result either in fatal errors or erroneous matrix calculations.
 
 Using the \code{vrm_import()} approach to building function-based MPMs
-requires attention to the stageframe. Although no \code{hfv_data} object
+requires attention to the stageframe. Although no \code{hfvdata} object
 needs to be input, stages for which vital rates are to be estimated via
 models parameterized with coefficients provided via function
 \code{vrm_import()} should be marked as occurring within the dataset, while
@@ -225,8 +225,8 @@ marked as not occurring within the dataset.
 
 Coefficients added to zero-inflation models can only be added to primary
 size, secondary size, tertiary size, fecundity, and the juvenile versions of
-primary, secondary, and tertiary size. Care must be taken to include zero-
-inflated coefficients only for variables without size-truncated
+primary, secondary, and tertiary size. Care must be taken to include
+zero-inflated coefficients only for variables without size-truncated
 distributions. Adding such terms will result in fatal errors during matrix
 creation.
 }

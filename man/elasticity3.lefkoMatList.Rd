@@ -49,12 +49,12 @@ A, U, and F matrices in the output \code{lefkoElas} object.}
 \value{
 This function returns a list with two elements. The first is an
 object of class \code{lefkoElas} that contains the mean elasticity matrices
-of the bootstrapped sensitivity matrices. The second is a list containing
+of the bootstrapped matrices. The second is a list containing
 \code{lefkoElas} objects giving the elasticity matrices of all bootstrapped
 matrices.
 
-Within these lists are objects of class \code{lefkoElas}, which are comprised
-of lists of 8 elements. The first, \code{h_elasmats}, is a list of historical
+Within these lists are objects of class \code{lefkoElas}, which are
+lists of 8 elements. The first, \code{h_elasmats}, is a list of historical
 elasticity matrices (\code{NULL} if an ahMPM is used as input). The second,
 \code{ah_elasmats}, is a list of either ahistorical elasticity matrices if an
 ahMPM is used as input, or, if an hMPM is used as input, then the result is a
@@ -63,14 +63,14 @@ by the stage in occasions \emph{t} and \emph{t}+1 to produce
 historically-corrected elasticity matrices, which are equivalent in dimension
 to ahistorical elasticity matrices but reflect the effects of stage in
 occasion \emph{t}-1. The third element, \code{hstages}, is a data frame
-showing historical stage pairs (NULL if ahMPM used as input). The fourth
+showing historical stage pairs (NULL if an ahMPM is used as input). The fourth
 element, \code{agestages}, shows age-stage combinations in the order used in
-age-by-stage MPMs, if suppled. The fifth element, \code{ahstages}, is a data
+age-by-stage MPMs, if supplied. The fifth element, \code{ahstages}, is a data
 frame showing the order of ahistorical stages. The last 3 elements are the A,
 U, and F portions of the input.
 }
 \description{
-\code{elasticity3.lefkoMatList()} returns the elasticities of population growth
+\code{elasticity3.lefkoMatList()} returns the elasticities of population
 growth rate to elements of all \code{A} matrices in all bootstrapped
 \code{lefkoMat} objects within an entered object of class
 \code{lefkoMatList}. If deterministic, then \eqn{\lambda} is taken as the

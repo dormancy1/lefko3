@@ -57,6 +57,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Richard P. Shefferson \email{cdorm@g.ecc.u-tokyo.ac.jp} (\href{https://orcid.org/0000-0002-5234-3131}{ORCID})
   \item Johan Ehrlen (\href{https://orcid.org/0000-0001-8539-8967}{ORCID})
 }
 

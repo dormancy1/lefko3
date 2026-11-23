@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{bootstrap3}
 \alias{bootstrap3}
-\title{Bootstrap Standardized hfv_data Datasets}
+\title{Bootstrap Standardized hfvdata Datasets}
 \usage{
 bootstrap3(
   data,
@@ -39,14 +39,14 @@ individual identity. Defaults to \code{TRUE}.}
 \item{prop_size}{A logical value indicating whether to keep the proportions
 of individuals (if \code{by_indiv = TRUE}) or of rows (if \code{by_indiv =
 FALSE}) in each bootstrapped dataset to the same proportions across
-populations (if \code{by_pop = TRUE}, and patches (if
-\code{by_patch = TRUE}, as in the original dataset. If \code{FALSE}, then
+populations (if \code{by_pop = TRUE}), and patches (if
+\code{by_patch = TRUE}), as in the original dataset. If \code{FALSE}, then
 allows the specific proportions to be set by argument \code{max_limit}.
 Defaults to \code{TRUE}.}
 
 \item{max_limit}{Sets the sample size to pull from the original data frame,
 if \code{prop_size = FALSE}. Defaults to the size of the original dataset if
-\code{prop_size = TRUE}, and to 100 if if \code{prop_size = FALSE}. Can also
+\code{prop_size = TRUE}, and to 100 if \code{prop_size = FALSE}. Can also
 be input as an integer vector giving the number of samples to take by
 population (if \code{by_pop = TRUE}), patch (if \code{by_patch = TRUE}), or
 population-patch (if \code{by_pop = TRUE} and \code{by_patch = TRUE}).}

@@ -23,8 +23,8 @@ This function returns a single deterministic sensitivity matrix.
 \description{
 \code{sensitivity3.matrix()} returns the sensitivities of \eqn{\lambda} to
 elements of a single matrix. Because this handles only one matrix, the
-sensitivities are inherently deterministic and based on the dominant eigen
-value as the best metric of the population growth rate. This function can
+sensitivities are inherently deterministic and based on the dominant
+eigenvalue as the best metric of the population growth rate. This function can
 handle large and sparse matrices, and so can be used with large historical
 matrices, IPMs, age x stage matrices, as well as smaller ahistorical
 matrices.

@@ -168,15 +168,15 @@ stablestage3 <- function(mats, ...) UseMethod("stablestage3")
 #' stage-pair distribution, while the \code{ahist} element describes the stage
 #' distribution. If deterministic, then \code{hist} contains a data frame
 #' including the matrix number (\code{matrix}), the numeric stage designations for
-#' stages in occasions \emph{t} and \emph{t}-1, (\code{stage_id_2} and
-#' \code{stage_id_1}, respectively), followed by the respective stage names (
-#' \code{stage_2} and \code{stage_1}), and ending with the estimated stable
+#' stages in occasions \emph{t} and \emph{t}-1 (\code{stage_id_2} and
+#' \code{stage_id_1}, respectively), followed by the respective stage names
+#' (\code{stage_2} and \code{stage_1}), and ending with the estimated stable
 #' stage-pair distribution. The associated \code{ahist} element is as before. If
 #' stochastic, then the \code{hist} element contains a single data frame with
 #' the number of the population-patch (\code{matrix_set}), a string
 #' concatenating the names of the population and the patch (\code{poppatch}),
-#' the assigned stage id numbers in times \emph{t} and \emph{t}-1 (
-#' \code{stage_id_2} and \code{stage_id_2}, respectively), and the associated
+#' the assigned stage id numbers in times \emph{t} and \emph{t}-1
+#' (\code{stage_id_2} and \code{stage_id_2}, respectively), and the associated
 #' stage names (\code{stage_2} and \code{stage_1}, respectively), and the
 #' long-run average stage distribution (\code{ss_prop}). The associated
 #' \code{ahist} element is as before in the ahistorical, stochastic case.
@@ -800,15 +800,15 @@ stablestage3.dgCMatrix <- function(mats, ...)
 #' stage-pair distribution, while the \code{ahist} element describes the stage
 #' distribution. If deterministic, then \code{hist} contains a data frame
 #' including the matrix number (\code{matrix}), the numeric stage designations for
-#' stages in occasions \emph{t} and \emph{t}-1, (\code{stage_id_2} and
-#' \code{stage_id_1}, respectively), followed by the respective stage names (
-#' \code{stage_2} and \code{stage_1}), and ending with the estimated stable
+#' stages in occasions \emph{t} and \emph{t}-1 (\code{stage_id_2} and
+#' \code{stage_id_1}, respectively), followed by the respective stage names
+#' (\code{stage_2} and \code{stage_1}), and ending with the estimated stable
 #' stage-pair distribution. The associated \code{ahist} element is as before. If
 #' stochastic, then the \code{hist} element contains a single data frame with
 #' the number of the population-patch (\code{matrix_set}), a string
 #' concatenating the names of the population and the patch (\code{poppatch}),
-#' the assigned stage id numbers in times \emph{t} and \emph{t}-1 (
-#' \code{stage_id_2} and \code{stage_id_2}, respectively), and the associated
+#' the assigned stage id numbers in times \emph{t} and \emph{t}-1
+#' (\code{stage_id_2} and \code{stage_id_2}, respectively), and the associated
 #' stage names (\code{stage_2} and \code{stage_1}, respectively), and the
 #' long-run average stage distribution (\code{ss_prop}). The associated
 #' \code{ahist} element is as before in the ahistorical, stochastic case.
@@ -977,10 +977,10 @@ stablestage3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
 #' makes no assumptions about whether the matrix is ahistorical and simply
 #' provides stable stage distribution values corresponding to each row, meaning
 #' that the overall stable stage distribution of basic life history stages in a
-#' historical matrix are not provided (the \code{\link{stablestage3.lefkoMat}()}
-#' historical estimates these on the basis of stage description information
+#' historical matrix is not provided (the \code{\link{stablestage3.lefkoMat}()}
+#' function estimates these on the basis of stage description information
 #' provided in the \code{lefkoMat} object used as input in that function). This
-#' provided in the handle large and sparse matrices, and so can be used with
+#' function can handle large and sparse matrices, and so can be used with
 #' large historical matrices, IPMs, age x stage matrices, as well as smaller
 #' ahistorical matrices.
 #' 
@@ -1189,7 +1189,7 @@ stablestage3.list <- function(mats, stochastic = FALSE, times = 10000,
 
 #' Estimate Reproductive Value
 #' 
-#' \code{repvalue3()} is a generic function that estimates returns the
+#' \code{repvalue3()} is a generic function that estimates the
 #' reproductive values of stages in a population projection matrix or a set of
 #' matrices. The specifics of estimation vary with the class of input object.
 #' This function is made to handle very large and sparse matrices supplied as
@@ -1314,7 +1314,7 @@ repvalue3 <- function(mats, ...) UseMethod("repvalue3")
 #' 
 #' @name repvalue3.lefkoMat
 #' 
-#' @param mats An object of class \code{lefkoMat} object.
+#' @param mats An object of class \code{lefkoMat}.
 #' @param stochastic A logical value indicating whether to use deterministic
 #' (\code{FALSE}) or stochastic (\code{TRUE}) analysis. Defaults to
 #' \code{FALSE}.
@@ -1345,7 +1345,7 @@ repvalue3 <- function(mats, ...) UseMethod("repvalue3")
 #' output, which includes the number of the matrix within the \code{A} element
 #' of the input \code{lefkoMat} object, followed by the stage id (numeric and
 #' assigned through \code{\link{sf_create}()}), the stage name, and the
-#' estimated proportion of the reproductive value vector (\code{rep_value}). If
+#' estimated reproductive value vector (\code{rep_value}). If
 #' stochastic and ahistorical, then a single data frame is output starting with
 #' the number of the population-patch (\code{matrix_set}), a string
 #' concatenating the names of the population and the patch (\code{poppatch}),
@@ -1358,7 +1358,7 @@ repvalue3 <- function(mats, ...) UseMethod("repvalue3")
 #' stage-pair reproductive values, while the \code{ahist} element describes the
 #' stage reproductive values. If deterministic, then \code{hist} contains a data
 #' frame including the matrix number (\code{matrix}), the numeric stage
-#' designations for stages in occasions \emph{t} and \emph{t}-1,
+#' designations for stages in occasions \emph{t} and \emph{t}-1
 #' (\code{stage_id_2} and \code{stage_id_1}, respectively), followed by the
 #' respective stage names (\code{stage_2} and \code{stage_1}), and ending with
 #' the estimated reproductive values (\code{rep_value}). The associated
@@ -1366,7 +1366,7 @@ repvalue3 <- function(mats, ...) UseMethod("repvalue3")
 #' element contains a single data frame with the number of the population-patch
 #' (\code{matrix_set}), a string concatenating the names of the population and
 #' the patch (\code{poppatch}), the assigned stage id numbers in times \emph{t}
-#' and \emph{t}-1 (\code{stage_id_2} and \code{stage_id_2}, respectively), and
+#' and \emph{t}-1 (\code{stage_id_2} and \code{stage_id_1}, respectively), and
 #' the associated stage names (\code{stage_2} and \code{stage_1}, respectively),
 #' and the long-run mean reproductive values (\code{rep_value}). The associated
 #' \code{ahist} element is as before in the ahistorical, stochastic case.
@@ -1985,7 +1985,7 @@ repvalue3.dgCMatrix <- function(mats, ...)
 #' 
 #' @name repvalue3.lefkoMatList
 #' 
-#' @param mats An object of class \code{lefkoMatList} object.
+#' @param mats An object of class \code{lefkoMatList}.
 #' @param stochastic A logical value indicating whether to use deterministic
 #' (\code{FALSE}) or stochastic (\code{TRUE}) analysis. Defaults to
 #' \code{FALSE}.
@@ -2019,7 +2019,7 @@ repvalue3.dgCMatrix <- function(mats, ...)
 #' output, which includes the number of the matrix within the \code{A} element
 #' of the input \code{lefkoMat} object, followed by the stage id (numeric and
 #' assigned through \code{\link{sf_create}()}), the stage name, and the
-#' estimated proportion of the reproductive value vector (\code{rep_value}). If
+#' estimated reproductive value vector (\code{rep_value}). If
 #' stochastic and ahistorical, then a single data frame is output starting with
 #' the number of the population-patch (\code{matrix_set}), a string
 #' concatenating the names of the population and the patch (\code{poppatch}),
@@ -2032,7 +2032,7 @@ repvalue3.dgCMatrix <- function(mats, ...)
 #' stage-pair reproductive values, while the \code{ahist} element describes the
 #' stage reproductive values. If deterministic, then \code{hist} contains a data
 #' frame including the matrix number (\code{matrix}), the numeric stage
-#' designations for stages in occasions \emph{t} and \emph{t}-1,
+#' designations for stages in occasions \emph{t} and \emph{t}-1
 #' (\code{stage_id_2} and \code{stage_id_1}, respectively), followed by the
 #' respective stage names (\code{stage_2} and \code{stage_1}), and ending with
 #' the estimated reproductive values (\code{rep_value}). The associated
@@ -2040,7 +2040,7 @@ repvalue3.dgCMatrix <- function(mats, ...)
 #' element contains a single data frame with the number of the population-patch
 #' (\code{matrix_set}), a string concatenating the names of the population and
 #' the patch (\code{poppatch}), the assigned stage id numbers in times \emph{t}
-#' and \emph{t}-1 (\code{stage_id_2} and \code{stage_id_2}, respectively), and
+#' and \emph{t}-1 (\code{stage_id_2} and \code{stage_id_1}, respectively), and
 #' the associated stage names (\code{stage_2} and \code{stage_1}, respectively),
 #' and the long-run mean reproductive values (\code{rep_value}). The associated
 #' \code{ahist} element is as before in the ahistorical, stochastic case.
@@ -2438,7 +2438,7 @@ repvalue3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' @name sensitivity3
 #' 
 #' @param mats A lefkoMat object, or population projection matrix, for which
-#' the stable stage distribution is desired.
+#' sensitivities are desired.
 #' @param ... Other parameters
 #' 
 #' @return The value returned depends on the class of the \code{mats} argument.
@@ -2532,12 +2532,12 @@ sensitivity3 <- function(mats, ...) UseMethod("sensitivity3")
 #' @return This function returns an object of class \code{lefkoSens}, which is a
 #' list of 8 elements. The first, \code{h_sensmats}, is a list of historical
 #' sensitivity matrices (\code{NULL} if an ahMPM is used as input). The second,
-#' \code{ah_elasmats}, is a list of either ahistorical sensitivity matrices if
+#' \code{ah_sensmats}, is a list of either ahistorical sensitivity matrices if
 #' an ahMPM is used as input, or, if an hMPM is used as input, then the result
 #' is a list of ahistorical matrices based on the equivalent historical
 #' dependencies assumed in the input historical matrices. The third element,
 #' \code{hstages}, is a data frame showing historical stage pairs (\code{NULL}
-#' if an ahMPM used as input). The fourth element, \code{agestages}, show the
+#' if an ahMPM is used as input). The fourth element, \code{agestages}, shows the
 #' order of age-stage combinations, if age-by-stage MPMs have been supplied. The
 #' fifth element, \code{ahstages}, is a data frame showing the order of
 #' ahistorical stages. The last 3 elements are the A, U, and F portions of the
@@ -2755,8 +2755,8 @@ sensitivity3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
 #' 
 #' \code{sensitivity3.matrix()} returns the sensitivities of \eqn{\lambda} to
 #' elements of a single matrix. Because this handles only one matrix, the
-#' sensitivities are inherently deterministic and based on the dominant eigen
-#' value as the best metric of the population growth rate. This function can
+#' sensitivities are inherently deterministic and based on the dominant
+#' eigenvalue as the best metric of the population growth rate. This function can
 #' handle large and sparse matrices, and so can be used with large historical
 #' matrices, IPMs, age x stage matrices, as well as smaller ahistorical
 #' matrices.
@@ -2872,8 +2872,8 @@ sensitivity3.matrix <- function(mats, sparse = "auto", ...)
 #' 
 #' \code{sensitivity3.dgCMatrix()} returns the sensitivities of \eqn{\lambda} to
 #' elements of a single, sparse matrix. Because this handles only one matrix,
-#' sensitivities are inherently deterministic and based on the dominant eigen
-#' value as the best metric of the population growth rate.
+#' sensitivities are inherently deterministic and based on the dominant
+#' eigenvalue as the best metric of the population growth rate.
 #' 
 #' @name sensitivity3.dgCMatrix
 #' 
@@ -3017,15 +3017,15 @@ sensitivity3.dgCMatrix <- function(mats, sparse = "auto", ...)
 #' \code{lefkoSens} objects giving the sensitivity matrices of all bootstrapped
 #' matrices.
 #' 
-#' Within these lists are objects of class \code{lefkoSens}, which are comprised
-#' of lists of 8 elements. The first, \code{h_sensmats}, is a list of historical
+#' Within these lists are objects of class \code{lefkoSens}, which are
+#' lists of 8 elements. The first, \code{h_sensmats}, is a list of historical
 #' sensitivity matrices (\code{NULL} if an ahMPM is used as input). The second,
-#' \code{ah_elasmats}, is a list of either ahistorical sensitivity matrices if
+#' \code{ah_sensmats}, is a list of either ahistorical sensitivity matrices if
 #' an ahMPM is used as input, or, if an hMPM is used as input, then the result
 #' is a list of ahistorical matrices based on the equivalent historical
 #' dependencies assumed in the input historical matrices. The third element,
 #' \code{hstages}, is a data frame showing historical stage pairs (\code{NULL}
-#' if an ahMPM used as input). The fourth element, \code{agestages}, show the
+#' if an ahMPM is used as input). The fourth element, \code{agestages}, shows the
 #' order of age-stage combinations, if age-by-stage MPMs have been supplied. The
 #' fifth element, \code{ahstages}, is a data frame showing the order of
 #' ahistorical stages. The last 3 elements are the A, U, and F portions of the
@@ -3184,14 +3184,14 @@ sensitivity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
 #' matrices with at least 50 rows and no more than 50\% of elements with values
 #' greater than zero.
 #' @param append_mats A logical value indicating whether to include the original
-#' matrices input as object \code{mats} in the output \code{lefkoSense} object.
+#' matrices input as object \code{mats} in the output \code{lefkoSens} object.
 #' Defaults to FALSE.
 #' @param ... Other parameters.
 #' 
 #' @return This function returns an object of class \code{lefkoSens}, which is a
 #' list of 8 elements. The first, \code{h_sensmats}, is a list of historical
 #' sensitivity matrices (\code{NULL} if an ahMPM is used as input). The second,
-#' \code{ah_elasmats}, is a list of ahistorical sensitivity matrices if an ahMPM
+#' \code{ah_sensmats}, is a list of ahistorical sensitivity matrices if an ahMPM
 #' is used as input (\code{NULL} if an hMPM is used as input). The third
 #' element, \code{hstages}, the fourth element, \code{agestages}, and the fifth
 #' element, \code{ahstages}, are \code{NULL}. The last 3 elements include the
@@ -3435,8 +3435,7 @@ sensitivity3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' @name elasticity3
 #' 
 #' @param mats A lefkoMat object, a population projection matrix, or a list of
-#' population projection matrices for which the stable stage distribution is
-#' desired.
+#' population projection matrices for which elasticites are desired.
 #' @param ... Other parameters.
 #' 
 #' @return The value returned depends on the class of the \code{mats} argument.
@@ -3578,16 +3577,16 @@ elasticity3 <- function(mats, ...) UseMethod("elasticity3")
 #' @return This function returns an object of class \code{lefkoElas}, which is a
 #' list with 8 elements. The first, \code{h_elasmats}, is a list of historical
 #' elasticity matrices (\code{NULL} if an ahMPM is used as input). The second,
-#' \code{ah_elasmats}, is a list of either ahistorical elasticity matrices if an
+#' \code{ah_sensmats}, is a list of either ahistorical elasticity matrices if an
 #' ahMPM is used as input, or, if an hMPM is used as input, then the result is a
 #' list of elasticity matrices in which historical elasticities have been summed
 #' by the stage in occasions \emph{t} and \emph{t}+1 to produce
 #' historically-corrected elasticity matrices, which are equivalent in dimension
 #' to ahistorical elasticity matrices but reflect the effects of stage in
 #' occasion \emph{t}-1. The third element, \code{hstages}, is a data frame
-#' showing historical stage pairs (NULL if ahMPM used as input). The fourth
+#' showing historical stage pairs (NULL if an ahMPM is used as input). The fourth
 #' element, \code{agestages}, shows age-stage combinations in the order used in
-#' age-by-stage MPMs, if suppled. The fifth element, \code{ahstages}, is a data
+#' age-by-stage MPMs, if supplied. The fifth element, \code{ahstages}, is a data
 #' frame showing the order of ahistorical stages. The last 3 elements are the A,
 #' U, and F portions of the input.
 #' 
@@ -3866,7 +3865,7 @@ elasticity3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
 #' 
 #' \code{elasticity3.matrix()} returns the elasticities of lambda to elements
 #' of a single matrix.  Because this handles only one matrix, the elasticities
-#' are inherently deterministic and based on the dominant eigen value as the
+#' are inherently deterministic and based on the dominant eigenvalue as the
 #' best metric of the population growth rate. This function can handle large and
 #' sparse matrices, and so can be used with large historical matrices, IPMs,
 #' age x stage matrices, as well as smaller ahistorical matrices.
@@ -3988,7 +3987,7 @@ elasticity3.matrix <- function(mats, sparse = "auto", ...)
 #' 
 #' \code{elasticity3.dgCMatrix()} returns the elasticities of lambda to elements
 #' of a single matrix.  Because this handles only one matrix, the elasticities
-#' are inherently deterministic and based on the dominant eigen value as the
+#' are inherently deterministic and based on the dominant eigenvalue as the
 #' best metric of the population growth rate.
 #' 
 #' @name elasticity3.dgCMatrix
@@ -4092,7 +4091,7 @@ elasticity3.dgCMatrix <- function(mats, sparse = "auto", ...)
 
 #' Estimate Elasticity of Population Growth Rate of a lefkoMatList Object
 #' 
-#' \code{elasticity3.lefkoMatList()} returns the elasticities of population growth
+#' \code{elasticity3.lefkoMatList()} returns the elasticities of population
 #' growth rate to elements of all \code{A} matrices in all bootstrapped
 #' \code{lefkoMat} objects within an entered object of class
 #' \code{lefkoMatList}. If deterministic, then \eqn{\lambda} is taken as the
@@ -4129,12 +4128,12 @@ elasticity3.dgCMatrix <- function(mats, sparse = "auto", ...)
 #' 
 #' @return This function returns a list with two elements. The first is an
 #' object of class \code{lefkoElas} that contains the mean elasticity matrices
-#' of the bootstrapped sensitivity matrices. The second is a list containing
+#' of the bootstrapped matrices. The second is a list containing
 #' \code{lefkoElas} objects giving the elasticity matrices of all bootstrapped
 #' matrices.
 #' 
-#' Within these lists are objects of class \code{lefkoElas}, which are comprised
-#' of lists of 8 elements. The first, \code{h_elasmats}, is a list of historical
+#' Within these lists are objects of class \code{lefkoElas}, which are
+#' lists of 8 elements. The first, \code{h_elasmats}, is a list of historical
 #' elasticity matrices (\code{NULL} if an ahMPM is used as input). The second,
 #' \code{ah_elasmats}, is a list of either ahistorical elasticity matrices if an
 #' ahMPM is used as input, or, if an hMPM is used as input, then the result is a
@@ -4143,9 +4142,9 @@ elasticity3.dgCMatrix <- function(mats, sparse = "auto", ...)
 #' historically-corrected elasticity matrices, which are equivalent in dimension
 #' to ahistorical elasticity matrices but reflect the effects of stage in
 #' occasion \emph{t}-1. The third element, \code{hstages}, is a data frame
-#' showing historical stage pairs (NULL if ahMPM used as input). The fourth
+#' showing historical stage pairs (NULL if an ahMPM is used as input). The fourth
 #' element, \code{agestages}, shows age-stage combinations in the order used in
-#' age-by-stage MPMs, if suppled. The fifth element, \code{ahstages}, is a data
+#' age-by-stage MPMs, if supplied. The fifth element, \code{ahstages}, is a data
 #' frame showing the order of ahistorical stages. The last 3 elements are the A,
 #' U, and F portions of the input.
 #' 
@@ -4318,9 +4317,9 @@ elasticity3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
 #' Estimate Elasticity of Population Growth Rate of a List of Matrices
 #' 
 #' \code{elasticity3.list()} returns the elasticities of lambda to elements
-#' of a single matrix. This function can handle large and sparse matrices, and 
-#' so can be used with large historical matrices, IPMs, age x stage matrices,
-#' as well as smaller ahistorical matrices.
+#' of each matrix in a list of matrices. This function can handle large and
+#' sparse matrices, and so can be used with large historical matrices, IPMs,
+#' age x stage matrices, as well as smaller ahistorical matrices.
 #' 
 #' @name elasticity3.list
 #' 
@@ -4602,7 +4601,7 @@ elasticity3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' @param times The number of occasions to project forward in stochastic
 #' simulation. Defaults to \code{10000}.
 #' @param burnin The number of initial steps to ignore in stochastic projection
-#' when calculating stochastic elasticities. Must be smaller than \code{steps}.
+#' when calculating stochastic elasticities. Must be smaller than \code{times}.
 #' Defaults to \code{3000}.
 #' @param tweights An optional numeric vector or matrix denoting the
 #' probabilities of choosing each matrix in a stochastic projection. If a matrix
@@ -4645,7 +4644,7 @@ elasticity3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' which provides the contributions of temporal correlations in matrix elements;
 #' \code{r_values_m}, which provides a vector of log deterministic lambda values
 #' for treatment populations; and \code{r_values_ref}, which provides the log
-#' deterministic lambda of the mean reference matrix.This is followed by the
+#' deterministic lambda of the mean reference matrix. This is followed by the
 #' stageframe as object \code{ahstages}, the order of historical stages as
 #' object \code{hstages}, the age-by-stage order as object \code{agestages}, the
 #' order of matrices as object \code{labels}, and, if requested, the original A,
@@ -4669,7 +4668,7 @@ elasticity3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' among patches.
 #' 
 #' Default behavior for stochastic LTRE uses the full population provided in
-#' \code{mats} as the reference if no \code{refmats} and \code{ref} is provided.
+#' \code{mats} as the reference if neither \code{refmats} nor \code{ref} is provided.
 #' If no \code{refmats} is provided but \code{ref} is, then the matrices noted
 #' in \code{ref} are used as the reference matrix set. Year and patch order is
 #' utilized from object \code{mats}, but not from object \code{refmats}, in
@@ -4681,8 +4680,8 @@ elasticity3.list <- function(mats, stochastic = FALSE, times = 10000,
 #' If \code{sparse = "auto"}, the default, then sparse matrix encoding
 #' will be used if the size of the input matrices is at least 50 columns by 50
 #' rows for deterministic and stochastic LTREs and 10 columns by 10 rows for
-#' small noise approximation LTREs, in all cases as long as 50\% of the elements
-#' in the first matrix are non-zero.
+#' small noise approximation LTREs, in all cases as long as no more than 50\% of
+#' the elements in the first matrix are non-zero.
 #' 
 #' Stochastic LTREs do not test for the impact of temporal change in vital
 #' rates. An MPM with a single population, a single patch, and only annual
@@ -5126,7 +5125,7 @@ summary.lefkoElas <- function(object, ...) {
 #' 
 #' @return A list of data frames. In all cases, the first data frame is one
 #' showing the positive, negative, and total contributions of elements in
-#' each LTRE contribution matrix. If not a SNA-LTRE, then there are an
+#' each LTRE contribution matrix. If not an SNA-LTRE, then there are an
 #' additional two (if deterministic) or four (if stochastic) data frames. If
 #' deterministic, then \code{hist_det} is a data frame showing the summed LTRE
 #' contributions for all 16 kinds of historical transition per matrix, with each
@@ -5365,7 +5364,7 @@ summary.lefkoLTRE <- function(object, ...) {
 #' with the following elements:
 #' \item{milepost_sums}{A data frame showing the number of replicates at each
 #' of the milepost times that is above the threshold population/patch size.}
-#' \item{extinction_times}{A dataframe showing the numbers of replicates going
+#' \item{extinction_times}{A data frame showing the numbers of replicates going
 #' extinct (\code{ext_reps}) and mean extinction time (\code{ext_time}) per
 #' population-patch. If \code{ext_time = FALSE}, then only outputs \code{NA}.}
 #' 
@@ -5380,8 +5379,8 @@ summary.lefkoLTRE <- function(object, ...) {
 #' 
 #' Extinction time is calculated on the basis of whether the replicate ever
 #' falls below a single individual. A replicate with a positive population size
-#' below 0.0 that manages to rise above 1.0 individual is still considered to
-#' have gone extinct the first time it crossed below 1.0.
+#' below 1.0 that manages to rise above 1.0 individual is still considered to
+#' have gone extinct when it first crossed below 1.0.
 #' 
 #' If the input \code{lefkoProj} object is a mixture of two or more other
 #' \code{lefkoProj} objects, then mileposts will be given relative to the
@@ -5662,17 +5661,16 @@ summary.lefkoProj <- function(object, threshold = 1, inf_alive = TRUE,
 #' @param variable The focus variable of the plot to produce. Defaults to
 #' \code{"popsize"}, which produces line plots of the \code{popsize} element in
 #' object \code{x}.
-#' @param style A string denoting ther kind of plot to produce. Currently
-#' limited to \code{"timeseries"}, which shows \code{variable} against time on
-#' the x axis. Other choices include \code{"statespace"}, which plots
-#' \code{variable} at one time on the x axis against the same variable in the
-#' next time on the y axis.
+#' @param style A string denoting the kind of plot to produce. Options include
+#' \code{"timeseries"}, which shows \code{variable} against time on
+#' the x axis, and \code{"statespace"}, which plots \code{variable} at one time
+#' on the x axis against the same variable in the next time on the y axis.
 #' @param repl The replicate to plot. Defaults to \code{"all"}, in which case
 #' all replicates are plotted.
 #' @param patch The patch to plot, as labeled in the \code{labels} element in
 #' object \code{x}. Defaults to \code{"pop"}, in which case only the final
 #' population-level projection is plotted. Can also be set to \code{"all"}, in
-#' which case projections for all patches and population in the \code{labels}
+#' which case projections for all patches and populations in the \code{labels}
 #' element are plotted.
 #' @param auto_ylim A logical value indicating whether the maximum of the y axis
 #' should be determined automatically. Defaults to \code{TRUE}, but reverts to
@@ -5684,7 +5682,7 @@ summary.lefkoProj <- function(object, threshold = 1, inf_alive = TRUE,
 #' associated with each replicate automatically. Defaults to \code{TRUE}, but
 #' reverts to \code{FALSE} if any setting for \code{lty} is given.
 #' @param auto_title A logical value indicating whether to add a title to each
-#' plot. The plot is composed of the concatenated population and patch names.
+#' plot. The title is composed of the concatenated population and patch names.
 #' Defaults to \code{FALSE}.
 #' @param ... Other parameters used by functions \code{plot.default()} and
 #' \code{lines()}.

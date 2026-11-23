@@ -41,7 +41,7 @@ Apart from a statement of the results, this function outputs a list
 with the following elements:
 \item{milepost_sums}{A data frame showing the number of replicates at each
 of the milepost times that is above the threshold population/patch size.}
-\item{extinction_times}{A dataframe showing the numbers of replicates going
+\item{extinction_times}{A data frame showing the numbers of replicates going
 extinct (\code{ext_reps}) and mean extinction time (\code{ext_time}) per
 population-patch. If \code{ext_time = FALSE}, then only outputs \code{NA}.}
 }
@@ -62,8 +62,8 @@ replicate is above the extinction threshold of a single individual.
 
 Extinction time is calculated on the basis of whether the replicate ever
 falls below a single individual. A replicate with a positive population size
-below 0.0 that manages to rise above 1.0 individual is still considered to
-have gone extinct the first time it crossed below 1.0.
+below 1.0 that manages to rise above 1.0 individual is still considered to
+have gone extinct when it first crossed below 1.0.
 
 If the input \code{lefkoProj} object is a mixture of two or more other
 \code{lefkoProj} objects, then mileposts will be given relative to the

@@ -24,7 +24,7 @@ transition, juvenile tertiary size transition, juvenile reproductive status
 probability, and juvenile maturity status probability. Defaults to a vector
 of 14 \code{FALSE} values.}
 
-\item{style}{A 14 element vector coding for the style of density dependence
+\item{style}{A 14-element vector coding for the style of density dependence
 on each vital rate. Options include \code{0}: no density dependence,
 \code{1}, \code{ricker}, \code{ric}, or \code{r} for the Ricker function;
 \code{2}, \code{beverton}, \code{bev}, and \code{b} for the Beverton-Holt
@@ -32,17 +32,17 @@ function; \code{3}, \code{usher}, \code{ush}, and \code{u} for the Usher
 function; and \code{4}, \code{logistic}, \code{log}, and \code{l} for the
 logistic function. Defaults to 14 values of \code{0}.}
 
-\item{time_delay}{A 14 element vector indicating the number of occasions back
+\item{time_delay}{A 14-element vector indicating the number of occasions back
 on which density dependence operates. Defaults to 14 values of \code{1}, and
 may not include any number less than 1.}
 
-\item{alpha}{A 14 element vector indicating the numeric values to use as the
-alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
+\item{alpha}{A 14-element vector indicating the numeric values to use as the
+alpha term in the two-parameter Ricker, Beverton-Holt, or Usher function, or
 the value of the carrying capacity \emph{K} to use in the logistic equation
 (see \code{Notes} for more on this term). Defaults to 14 values of \code{0}.}
 
-\item{beta}{A 14 element vector indicating the numeric values to use as the
-beta term in the two parameter Ricker, Beverton-Holt, or Usher function. Used
+\item{beta}{A 14-element vector indicating the numeric values to use as the
+beta term in the two-parameter Ricker, Beverton-Holt, or Usher function. Used
 to indicate whether to use \emph{K} as a hard limit in the logistic equation
 (see \code{Notes} below). Defaults to 14 values of \code{0}.}
 }

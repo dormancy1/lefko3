@@ -46,7 +46,7 @@ matrices with at least 50 rows and no more than 50\% of elements with values
 greater than zero.}
 
 \item{append_mats}{A logical value indicating whether to include the original
-matrices input as object \code{mats} in the output \code{lefkoSense} object.
+matrices input as object \code{mats} in the output \code{lefkoSens} object.
 Defaults to FALSE.}
 
 \item{...}{Other parameters.}
@@ -55,7 +55,7 @@ Defaults to FALSE.}
 This function returns an object of class \code{lefkoSens}, which is a
 list of 8 elements. The first, \code{h_sensmats}, is a list of historical
 sensitivity matrices (\code{NULL} if an ahMPM is used as input). The second,
-\code{ah_elasmats}, is a list of ahistorical sensitivity matrices if an ahMPM
+\code{ah_sensmats}, is a list of ahistorical sensitivity matrices if an ahMPM
 is used as input (\code{NULL} if an hMPM is used as input). The third
 element, \code{hstages}, the fourth element, \code{agestages}, and the fifth
 element, \code{ahstages}, are \code{NULL}. The last 3 elements include the

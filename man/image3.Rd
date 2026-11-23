@@ -7,8 +7,8 @@
 image3(mats, ...)
 }
 \arguments{
-\item{mats}{A lefkoMat object, or a single projection matrix, for which the
-dominant eigenvalue is desired.}
+\item{mats}{A lefkoMat object, or a single projection matrix, for which a
+matrix image is desired.}
 
 \item{...}{Other parameters}
 }

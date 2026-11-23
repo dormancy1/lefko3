@@ -24,11 +24,10 @@
 \code{"popsize"}, which produces line plots of the \code{popsize} element in
 object \code{x}.}
 
-\item{style}{A string denoting ther kind of plot to produce. Currently
-limited to \code{"timeseries"}, which shows \code{variable} against time on
-the x axis. Other choices include \code{"statespace"}, which plots
-\code{variable} at one time on the x axis against the same variable in the
-next time on the y axis.}
+\item{style}{A string denoting the kind of plot to produce. Options include
+\code{"timeseries"}, which shows \code{variable} against time on
+the x axis, and \code{"statespace"}, which plots \code{variable} at one time
+on the x axis against the same variable in the next time on the y axis.}
 
 \item{repl}{The replicate to plot. Defaults to \code{"all"}, in which case
 all replicates are plotted.}
@@ -36,7 +35,7 @@ all replicates are plotted.}
 \item{patch}{The patch to plot, as labeled in the \code{labels} element in
 object \code{x}. Defaults to \code{"pop"}, in which case only the final
 population-level projection is plotted. Can also be set to \code{"all"}, in
-which case projections for all patches and population in the \code{labels}
+which case projections for all patches and populations in the \code{labels}
 element are plotted.}
 
 \item{auto_ylim}{A logical value indicating whether the maximum of the y axis
@@ -52,7 +51,7 @@ associated with each replicate automatically. Defaults to \code{TRUE}, but
 reverts to \code{FALSE} if any setting for \code{lty} is given.}
 
 \item{auto_title}{A logical value indicating whether to add a title to each
-plot. The plot is composed of the concatenated population and patch names.
+plot. The title is composed of the concatenated population and patch names.
 Defaults to \code{FALSE}.}
 
 \item{...}{Other parameters used by functions \code{plot.default()} and

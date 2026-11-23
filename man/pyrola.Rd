@@ -6,19 +6,19 @@
 \title{Demographic Dataset of \emph{Pyrola japonica} and \emph{Pyrola subaphylla}
 Populations, in Horizontal Format}
 \format{
-A data frame with 454 individuals and 57 variables. Each row 
-corresponds to an unique individual, and each variable from
+A data frame with 454 individuals and 51 variables. Each row 
+corresponds to a unique individual, and each variable from
 \code{sprouted.2015} on refers to the state of the individual in a particular
 year.
 
 \describe{
   \item{species}{String denoting which of the two species the individual
   belongs to.}
-  \item{population}{Integer denoting whcih population the individual belongs
+  \item{population}{Integer denoting which population the individual belongs
   to. Synonymous with species in this dataset.}
   \item{id}{A numeric variable giving a unique number to each 
-  individual within each species. Note that numbers are reused among the two
-  species.}
+  individual within each species. Note that numbers are reused between the
+  two species.}
   \item{sprouted.2015}{A binomial indicating whether the individual had
   living aboveground tissue observable in the 2015 census.}
   \item{lvs.num.2015}{Number of leaves in 2015.}
@@ -76,9 +76,10 @@ year.
 }
 }
 \source{
-Shefferson, R.P., K. Shutoh, and K. Suetsugu. \emph{In review}.
-Vegetative dormancy and the evolution of mycoheterotrophy in sister
-\emph{Pyrola} species. \emph{Journal of Ecology}.
+Shefferson, R.P., K. Shutoh, and K. Suetsugu. 2024. Life history
+costs drive the evolution of mycoheterotrophs: increased sprouting and
+flowering in a strongly mycoheterotrophic \emph{Pyrola} species.
+\emph{Journal of Ecology} 112(6):1287-1300.
 }
 \usage{
 data(pyrola)

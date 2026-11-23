@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{mats}{An object of class \code{lefkoMatList} object.}
+\item{mats}{An object of class \code{lefkoMatList}.}
 
 \item{stochastic}{A logical value indicating whether to use deterministic
 (\code{FALSE}) or stochastic (\code{TRUE}) analysis. Defaults to
@@ -56,7 +56,7 @@ stochastic. If deterministic and ahistorical, then a single data frame is
 output, which includes the number of the matrix within the \code{A} element
 of the input \code{lefkoMat} object, followed by the stage id (numeric and
 assigned through \code{\link{sf_create}()}), the stage name, and the
-estimated proportion of the reproductive value vector (\code{rep_value}). If
+estimated reproductive value vector (\code{rep_value}). If
 stochastic and ahistorical, then a single data frame is output starting with
 the number of the population-patch (\code{matrix_set}), a string
 concatenating the names of the population and the patch (\code{poppatch}),
@@ -69,7 +69,7 @@ into a list object. The \code{hist} element describes the historical
 stage-pair reproductive values, while the \code{ahist} element describes the
 stage reproductive values. If deterministic, then \code{hist} contains a data
 frame including the matrix number (\code{matrix}), the numeric stage
-designations for stages in occasions \emph{t} and \emph{t}-1,
+designations for stages in occasions \emph{t} and \emph{t}-1
 (\code{stage_id_2} and \code{stage_id_1}, respectively), followed by the
 respective stage names (\code{stage_2} and \code{stage_1}), and ending with
 the estimated reproductive values (\code{rep_value}). The associated
@@ -77,7 +77,7 @@ the estimated reproductive values (\code{rep_value}). The associated
 element contains a single data frame with the number of the population-patch
 (\code{matrix_set}), a string concatenating the names of the population and
 the patch (\code{poppatch}), the assigned stage id numbers in times \emph{t}
-and \emph{t}-1 (\code{stage_id_2} and \code{stage_id_2}, respectively), and
+and \emph{t}-1 (\code{stage_id_2} and \code{stage_id_1}, respectively), and
 the associated stage names (\code{stage_2} and \code{stage_1}, respectively),
 and the long-run mean reproductive values (\code{rep_value}). The associated
 \code{ahist} element is as before in the ahistorical, stochastic case.

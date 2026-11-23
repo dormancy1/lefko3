@@ -2,7 +2,7 @@
 % Please edit documentation in R/errorchecks.R
 \name{summary_hfv}
 \alias{summary_hfv}
-\title{Summary of Classes "hfvdata" and "hfvlist}
+\title{Summary of Classes "hfvdata" and "hfvlist"}
 \usage{
 summary_hfv(
   object,
@@ -48,7 +48,7 @@ followed by a standard data frame summary of the hfv dataset. If
 \code{err_check = TRUE}, then a subset of the original data frame input as
 \code{object} is exported with only rows showing stage assignment issues.
 
-If an object of class \code{hfvlist} in entered, then the first line of
+If an object of class \code{hfvlist} is entered, then the first line of
 output shows the number of bootstrapped datasets. This is followed by lines
 showing the mean number of rows and variables per data frame, as well as the
 mean numbers of populations, patches, individuals, and years per data frame.
@@ -67,7 +67,7 @@ demographic data in historical vertical format (data frames of class
 }
 \section{Notes}{
 
-Stage assignment issue identified by option \code{err_check} fall under two
+Stage assignment issues identified by option \code{err_check} fall under two
 categories. First, all rows showing \code{NoMatch} as the identified stage
 for \code{stage1}, \code{stage2}, or \code{stage3} are identified. Second,
 all rows showing \code{stage1 = "NotAlive"} and \code{alive1 = 1},

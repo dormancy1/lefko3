@@ -8,7 +8,7 @@ sensitivity3(mats, ...)
 }
 \arguments{
 \item{mats}{A lefkoMat object, or population projection matrix, for which
-the stable stage distribution is desired.}
+sensitivities are desired.}
 
 \item{...}{Other parameters}
 }

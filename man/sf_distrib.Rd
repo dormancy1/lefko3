@@ -42,8 +42,8 @@ observation status in occasion \emph{t}+1. This should be used if observation
 status will be used as a vital rate to absorb states of size = 0.}
 
 \item{fec}{A vector holding the names or column numbers of the variables
-corresponding to in occasions \emph{t}+1 and \emph{t}. Input only if 
-\code{fec} is to be tested.}
+corresponding to fecundity in occasions \emph{t}+1 and \emph{t}. Input only
+if \code{fec} is to be tested.}
 
 \item{repst}{A vector holding the names or column numbers of the variables
 corresponding to reproductive status in occasions \emph{t}+1 and \emph{t}.
@@ -77,10 +77,11 @@ Produces text describing the degree and significance of difference
 from expected dispersion, and the degree and significance of zero inflation.
 The tests are chi-squared score tests based on the expectations of 
 mean = variance, and 0s as abundant as predicted by the value of lambda
-estimated from the dataset. See van der Broek (1995) for more details.
+estimated from the dataset. See van den Broek (1995; Biometrics 51:738-743)
+for more details.
 }
 \description{
-Function \code{sf_distrib} takes a historically formatted vertical data as
+Function \code{sf_distrib} takes a historically formatted vertical dataset as
 input and tests whether size and fecundity data are dispersed according to a
 Poisson distribution (where mean = variance), and whether the number of 0s
 exceeds expectations. This function is now deprecated in favor of function
@@ -99,7 +100,7 @@ the response given size in occasion \emph{t}, under a quasi-Poisson
 distribution.
 
 The specific test used for zero-inflation is the chi-squared test presented
-in van der Broek (1995).
+in van den Broek (1995; Biometrics 51:738-743).
 }
 
 \examples{

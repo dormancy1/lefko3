@@ -52,7 +52,7 @@ function \code{\link{projection3}()}.
 }
 \section{Notes}{
 
-Entries in \code{stage2}, and \code{stage1} can include abbreviations for
+Entries in \code{stage2} and \code{stage1} can include abbreviations for
 groups of stages. Use \code{rep} if all reproductive stages are to be used,
 \code{nrep} if all mature but non-reproductive stages are to be used,
 \code{mat} if all mature stages are to be used, \code{immat} if all immature

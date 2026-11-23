@@ -34,7 +34,7 @@ using namespace LefkoUtils;
 //' vector composed of the midpoints of each size bin, or simply of sizes
 //' characteristic of the size bins. If denoting the boundary of an automated
 //' size classification group, then should denote the absolute minimum size of
-//' that group, or the absolute size of that group (see \code{Notes}).
+//' that group, or the absolute maximum size of that group (see \code{Notes}).
 //' @param stagenames A vector of stage names, in the same order as elements in
 //' sizes. Can also be set to \code{ipm} for automated size classification (see
 //' \code{Notes} section).
@@ -143,7 +143,7 @@ using namespace LefkoUtils;
 //' center, and maximum of each size bin, as well as its width. If minimum and
 //' maximum ages were specified, then these are also included. Also includes an 
 //' empty string variable that can be used to describe stages meaningfully. This
-//' object can be used as the \code{stageframe} input for \code{\link{flefko3}()} 
+//' object can be used as the \code{stageframe} input for \code{\link{flefko3}()}, 
 //' \code{\link{flefko2}()}, \code{\link{rlefko3}()}, and \code{\link{rlefko2}()}.
 //' 
 //' Variables in this data frame include the following:
@@ -5602,13 +5602,13 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' transitions are assumed to be subject to this time delay. Does not apply to
 //' the additive limit function, which uses only the current population.
 //' @param alpha A vector indicating the numeric values to use as the
-//' alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
+//' alpha term in the two-parameter Ricker, Beverton-Holt, or Usher function, or
 //' the value of the carrying capacity \emph{K} to use in the logistic or
 //' additive limit functions (see \code{Notes} section for more on this term).
 //' If a single number is provided, then all noted transitions are assumed to be
 //' subject to this value of alpha. Defaults to \code{1}.
 //' @param beta A vector indicating the numeric values to use as the beta term
-//' in the two parameter Ricker, Beverton-Holt, or Usher function, or the
+//' in the two-parameter Ricker, Beverton-Holt, or Usher function, or the
 //' multiplier on the previous population size in the additive limit function.
 //' Also used to indicate whether to use \emph{K} as a hard limit in the
 //' logistic equation (see section \code{Notes} below). If a single number is
@@ -5628,7 +5628,7 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 //' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 //' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-//' fecundity transitions. Defaults to \code{1} for survival transition, with
+//' fecundity transition. Defaults to \code{1} for survival transition, with
 //' impacts only on the construction of deVries-format hMPMs.
 //' 
 //' @return A data frame of class \code{lefkoDens}. This object can be used as
@@ -5656,8 +5656,8 @@ Rcpp::DataFrame density_reassess(DataFrame stageframe, DataFrame dens_inp,
 //' occasion \emph{t}+1 is a survival transition probability (1), or a fecundity
 //' rate (2).}
 //' \item{type_t12}{Designates whether the transition from occasion \emph{t}-1 to
-//' occasion \emph{t} is a survival transition probability (1), a fecundity rate
-//' (2).}
+//' occasion \emph{t} is a survival transition probability (1) or a fecundity
+//' rate (2).}
 //' 
 //' @section Notes:
 //' This function provides inputs when density dependence is operationalized
@@ -6547,7 +6547,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
 //' between occasions \emph{t}-1 and \emph{t}. Only necessary if a historical
 //' MPM in deVries format is desired. This should be entered as \code{1},
 //' \code{S}, or \code{s} for a survival transition; or \code{2}, \code{F}, or
-//' \code{f} for a fecundity transitions. Defaults to \code{1} for survival
+//' \code{f} for a fecundity transition. Defaults to \code{1} for survival
 //' transition, with impacts only on the construction of deVries-format hMPMs.
 //' 
 //' @return A data frame of class \code{lefkoSD}. This object can be used as
@@ -6577,7 +6577,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
 //' transition.}
 //' \item{multiplier}{A multiplier for proxy transitions or for fecundity.}
 //' \item{convtype}{Designates whether the transition from occasion \emph{t} to
-//' occasion \emph{t}+1 is a survival transition probability (1), a fecundity
+//' occasion \emph{t}+1 is a survival transition probability (1) or a fecundity
 //' rate (2), or a fecundity multiplier (3).}
 //' \item{convtype_t12}{Designates whether the transition from occasion
 //' \emph{t}-1 to occasion \emph{t} is a survival transition probability (1), or
@@ -6593,7 +6593,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
 //' Fecundity multiplier data supplied via the \code{supplemental()} function
 //' acts in the same way as non-zero entries supplied via a reproductive matrix,
 //' but gets priority in all matrix creations. Thus, in cases where fecundity
-//' multipliers are provided for the same function via the reproductive matrix
+//' multipliers are provided for the same transition via the reproductive matrix
 //' and function \code{supplemental()}, the latter is used.
 //' 
 //' Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
@@ -6620,7 +6620,7 @@ DataFrame density_input(List mpm, Nullable<RObject> stage3 = R_NilValue,
 //' purely age-specific, and do not set reproductive transitions in MPM
 //' creation). For example, if all stage 2 to stage 3 transitions above age 2
 //' yield fecundity, then stage 2 to stage 3 can be set to
-//' \code{multiplier = 1.0} with \code{convtype = 3}, and the same transition
+//' \code{multiplier = 1.0} with \code{type = 3}, and the same transition
 //' for \code{age2 = c(1, 2)} can be set to \code{multiplier = c(0, 0)}.
 //' 
 //' Several operations may be included per transition. Operations on the same
@@ -7291,7 +7291,7 @@ Rcpp::List supplemental (bool historical = true, bool stagebased = true,
   return supplement;
 }
 
-//' Create A Supplement Skeleton Data Frame
+//' Create a Supplement Skeleton Data Frame
 //' 
 //' @name sup_skeleton
 //' 
@@ -7394,7 +7394,7 @@ DataFrame sup_skeleton (Nullable<RObject> rows = R_NilValue) {
 //' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 //' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 //' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-//' fecundity transitions. Defaults to \code{1} for survival transition, with
+//' fecundity transition. Defaults to \code{1} for survival transition, with
 //' impacts only on the construction of deVries-format hMPMs.
 //' @param target_mpm If modifying a \code{lefkoMatList} object, then this
 //' allows the user to specify which MPMs to modify. To modify, enter a vector
@@ -8976,7 +8976,7 @@ void edit_lM_single (List& final_output, const List& mpm, Nullable<RObject> pop 
 //' Function \code{edit_lM()} edits existing \code{lefkoMat} and
 //' \code{lefkoMatList} objects with external data supplied by the user. The
 //' effects are similar to function \code{\link{supplemental}()}, though
-//' function \code{edit_lM()} allows individuals matrices within \code{lefkoMat}
+//' function \code{edit_lM()} allows individual matrices within \code{lefkoMat}
 //' objects to be edited after creation, while \code{\link{supplemental}()}
 //' provides external data that modifies all matrices within a \code{lefkoMat}
 //' object, or within all the \code{lefkoMat} objects within a
@@ -8984,7 +8984,7 @@ void edit_lM_single (List& final_output, const List& mpm, Nullable<RObject> pop 
 //' 
 //' @name edit_lM
 //' 
-//' @param mpm The \code{lefkoMat} and \code{lefkoMatList} object to be edited.
+//' @param mpm The \code{lefkoMat} or \code{lefkoMatList} object to be edited.
 //' @param pop A string vector denoting the populations to be edited. Defaults
 //' to \code{NULL}, in which case all populations are edited.
 //' @param patch A string vector denoting the patches to be edited. Defaults
@@ -9036,7 +9036,7 @@ void edit_lM_single (List& final_output, const List& mpm, Nullable<RObject> pop 
 //' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 //' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 //' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-//' fecundity transitions. Defaults to \code{1} for survival transition, with
+//' fecundity transition. Defaults to \code{1} for survival transition, with
 //' impacts only on the construction of deVries-format hMPMs.
 //' @param target_mpm If modifying a \code{lefkoMatList} object, then this
 //' allows the user to specify which MPMs to modify. To modify, enter a vector

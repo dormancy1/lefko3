@@ -86,12 +86,12 @@
 #' individual covariate to be used in analysis. Can refer to the only instance,
 #' the first instance, or all instances of these variables. In the last case,
 #' the values should be entered as a vector.
-#' @param indcovbcol A variable name(s) or column number(s) corresponding to an
-#' individual covariate to be used in analysis. Can refer to the only instance,
+#' @param indcovbcol A variable name(s) or column number(s) corresponding to a
+#' second individual covariate to be used in analysis. Can refer to the only instance,
 #' the first instance, or all instances of these variables. In the last case,
 #' the values should be entered as a vector.
-#' @param indcovccol A second variable name(s) or column number(s) corresponding
-#' to an individual covariate to be used in analysis. Can refer to the only
+#' @param indcovccol A variable name(s) or column number(s) corresponding to a
+#' third individual covariate to be used in analysis. Can refer to the only
 #' instance, the first instance, or all instances of these variables. In the
 #' last case, the values should be entered as a vector.
 #' @param aliveacol Variable name(s) or column number(s) providing information
@@ -159,7 +159,7 @@
 #' be censored using the variable defined in \code{censorcol}. Defaults to 
 #' \code{FALSE}.
 #' @param coordsRepeat A logical value indicating whether X and Y coordinates
-#' correspond to single X and Y columns. If \code{TRUE}, then each observation
+#' repeat across occasion blocks. If \code{TRUE}, then each observation
 #' occasion has its own X and Y variables. Defaults to \code{FALSE}.
 #' @param spacing The spacing at which density should be estimated, if density
 #' estimation is desired and X and Y coordinates are supplied. Given in the same
@@ -172,12 +172,12 @@
 #' \code{FALSE}.
 #' @param NRasRep If \code{TRUE}, then will treat non-reproductive but mature 
 #' individuals as reproductive during stage assignment. This can be useful when
-#' a MPM is desired without separation of reproductive and non-reproductive but
+#' an MPM is desired without separation of reproductive and non-reproductive but
 #' mature stages of the same size. Only used if \code{stageassign} is set to a
 #' stageframe. Defaults to \code{FALSE}.
 #' @param NOasObs If \code{TRUE}, then will treat individuals that are
 #' interpreted as not observed in the dataset as though they were observed
-#' during stage assignment. This can be useful when a MPM is desired without
+#' during stage assignment. This can be useful when an MPM is desired without
 #' separation of observable and unobservable stages. Only used if
 #' \code{stageassign} is set to a stageframe. Defaults to \code{FALSE}.
 #' @param prebreeding A logical term indicating whether the life history model
@@ -222,7 +222,7 @@
 #' \emph{t}, and \emph{t}+1, respectively.}
 #' \item{sizeb1,sizeb2,sizeb3}{Secondary size measurement in occasions
 #' \emph{t}-1, \emph{t}, and \emph{t}+1, respectively.}
-#' \item{sizec1,sizec2,sizec3}{Tertiary measurement in occasions \emph{t}-1, 
+#' \item{sizec1,sizec2,sizec3}{Tertiary size measurement in occasions \emph{t}-1, 
 #' \emph{t}, and \emph{t}+1, respectively.}
 #' \item{size1added,size2added,size3added}{Sum of primary, secondary, and 
 #' tertiary size measurements in occasions \emph{t}-1, \emph{t}, and \emph{t}+1, 
@@ -264,7 +264,7 @@
 #' is used that does not yield sizes greater than 0 in all cases in which
 #' individuals were observed. Such situations may arise, for example, in plants
 #' when leaf number is the dominant size variable used, but individuals
-#' occasionally occur with inflorescences but no leaves. In this instances,
+#' occasionally occur with inflorescences but no leaves. In these instances,
 #' it helps to mark related variables as \code{sizeb} and \code{sizec}, because
 #' observation status will be interpreted in relation to all 3 size variables.
 #' Further analysis can then utilize only a single size variable, of the user's
@@ -294,7 +294,7 @@
 #' values can conflict with data management algorithms in ways that are
 #' difficult to predict.
 #' 
-#' Unusual errors (e.g. \code{"Error in .pfj..."}) may occur in cases where the
+#' Unusual errors (e.g. \code{"Error in pfj..."}) may occur in cases where the
 #' variables are improperly passed, where seemingly numeric variables include
 #' text, or where the \code{blocksize} is improperly set.
 #' 
@@ -829,12 +829,12 @@ verticalize3 <- function(data, noyears, firstyear = 1, popidcol = 0,
 #' tertiary size entry in occasion \emph{t}+1.
 #' @param repstra2col A variable name or column number corresponding to the
 #' production of reproductive structures, such as flowers, in occasion \emph{t}.
-#' This can be binomial or count data, and is used to in analysis of the
+#' This can be binomial or count data, and is used in analysis of the
 #' probability of reproduction.
 #' @param repstra3col A variable name or column number corresponding to the
 #' production of reproductive structures, such as flowers, in occasion
-#' \emph{t}+1. This can be binomial or count data, and is used to in analysis
-#' of the probability of reproduction.
+#' \emph{t}+1. This can be binomial or count data, and is used in analysis of
+#' the probability of reproduction.
 #' @param repstrb2col A second variable name or column number corresponding to
 #' the production of reproductive structures, such as flowers, in occasion
 #' \emph{t}. This can be binomial or count data.
@@ -954,7 +954,7 @@ verticalize3 <- function(data, noyears, firstyear = 1, popidcol = 0,
 #' \code{FALSE}.
 #' @param NOasObs If \code{TRUE}, then will treat individuals that are
 #' interpreted as not observed in the dataset as though they were observed
-#' during stage assignment. This can be useful when a MPM is desired without
+#' during stage assignment. This can be useful when an MPM is desired without
 #' separation of observable and unobservable stages. Only used if
 #' \code{stageassign} is set to a stageframe. Defaults to \code{FALSE}.
 #' @param prebreeding A logical term indicating whether the life history model
@@ -1050,7 +1050,7 @@ verticalize3 <- function(data, noyears, firstyear = 1, popidcol = 0,
 #' and suggest that there is likely a problem with the stageframe. The most
 #' common such problems are: 1) stages have significant overlap in
 #' characteristics, with the most common being overlapping size bins caused by
-#' erroneous definitions of size bin halfwidths; and 2) some individuals exist
+#' erroneous definitions of size bin half-widths; and 2) some individuals exist
 #' in states not defined within the stageframe.
 #' 
 #' In some datasets with unobservable stages, observation status
@@ -1058,7 +1058,7 @@ verticalize3 <- function(data, noyears, firstyear = 1, popidcol = 0,
 #' is used that does not yield sizes greater than 0 in all cases in which
 #' individuals were observed. Such situations may arise, for example, in plants
 #' when leaf number is the dominant size variable used, but individuals
-#' occasionally occur with inflorescences but no leaves. In this instances,
+#' occasionally occur with inflorescences but no leaves. In these instances,
 #' it helps to mark related variables as \code{sizeb} and \code{sizec}, because
 #' observation status will be interpreted in relation to all 3 size variables.
 #' Alternatively, observation status may be input via \code{obs2col} and
@@ -2236,8 +2236,8 @@ historicalize3 <- function(data, popidcol = 0, patchidcol = 0, individcol,
 #' @section Notes for importing lists of matrices:
 #' Lists may be composed of a mix of matrices in standard R format (i.e. created
 #' via the \code{matrix()} function), and in \code{dgCMatrix} sparse format
-#' (i.e. created via the \code{Matrix::Matrix()} function with
-#' \code{sparse = TRUE}.) All matrices will be forced to one or the other,
+#' (e.g. created via the \code{Matrix::Matrix()} function with
+#' \code{sparse = TRUE}). All matrices will be forced to one or the other,
 #' depending on the value given for the \code{sparse_output} argument.
 #' 
 #' U and F decomposition assumes that elements holding fecundity values are
@@ -2266,11 +2266,11 @@ historicalize3 <- function(data, popidcol = 0, patchidcol = 0, individcol,
 #' this function.
 #' 
 #' This function does not and cannot replace the wonderful tools offered to
-#' explore the COMPADRE and COMADRE packages. Please see package
-#' \code{Rcompadre} to use those tools. Note that function \code{import_Com()}
+#' explore the COMPADRE and COMADRE databases. Please see package
+#' \code{Rcompadre} to use those tools. Note that function \code{create_lM()}
 #' has no relationship to the \code{Rcompadre} development team.
 #' 
-#' Function \code{import_Com()} requires that the dimensions of all matrices
+#' Function \code{create_lM()} requires that the dimensions of all matrices
 #' imported into a single \code{lefkoMat} object be equal.
 #' 
 #' The reproductive and maturity status of each stage is determined by patterns
@@ -2474,7 +2474,7 @@ create_lM <- function(mats, stageframe = NULL, hstages = NA, agestages = NA,
 #' @param Umats Either a single \code{U} matrix, or a list of \code{U} matrices.
 #' Not necessary if \code{Amats} and \code{Fmats} are both provided, or if
 #' \code{UFdecomp = TRUE} and \code{entrystage} is provided.
-#' @param Fmats Either a single \code{F} matrix, or a list of \code{U} matrices.
+#' @param Fmats Either a single \code{F} matrix, or a list of \code{F} matrices.
 #' Not necessary if \code{Amats} and \code{Umats} are both provided, or if
 #' \code{UFdecomp = TRUE} and \code{entrystage} is provided.
 #' @param UFdecomp A logical value indicating whether U and F matrices should be
@@ -2889,7 +2889,7 @@ add_lM <- function(lM, Amats = NA, Umats = NA, Fmats = NA, UFdecomp = FALSE,
 #' @section Notes:
 #' If \code{mat_num} is not provided, then at least one of \code{pop},
 #' \code{patch}, or \code{year} must be provided. If at least two of \code{pop},
-#' \code{patch}, and \code{year} are provided, then function \code{detele_lM()}
+#' \code{patch}, and \code{year} are provided, then function \code{delete_lM()}
 #' will identify matrices to remove as the intersection of provided inputs.
 #' 
 #' @seealso \code{\link{create_lM}()}

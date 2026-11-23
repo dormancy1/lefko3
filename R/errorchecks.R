@@ -143,8 +143,8 @@ summary.lefkoCondMat <- function(object, ...) {
 #' 
 #' @name image3
 #' 
-#' @param mats A lefkoMat object, or a single projection matrix, for which the
-#' dominant eigenvalue is desired.
+#' @param mats A lefkoMat object, or a single projection matrix, for which a
+#' matrix image is desired.
 #' @param ... Other parameters
 #' 
 #' @return Produces a single matrix image, or a series of images, depending on
@@ -794,8 +794,9 @@ image3.lefkoElas <- function(mats, used = "all", type = "a", ...) {
 #' error.
 #' 
 #' If the lengths and dimensions of the input \code{lefkoMat} objects are the
-#' same, then this will check if the \code{labels} element is essentially the
-#' same. If not, then the function will yield a warning, but will still operate.
+#' same, then this function will check whether the \code{labels} element is
+#' essentially the same. If not, then the function will yield a warning, but
+#' will still operate.
 #' 
 #' @examples
 #' sizevector <- c(0, 0, 0, 0, 0, 0, 1, 3, 6, 11, 19.5)
@@ -937,7 +938,7 @@ diff_lM <- function(mpm1, mpm2) {
   return(output)
 }
 
-#' Summary of Classes "hfvdata" and "hfvlist
+#' Summary of Classes "hfvdata" and "hfvlist"
 #'
 #' A function to simplify the viewing of basic information describing
 #' demographic data in historical vertical format (data frames of class
@@ -970,7 +971,7 @@ diff_lM <- function(mpm1, mpm2) {
 #' \code{err_check = TRUE}, then a subset of the original data frame input as
 #' \code{object} is exported with only rows showing stage assignment issues.
 #' 
-#' If an object of class \code{hfvlist} in entered, then the first line of
+#' If an object of class \code{hfvlist} is entered, then the first line of
 #' output shows the number of bootstrapped datasets. This is followed by lines
 #' showing the mean number of rows and variables per data frame, as well as the
 #' mean numbers of populations, patches, individuals, and years per data frame.
@@ -982,7 +983,7 @@ diff_lM <- function(mpm1, mpm2) {
 #' frames, starting with a new variable giving the bootstrap number of origin.
 #' 
 #' @section Notes:
-#' Stage assignment issue identified by option \code{err_check} fall under two
+#' Stage assignment issues identified by option \code{err_check} fall under two
 #' categories. First, all rows showing \code{NoMatch} as the identified stage
 #' for \code{stage1}, \code{stage2}, or \code{stage3} are identified. Second,
 #' all rows showing \code{stage1 = "NotAlive"} and \code{alive1 = 1},

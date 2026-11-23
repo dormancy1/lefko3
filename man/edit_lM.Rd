@@ -26,7 +26,7 @@ edit_lM(
 )
 }
 \arguments{
-\item{mpm}{The \code{lefkoMat} and \code{lefkoMatList} object to be edited.}
+\item{mpm}{The \code{lefkoMat} or \code{lefkoMatList} object to be edited.}
 
 \item{pop}{A string vector denoting the populations to be edited. Defaults
 to \code{NULL}, in which case all populations are edited.}
@@ -94,7 +94,7 @@ If empty or not provided, then defaults to \code{1} for survival transition.}
 occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 deVries format is desired. This should be entered as \code{1}, \code{S}, or
 \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-fecundity transitions. Defaults to \code{1} for survival transition, with
+fecundity transition. Defaults to \code{1} for survival transition, with
 impacts only on the construction of deVries-format hMPMs.}
 
 \item{target_mpm}{If modifying a \code{lefkoMatList} object, then this
@@ -110,7 +110,7 @@ An edited copy of the original MPM is returned, also as a
 Function \code{edit_lM()} edits existing \code{lefkoMat} and
 \code{lefkoMatList} objects with external data supplied by the user. The
 effects are similar to function \code{\link{supplemental}()}, though
-function \code{edit_lM()} allows individuals matrices within \code{lefkoMat}
+function \code{edit_lM()} allows individual matrices within \code{lefkoMat}
 objects to be edited after creation, while \code{\link{supplemental}()}
 provides external data that modifies all matrices within a \code{lefkoMat}
 object, or within all the \code{lefkoMat} objects within a

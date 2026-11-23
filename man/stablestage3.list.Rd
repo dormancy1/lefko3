@@ -53,10 +53,10 @@ in population projection matrices arranged in a general list. The function
 makes no assumptions about whether the matrix is ahistorical and simply
 provides stable stage distribution values corresponding to each row, meaning
 that the overall stable stage distribution of basic life history stages in a
-historical matrix are not provided (the \code{\link{stablestage3.lefkoMat}()}
-historical estimates these on the basis of stage description information
+historical matrix is not provided (the \code{\link{stablestage3.lefkoMat}()}
+function estimates these on the basis of stage description information
 provided in the \code{lefkoMat} object used as input in that function). This
-provided in the handle large and sparse matrices, and so can be used with
+function can handle large and sparse matrices, and so can be used with
 large historical matrices, IPMs, age x stage matrices, as well as smaller
 ahistorical matrices.
 }

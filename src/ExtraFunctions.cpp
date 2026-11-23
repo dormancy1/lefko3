@@ -17,8 +17,8 @@ using namespace arma;
 
 //' Two-Parameter Ricker Function
 //' 
-//' Function \code{ricker3()} creates a vector of values produced by the two-
-//' parameter Ricker function as applied with a user-specified time lag. The
+//' Function \code{ricker3()} creates a vector of values produced by the
+//' two-parameter Ricker function as applied with a user-specified time lag. The
 //' two-parameter Ricker function is given as 
 //' \eqn{\phi_{t+1} = \phi_t \alpha e^{-\beta n_t}}. Here, if no
 //' \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.
@@ -45,8 +45,8 @@ using namespace arma;
 //' @param separate_N An optional numeric vector with values of N in each time,
 //' if phi is to be treated as different from N in the two-parameter model.
 //' 
-//' @return A numeric vector of values showing values projected under the two-
-//' parameter Ricker function.
+//' @return A numeric vector of values showing values projected under the
+//' two-parameter Ricker function.
 //' 
 //' @examples
 //' trial_run1 <- ricker3(1, alpha = 0.5, beta = -0.009)
@@ -164,8 +164,8 @@ Rcpp::NumericVector ricker3(double start_value, double alpha, double beta,
 
 //' Two-Parameter Beverton-Holt Function
 //' 
-//' Function \code{beverton3()} creates a vector of values produced by the two-
-//' parameter Beverton-Holt function as applied with a user-specified time lag.
+//' Function \code{beverton3()} creates a vector of values produced by the
+//' two-parameter Beverton-Holt function as applied with a user-specified time lag.
 //' The two-parameter Beverton-Holt function is given as 
 //' \eqn{\phi_{t+1} = \phi_t \alpha / (1 + \beta n_t)}. Here, if no
 //' \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.
@@ -193,8 +193,8 @@ Rcpp::NumericVector ricker3(double start_value, double alpha, double beta,
 //' @param separate_N An optional numeric vector with values of N in each time,
 //' if phi is to be treated as different from N in the two-parameter model.
 //' 
-//' @return A numeric vector of values showing values projected under the two-
-//' parameter Beverton-Holt function.
+//' @return A numeric vector of values showing values projected under the
+//' two-parameter Beverton-Holt function.
 //' 
 //' @examples
 //' trial_run1 <- beverton3(1, alpha = 0.5, beta = 0.009)
@@ -314,8 +314,8 @@ Rcpp::NumericVector beverton3(double start_value, double alpha, double beta,
 
 //' Two-Parameter Usher Function
 //' 
-//' Function \code{usher3()} creates a vector of values produced by the two-
-//' parameter Usher function as applied with a user-specified time lag.
+//' Function \code{usher3()} creates a vector of values produced by the
+//' two-parameter Usher function as applied with a user-specified time lag.
 //' The Usher function is given as 
 //' \eqn{\phi_{t+1} = \phi_t / (1 + e^{\alpha n_t + \beta})}. Here,
 //' if no \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.
@@ -342,8 +342,8 @@ Rcpp::NumericVector beverton3(double start_value, double alpha, double beta,
 //' @param separate_N An optional numeric vector with values of N in each time,
 //' if phi is to be treated as different from N in the two-parameter model.
 //' 
-//' @return A numeric vector of values showing values projected under the two-
-//' parameter Usher function.
+//' @return A numeric vector of values showing values projected under the
+//' two-parameter Usher function.
 //' 
 //' @examples
 //' trial_run1 <- usher3(1, alpha = -0.5, beta = 0.005)
@@ -455,7 +455,7 @@ Rcpp::NumericVector usher3(double start_value, double alpha, double beta,
   return output;
 }
 
-//' Two-Parameter logistic Function
+//' Logistic Function
 //' 
 //' Function \code{logistic3()} creates a vector of values produced by the
 //' logistic function as applied with a user-specified time lag. The logistic
@@ -471,7 +471,7 @@ Rcpp::NumericVector usher3(double start_value, double alpha, double beta,
 //' @param beta If set to some positive number, then this number is the maximum
 //' value of phi to enforce. Otherwise, equals \code{0} and enforces no limit.
 //' @param lambda The value of the discrete population growth rate to use.
-//' Equal to the natural logarithm of the instantaneous growth rate, r.
+//' Equal to \eqn{e} raised to the instantaneous growth rate, \eqn{r}.
 //' @param time_steps The number of time steps to run the projection. Must be a
 //' positive integer.
 //' @param time_lag A positive integer denoting the number of time steps back
@@ -488,7 +488,7 @@ Rcpp::NumericVector usher3(double start_value, double alpha, double beta,
 //' @param separate_N An optional numeric vector with values of N in each time,
 //' if phi is to be treated as different from N in the logistic model.
 //' 
-//' @return A numeric vector of values showing values projected under the-
+//' @return A numeric vector of values showing values projected under the
 //' logistic function.
 //' 
 //' @examples

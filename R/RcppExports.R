@@ -270,7 +270,7 @@
     .Call('_lefko3_density3', PACKAGE = 'lefko3', data, xcol, ycol, yearcol, spacing)
 }
 
-#' Bootstrap Standardized hfv_data Datasets
+#' Bootstrap Standardized hfvdata Datasets
 #' 
 #' Function \code{bootstrap3()} takes already standardized \code{hfvdata}
 #' datasets and bootstraps them by individual identity, or by row. All
@@ -294,13 +294,13 @@
 #' @param prop_size A logical value indicating whether to keep the proportions
 #' of individuals (if \code{by_indiv = TRUE}) or of rows (if \code{by_indiv =
 #' FALSE}) in each bootstrapped dataset to the same proportions across
-#' populations (if \code{by_pop = TRUE}, and patches (if
-#' \code{by_patch = TRUE}, as in the original dataset. If \code{FALSE}, then
+#' populations (if \code{by_pop = TRUE}), and patches (if
+#' \code{by_patch = TRUE}), as in the original dataset. If \code{FALSE}, then
 #' allows the specific proportions to be set by argument \code{max_limit}.
 #' Defaults to \code{TRUE}.
 #' @param max_limit Sets the sample size to pull from the original data frame,
 #' if \code{prop_size = FALSE}. Defaults to the size of the original dataset if
-#' \code{prop_size = TRUE}, and to 100 if if \code{prop_size = FALSE}. Can also
+#' \code{prop_size = TRUE}, and to 100 if \code{prop_size = FALSE}. Can also
 #' be input as an integer vector giving the number of samples to take by
 #' population (if \code{by_pop = TRUE}), patch (if \code{by_patch = TRUE}), or
 #' population-patch (if \code{by_pop = TRUE} and \code{by_patch = TRUE}).
@@ -511,7 +511,7 @@ cond_hmpm <- function(hmpm, matchoice = NULL, err_check = NULL) {
 #' @param lDiff An object of class \code{lefkoDiff}.
 #' @param ref Choice of mpm to use as reference. Defaults to \code{1}, which
 #' means that the \code{ahstages}, \code{hstages}, and \code{labels} elements
-#' for mpm1 will be used for all calculations. Only \code{1} amd \code{2} are
+#' for mpm1 will be used for all calculations. Only \code{1} and \code{2} are
 #' possible inputs.
 #' @param matchoice A character denoting whether to use A, U, or F matrices.
 #' Defaults to \code{A} matrices.
@@ -636,8 +636,8 @@ cond_diff <- function(lDiff, ref = 1L, matchoice = NULL, err_check = NULL) {
 
 #' Two-Parameter Ricker Function
 #' 
-#' Function \code{ricker3()} creates a vector of values produced by the two-
-#' parameter Ricker function as applied with a user-specified time lag. The
+#' Function \code{ricker3()} creates a vector of values produced by the
+#' two-parameter Ricker function as applied with a user-specified time lag. The
 #' two-parameter Ricker function is given as 
 #' \eqn{\phi_{t+1} = \phi_t \alpha e^{-\beta n_t}}. Here, if no
 #' \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.
@@ -664,8 +664,8 @@ cond_diff <- function(lDiff, ref = 1L, matchoice = NULL, err_check = NULL) {
 #' @param separate_N An optional numeric vector with values of N in each time,
 #' if phi is to be treated as different from N in the two-parameter model.
 #' 
-#' @return A numeric vector of values showing values projected under the two-
-#' parameter Ricker function.
+#' @return A numeric vector of values showing values projected under the
+#' two-parameter Ricker function.
 #' 
 #' @examples
 #' trial_run1 <- ricker3(1, alpha = 0.5, beta = -0.009)
@@ -698,8 +698,8 @@ ricker3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L, 
 
 #' Two-Parameter Beverton-Holt Function
 #' 
-#' Function \code{beverton3()} creates a vector of values produced by the two-
-#' parameter Beverton-Holt function as applied with a user-specified time lag.
+#' Function \code{beverton3()} creates a vector of values produced by the
+#' two-parameter Beverton-Holt function as applied with a user-specified time lag.
 #' The two-parameter Beverton-Holt function is given as 
 #' \eqn{\phi_{t+1} = \phi_t \alpha / (1 + \beta n_t)}. Here, if no
 #' \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.
@@ -727,8 +727,8 @@ ricker3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L, 
 #' @param separate_N An optional numeric vector with values of N in each time,
 #' if phi is to be treated as different from N in the two-parameter model.
 #' 
-#' @return A numeric vector of values showing values projected under the two-
-#' parameter Beverton-Holt function.
+#' @return A numeric vector of values showing values projected under the
+#' two-parameter Beverton-Holt function.
 #' 
 #' @examples
 #' trial_run1 <- beverton3(1, alpha = 0.5, beta = 0.009)
@@ -761,8 +761,8 @@ beverton3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L
 
 #' Two-Parameter Usher Function
 #' 
-#' Function \code{usher3()} creates a vector of values produced by the two-
-#' parameter Usher function as applied with a user-specified time lag.
+#' Function \code{usher3()} creates a vector of values produced by the
+#' two-parameter Usher function as applied with a user-specified time lag.
 #' The Usher function is given as 
 #' \eqn{\phi_{t+1} = \phi_t / (1 + e^{\alpha n_t + \beta})}. Here,
 #' if no \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.
@@ -789,8 +789,8 @@ beverton3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L
 #' @param separate_N An optional numeric vector with values of N in each time,
 #' if phi is to be treated as different from N in the two-parameter model.
 #' 
-#' @return A numeric vector of values showing values projected under the two-
-#' parameter Usher function.
+#' @return A numeric vector of values showing values projected under the
+#' two-parameter Usher function.
 #' 
 #' @examples
 #' trial_run1 <- usher3(1, alpha = -0.5, beta = 0.005)
@@ -821,7 +821,7 @@ usher3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L, p
     .Call('_lefko3_usher3', PACKAGE = 'lefko3', start_value, alpha, beta, time_steps, time_lag, pre0_subs, pre0_value, substoch, separate_N)
 }
 
-#' Two-Parameter logistic Function
+#' Logistic Function
 #' 
 #' Function \code{logistic3()} creates a vector of values produced by the
 #' logistic function as applied with a user-specified time lag. The logistic
@@ -837,7 +837,7 @@ usher3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L, p
 #' @param beta If set to some positive number, then this number is the maximum
 #' value of phi to enforce. Otherwise, equals \code{0} and enforces no limit.
 #' @param lambda The value of the discrete population growth rate to use.
-#' Equal to the natural logarithm of the instantaneous growth rate, r.
+#' Equal to \eqn{e} raised to the instantaneous growth rate, \eqn{r}.
 #' @param time_steps The number of time steps to run the projection. Must be a
 #' positive integer.
 #' @param time_lag A positive integer denoting the number of time steps back
@@ -854,7 +854,7 @@ usher3 <- function(start_value, alpha, beta, time_steps = 100L, time_lag = 1L, p
 #' @param separate_N An optional numeric vector with values of N in each time,
 #' if phi is to be treated as different from N in the logistic model.
 #' 
-#' @return A numeric vector of values showing values projected under the-
+#' @return A numeric vector of values showing values projected under the
 #' logistic function.
 #' 
 #' @examples
@@ -1064,7 +1064,7 @@ sf_skeleton <- function(stages, standard = TRUE) {
 #' 
 #' Function \code{hist_null()} uses ahistorical MPMs to create the equivalent
 #' MPMs in the structure of historical MPMs. These MPMs have the same
-#' dimensions and stage structure of hMPMs but assume no influence of
+#' dimensions and stage structure as hMPMs but assume no influence of
 #' individual history, and so can be compared to actual hMPMs.
 #' 
 #' @name hist_null
@@ -1151,7 +1151,7 @@ hist_null <- function(mpm, format = 1L, err_check = FALSE) {
 #' matrices in sparse format, if input as standard matrices.
 #' 
 #' @return Yields a \code{lefkoMat} object, a \code{lefkoMatList} object, or
-#' a list of matrices. If a \code{lefkoMat} object. then will have the
+#' a list of matrices. If a \code{lefkoMat} object, then it will have the
 #' following characteristics:
 #' 
 #' \item{A}{A list of full mean projection matrices in order of sorted
@@ -1325,7 +1325,7 @@ add_stage <- function(mpm, add_before = 0L, add_after = 0L, stage_name = NULL) {
 #' such columns are found, then function \code{cycle_check}
 #' will export an integer vector giving the column numbers with problems.
 #' These column numbers may then be checked against the \code{stage_id} column
-#' of the associated stageframe in the case of a ahistorical or age-based MPM,
+#' of the associated stageframe in the case of an ahistorical or age-based MPM,
 #' against the row number of the associated \code{hstages} data frame in the
 #' case of a historical MPM, or against the row number of the associated
 #' \code{agestages} data frame in the case of an age-by-stage MPM.
@@ -1420,7 +1420,7 @@ cycle_check <- function(mpm, quiet = NULL) {
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}.
 #' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 #' Defaults to \code{FALSE}.
@@ -1498,7 +1498,7 @@ NULL
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}.
 #' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 #' Defaults to \code{FALSE}.
@@ -1553,7 +1553,7 @@ NULL
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}.
 #' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then output will be in sparse matrix format.
 #' Defaults to \code{FALSE}.
@@ -1610,7 +1610,7 @@ NULL
 #' \code{F}, rather than also outputting matrix \code{A}. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}.
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}.
 #' Cannot be used with sparse format MPMs.
 #' @param sparse If \code{TRUE}, then outputs matrices in sparse format.
 #' Defaults to \code{FALSE}.
@@ -1761,7 +1761,7 @@ NULL
 #' negative binomial probability density estimation. Defaults to
 #' \code{100000000.0}.
 #' @param cdf A logical value indicating whether to estimate size transitions
-#' using the cumulative density function in cases with continuous
+#' using the cumulative distribution function in cases with continuous
 #' distributions. Defaults to \code{TRUE}, with the midpoint method used if
 #' \code{FALSE}.
 #' @param err_check If \code{TRUE}, then also output objects \code{prob_out}
@@ -1972,17 +1972,17 @@ NULL
 #' @param integeronly A logical value indicating whether to round the number of
 #' individuals projected in each stage at each occasion to the nearest
 #' integer. Defaults to \code{FALSE}.
-#' @param substoch An integer value indicating whether to force survival-
-#' transition matrices to be substochastic in density dependent and density
+#' @param substoch An integer value indicating whether to force
+#' survival-transition matrices to be substochastic in density dependent and density
 #' independent simulations. Defaults to \code{0}, which does not enforce
 #' substochasticity. Alternatively, \code{1} forces all survival-transition
 #' elements to range from 0.0 to 1.0, and forces fecundity to be non-negative;
-#' and \code{2} forces all column rows in the survival-transition matrices to
-#' total no more than 1.0, in addition to the actions outlined for option
+#' and \code{2} forces all columns in the survival-transition matrices to
+#' sum to no more than 1.0, in addition to the actions outlined for option
 #' \code{1}. Both settings \code{1} and \code{2} change negative fecundity
 #' elements to \code{0.0}.
 #' @param ipm_cdf A logical value indicating whether to estimate size
-#' transitions using the cumulative density function in cases with continuous
+#' transitions using the cumulative distribution function in cases with continuous
 #' distributions. Defaults to \code{TRUE}, with the midpoint method used if
 #' \code{FALSE}.
 #' @param nreps The number of replicate projections. Defaults to \code{1}.
@@ -2026,7 +2026,7 @@ NULL
 #' @param repmatrix An optional reproduction matrix. This matrix is composed
 #' mostly of \code{0}s, with non-zero entries acting as element identifiers and
 #' multipliers for fecundity (with \code{1} equaling full fecundity). If left
-#' blank, and no \code{supplement} is provided, then \code{flefko3()} will
+#' blank, and no \code{supplement} is provided, then \code{f_projection3()} will
 #' assume that all stages marked as reproductive produce offspring at 1x that of
 #' estimated fecundity, and that offspring production will yield the first stage
 #' noted as propagule or immature. May be the dimensions of either a historical
@@ -2047,7 +2047,7 @@ NULL
 #' Alternatively, an object of class \code{vrm_input}, serving the same role.
 #' Although this is optional input, it is recommended, and without it separate
 #' vital rate model inputs (named \code{XX_model}) are required. If conducting
-#' bootstrapped projection, then an object of \code{lefkoModList} is required.
+#' bootstrapped projection, then an object of class \code{lefkoModList} is required.
 #' @param paramnames A data frame with three columns, the first describing all
 #' terms used in linear modeling, the second (must be called \code{mainparams})
 #' giving the general model terms that will be used in matrix creation, and the
@@ -2057,8 +2057,8 @@ NULL
 #' required if \code{modelsuite} is not supplied.
 #' @param year Either a single integer value corresponding to the year to
 #' project, or a vector of \code{times} elements with the year to use at each
-#' time step. Defaults to \code{NA}, in which the first year in the set of years
-#' in the dataset is projected. If a vector shorter than \code{times} is
+#' time step. Defaults to \code{NA}, in which case the first year in the set of
+#' years in the dataset is projected. If a vector shorter than \code{times} is
 #' supplied, then this vector will be cycled.
 #' @param patch A value of \code{NA}, a single string value corresponding to the
 #' patch to project, or a vector of \code{times} elements with the patch to use
@@ -2071,11 +2071,11 @@ NULL
 #' @param ind_terms An optional data frame with 3 columns and \code{times} rows
 #' giving the values of individual covariates a, b, and c, respectively, for
 #' each projected time. Unused terms must be set to \code{0} (use of \code{NA}
-#' will produce errors.)
+#' will produce errors).
 #' @param ann_terms An optional data frame with 3 columns and \code{times} rows
 #' giving the values of annual covariates a, b, and c, respectively, for each
 #' projected time. Unused terms must be set to \code{0} (use of \code{NA} will
-#' produce errors.)
+#' produce errors).
 #' @param dev_terms An optional data frame with 14 columns and \code{times}
 #' rows showing the values of the deviation terms to be added to each linear
 #' vital rate. The column order should be: 1: survival, 2: observation, 3:
@@ -2083,7 +2083,7 @@ NULL
 #' fecundity, 8: juvenile survival, 9: juvenile observation, 10: juvenile
 #' primary size, 11: juvenile secondary size, 12: juvenile tertiary size, 13:
 #' juvenile reproduction, and 14: juvenile maturity transition.  Unused terms
-#' must be set to \code{0} (use of \code{NA} will produce errors.)
+#' must be set to \code{0} (use of \code{NA} will produce errors).
 #' @param surv_model A linear model predicting survival probability. This can 
 #' be a model of class \code{glm} or \code{glmer}, and requires a predicted
 #' binomial variable under a logit link. Ignored if \code{modelsuite} is
@@ -2195,8 +2195,7 @@ NULL
 #' (\code{TRUE}) or forced dense (\code{FALSE}) projection is desired.
 #' 
 #' @return A list of class \code{lefkoProj}, which always includes the first
-#' three elements of the following, and also includes the remaining elements
-#' below when a \code{lefkoMat} object is used as input:
+#' three elements of the following, and may include the elements following:
 #' \item{projection}{A list of lists of matrices showing the total number of
 #' individuals per stage per occasion. The first list corresponds to each
 #' pop-patch followed by each population (this top-level list is a single
@@ -2249,8 +2248,8 @@ NULL
 #' stage distribution estimation, and reproductive value estimation.
 #' @param integeronly A logical value indicating whether to round all projected
 #' numbers of individuals to the nearest integer.
-#' @param substoch An integer value indicating whether to force survival-
-#' transition matrices to be substochastic in density dependent simulations.
+#' @param substoch An integer value indicating whether to force
+#' survival-transition matrices to be substochastic in density dependent simulations.
 #' Defaults to \code{0}, which does not force substochasticity. Alternatively,
 #' \code{1} forces all survival-transition elements to range from 0.0 to 1.0
 #' and fecundity to be non-negative, and \code{2} forces all column rows to
@@ -2296,7 +2295,7 @@ NULL
 #' 
 #' @param fin_out The resulting List, built by reference.
 #' @param mpm A matrix projection model of class \code{lefkoMat}, or a list of
-#' full matrix projection matrices.
+#' full projection matrices.
 #' @param nreps The number of replicate projections.
 #' @param times Number of occasions to iterate per replicate. Defaults to
 #' 10,000.
@@ -2315,12 +2314,12 @@ NULL
 #' @param integeronly A logical value indicating whether to round the number of
 #' individuals projected in each stage at each occasion to the nearest
 #' integer. Defaults to \code{FALSE}.
-#' @param substoch An integer value indicating whether to force survival-
-#' transition matrices to be substochastic in density dependent simulations.
+#' @param substoch An integer value indicating whether to force
+#' survival-transition matrices to be substochastic in density dependent simulations.
 #' Defaults to \code{0}, which does not force substochasticity. Alternatively,
 #' \code{1} forces all survival-transition elements to range from 0.0 to 1.0,
-#' and forces fecundity to be non-negative; and \code{2} forces all column rows
-#' in the survival-transition matrices to total no more than 1.0, in addition
+#' and forces fecundity to be non-negative; and \code{2} forces all columns
+#' in the survival-transition matrices to sum to no more than 1.0, in addition
 #' to the actions outlined for option \code{1}.
 #' @param exp_tol A numeric value used to indicate a maximum value to set
 #' exponents to in the core kernel to prevent numerical overflow. Defaults to
@@ -2374,8 +2373,7 @@ NULL
 #' objects include matrices of class \code{dgCMatrix}.
 #' 
 #' @return A list of class \code{lefkoProj}, which always includes the first
-#' three elements of the following, and also includes the remaining elements
-#' below when a \code{lefkoMat} object is used as input:
+#' three elements of the following, and may include the elements following:
 #' \item{projection}{A list of lists of matrices showing the total number of
 #' individuals per stage per occasion. The first list corresponds to each
 #' pop-patch followed by each population. The inner list corresponds to
@@ -2458,17 +2456,17 @@ NULL
 #' @param integeronly A logical value indicating whether to round the number of
 #' individuals projected in each stage at each occasion to the nearest
 #' integer. Defaults to \code{FALSE}.
-#' @param substoch An integer value indicating whether to force survival-
-#' transition matrices to be substochastic in density dependent and density
+#' @param substoch An integer value indicating whether to force
+#' survival-transition matrices to be substochastic in density dependent and density
 #' independent simulations. Defaults to \code{0}, which does not enforce
 #' substochasticity. Alternatively, \code{1} forces all survival-transition
 #' elements to range from 0.0 to 1.0, and forces fecundity to be non-negative;
-#' and \code{2} forces all column rows in the survival-transition matrices to
-#' total no more than 1.0, in addition to the actions outlined for option
+#' and \code{2} forces all columns in the survival-transition matrices to
+#' sum to no more than 1.0, in addition to the actions outlined for option
 #' \code{1}. Both settings \code{1} and \code{2} change negative fecundity
 #' elements to \code{0.0}.
 #' @param ipm_cdf A logical value indicating whether to estimate size
-#' transitions using the cumulative density function in cases with continuous
+#' transitions using the cumulative distribution function in cases with continuous
 #' distributions. Defaults to \code{TRUE}, with the midpoint method used if
 #' \code{FALSE}.
 #' @param nreps The number of replicate projections. Defaults to \code{1}.
@@ -2512,7 +2510,7 @@ NULL
 #' @param repmatrix An optional reproduction matrix. This matrix is composed
 #' mostly of \code{0}s, with non-zero entries acting as element identifiers and
 #' multipliers for fecundity (with \code{1} equaling full fecundity). If left
-#' blank, and no \code{supplement} is provided, then \code{flefko3()} will
+#' blank, and no \code{supplement} is provided, then \code{f_projection3()} will
 #' assume that all stages marked as reproductive produce offspring at 1x that of
 #' estimated fecundity, and that offspring production will yield the first stage
 #' noted as propagule or immature. May be the dimensions of either a historical
@@ -2533,7 +2531,7 @@ NULL
 #' Alternatively, an object of class \code{vrm_input}, serving the same role.
 #' Although this is optional input, it is recommended, and without it separate
 #' vital rate model inputs (named \code{XX_model}) are required. If conducting
-#' bootstrapped projection, then an object of \code{lefkoModList} is required.
+#' bootstrapped projection, then an object of class \code{lefkoModList} is required.
 #' @param paramnames A data frame with three columns, the first describing all
 #' terms used in linear modeling, the second (must be called \code{mainparams})
 #' giving the general model terms that will be used in matrix creation, and the
@@ -2543,8 +2541,8 @@ NULL
 #' required if \code{modelsuite} is not supplied.
 #' @param year Either a single integer value corresponding to the year to
 #' project, or a vector of \code{times} elements with the year to use at each
-#' time step. Defaults to \code{NA}, in which the first year in the set of years
-#' in the dataset is projected. If a vector shorter than \code{times} is
+#' time step. Defaults to \code{NA}, in which case the first year in the set of
+#' years in the dataset is projected. If a vector shorter than \code{times} is
 #' supplied, then this vector will be cycled.
 #' @param patch A value of \code{NA}, a single string value corresponding to the
 #' patch to project, or a vector of \code{times} elements with the patch to use
@@ -2557,11 +2555,11 @@ NULL
 #' @param ind_terms An optional data frame with 3 columns and \code{times} rows
 #' giving the values of individual covariates a, b, and c, respectively, for
 #' each projected time. Unused terms must be set to \code{0} (use of \code{NA}
-#' will produce errors.)
+#' will produce errors).
 #' @param ann_terms An optional data frame with 3 columns and \code{times} rows
 #' giving the values of annual covariates a, b, and c, respectively, for each
 #' projected time. Unused terms must be set to \code{0} (use of \code{NA} will
-#' produce errors.)
+#' produce errors).
 #' @param dev_terms An optional data frame with 14 columns and \code{times}
 #' rows showing the values of the deviation terms to be added to each linear
 #' vital rate. The column order should be: 1: survival, 2: observation, 3:
@@ -2569,7 +2567,7 @@ NULL
 #' fecundity, 8: juvenile survival, 9: juvenile observation, 10: juvenile
 #' primary size, 11: juvenile secondary size, 12: juvenile tertiary size, 13:
 #' juvenile reproduction, and 14: juvenile maturity transition.  Unused terms
-#' must be set to \code{0} (use of \code{NA} will produce errors.)
+#' must be set to \code{0} (use of \code{NA} will produce errors).
 #' @param surv_model A linear model predicting survival probability. This can 
 #' be a model of class \code{glm} or \code{glmer}, and requires a predicted
 #' binomial variable under a logit link. Ignored if \code{modelsuite} is
@@ -2682,8 +2680,7 @@ NULL
 #' 
 #' @return If running a single (including replicated) projection, then the
 #' output is a list of class \code{lefkoProj}, which always includes the first
-#' three elements of the following, and also includes the remaining elements
-#' below when a \code{lefkoMat} object is used as input:
+#' three elements of the following,  and may include the elements following:
 #' \item{projection}{A list of lists of matrices showing the total number of
 #' individuals per stage per occasion. The first list corresponds to each
 #' pop-patch followed by each population (this top-level list is a single
@@ -2724,8 +2721,8 @@ NULL
 #' time-consuming when matrices need to be created at each time step. We have
 #' created this function to work as quickly as possible, but some options will
 #' slow analysis. First, the \code{err_check} option should always be set to
-#' \code{FALSE}, as the added created output will not only slow the analysis
-#' down but also potentially crash the memory if matrices are large enough.
+#' \code{FALSE}, as the additional output will not only slow the analysis
+#' but may also exhaust available memory if matrices are large enough.
 #' Second, the \code{repvalue} option should be set to \code{FALSE} unless
 #' reproductive values are genuinely needed, since this step requires
 #' concurrent backward projection and so in some cases may double total run
@@ -2734,15 +2731,15 @@ NULL
 #' will yield the quickest possible run time. Finally, the default behavior of
 #' the function is to round down fractional values of individuals, and to stop
 #' running projections (replicates) when the population drops to 0. Setting
-#' \code{integeronly = FALSE} will have the impact of increasing runtime,
-#' potentially dramatically, since the population can reach a point in which
-#' the population size is extremely small but not equal to 0.
+#' \code{integeronly = TRUE} may have the impact of decreasing runtime,
+#' potentially dramatically, since the population can go extinct once a
+#' fractional individual is left.
 #' 
 #' Projections with large matrices may take a long time to run. To assess the
 #' likely running time, try using a low number of iterations on a single
 #' replicate first. For example, set \code{nreps = 1} and \code{times = 10} for
 #' a trial run. If a full run is set and takes too long, press the STOP button
-#' in RStudio to cancel the projection run, or click \code{esc}.
+#' in RStudio to cancel the projection run, or click \code{Esc}.
 #' 
 #' This function currently allows three forms of density dependence. The first
 #' modifies matrix elements on the basis of the input provided in option
@@ -3038,9 +3035,9 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' the main vertical dataset coding for the stages of each individual in
 #' occasions \emph{t}+1 and \emph{t}, and \emph{t}-1, if historical. The names
 #' of stages in these variables should match those used in the
-#' \code{stageframe} exactly. If left blank, then \code{rlefko3()} will attempt
+#' \code{stageframe} exactly. If left blank, then \code{mpm_create()} will attempt
 #' to infer stages by matching values of \code{alive}, \code{obsst},
-#' \code{size}, \code{sizev}, \code{sizec}, \code{repst}, and \code{matst} to
+#' \code{size}, \code{sizeb}, \code{sizec}, \code{repst}, and \code{matst} to
 #' characteristics noted in the associated \code{stageframe}. Only used in raw,
 #' stage-based MPMs.
 #' @param yearcol The variable name or column number corresponding to occasion
@@ -3109,9 +3106,9 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' and of 14 elements in all other cases. Consists of scalar additions to the
 #' y-intercepts of vital rate linear models used to estimate vital rates in
 #' function-based MPMs. Defaults to \code{0} values for all vital rates.
-#' @param density A numeric value indicating density value to use to propagate
+#' @param density A numeric value indicating the density value to use to propagate
 #' matrices. Only needed if density is an explanatory term used in one or more
-#' vital rate models. Defaults to \code{NA}. Only used in function_based MPMs.
+#' vital rate models. Defaults to \code{NA}. Only used in function-based MPMs.
 #' @param CDF A logical value indicating whether to use the cumulative
 #' distribution function to estimate size transition probabilities in
 #' function-based MPMs. Defaults to \code{TRUE}, and should only be changed to
@@ -3176,7 +3173,7 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' function-based MPMs, and in stage-based MPMs in which a valid \code{hfvdata}
 #' class data frame with stages already assigned is provided.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
 #' only be used with raw MPMs not in sparse format, and should not be used to
 #' create normal MPMs intended for projection.
 #' @param sparse_output A logical value indicating whether to output matrices
@@ -3184,13 +3181,13 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' output in standard matrix format.
 #' 
 #' @return The dominant output is an object of class \code{lefkoMat}. If
-#' data of class \code{hfv_list} for empirical models, or modelsuites of class
+#' data of class \code{hfvlist} for empirical models, or modelsuites of class
 #' \code{lefkoModList} for function-based models are provided, then a list of
 #' class \code{lefkoMatList} is provided. The latter is a list in which each
 #' element is a separate \code{lefkoMat} object, providing output for a
 #' bootstrapped MPM analysis. 
 #' 
-#' Class \code{lefkoMat} objects are lists holds one full matrix projection
+#' Class \code{lefkoMat} objects are lists that hold one full matrix projection
 #' model and all of its metadata. The structure has the following elements:
 #' 
 #' \item{A}{A list of full projection matrices in order of sorted patches and
@@ -3239,7 +3236,7 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' either historical or ahistorical. If provided as historical, then
 #' a historical MPM must be estimated.
 #' 
-#' If neither a supplement nor a reproduction matrix are used, and the MPM
+#' If neither a supplement nor a reproduction matrix is used, and the MPM
 #' to create is stage-based, then fecundity will be assumed to occur from all
 #' reproductive stages to all propagule and immature stages.
 #' 
@@ -3252,8 +3249,7 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' 
 #' Input options including multiple variable names must be entered in the order
 #' of variables in occasion \emph{t}+1, \emph{t}, and \emph{t}-1. Rearranging
-#' the order will lead to erroneous calculations, and will may lead to fatal
-#' errors.
+#' the order will lead to erroneous calculations, and may lead to fatal errors.
 #' 
 #' This function provides two different means of estimating the probability of
 #' size transition. The midpoint method (\code{CDF = FALSE}) refers to the
@@ -3265,7 +3261,7 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' results, with total size transitions associated with a specific size not
 #' totaling to 1.0 and even specific size transition probabilities capable of
 #' being estimated at values greater than 1.0. The alternative and default
-#' method (\code{CDF = TRUE}) uses the cumulative density function to estimate
+#' method (\code{CDF = TRUE}) uses the cumulative distribution function to estimate
 #' the probability of size transition as the cumulative probability of size
 #' transition at the greater limit of the size class minus the cumulative
 #' probability of size transition at the lower limit of the size class. This
@@ -3275,10 +3271,10 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' Under the Gaussian and gamma size distributions, the number of estimated
 #' parameters may differ between the two \code{ipm_method} settings. Because
 #' the midpoint method has a tendency to incorporate upward bias in the
-#' estimation of size transition probabilities, it is more likely to yield non-
-#' zero values when the true probability is extremely close to 0. This will
+#' estimation of size transition probabilities, it is more likely to yield
+#' non-zero values when the true probability is extremely close to 0. This will
 #' result in the \code{summary.lefkoMat()} function yielding higher numbers of
-#' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
+#' estimated parameters than \code{CDF = TRUE} yields in some cases.
 #' 
 #' @examples
 #' \donttest{
@@ -3788,7 +3784,7 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' 
 #' @param mpm A matrix projection model of class \code{lefkoMat}, a list of
 #' class \code{lefkoMatList} including bootstrapped MPMs, or a list of full
-#' matrix projection matrices.
+#' projection matrices.
 #' @param nreps The number of replicate projections.
 #' @param times Number of occasions to iterate per replicate. Defaults to
 #' 10,000.
@@ -3807,12 +3803,12 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' @param integeronly A logical value indicating whether to round the number of
 #' individuals projected in each stage at each occasion to the nearest
 #' integer. Defaults to \code{FALSE}.
-#' @param substoch An integer value indicating whether to force survival-
-#' transition matrices to be substochastic in density dependent simulations.
+#' @param substoch An integer value indicating whether to force
+#' survival-transition matrices to be substochastic in density dependent simulations.
 #' Defaults to \code{0}, which does not force substochasticity. Alternatively,
 #' \code{1} forces all survival-transition elements to range from 0.0 to 1.0,
-#' and forces fecundity to be non-negative; and \code{2} forces all column rows
-#' in the survival-transition matrices to total no more than 1.0, in addition
+#' and forces fecundity to be non-negative; and \code{2} forces all columns
+#' in the survival-transition matrices to sum to no more than 1.0, in addition
 #' to the actions outlined for option \code{1}.
 #' @param exp_tol A numeric value used to indicate a maximum value to set
 #' exponents to in the core kernel to prevent numerical overflow. Defaults to
@@ -3867,9 +3863,8 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' 
 #' @return If a \code{lefkoMat} object or a simple list of matrices is used as
 #' input, then this function will produce a list of class \code{lefkoProj},
-#' which always includes the first three elements of the following, and also
-#' includes the remaining elements below when a \code{lefkoMat} object is used
-#' as input:
+#' which always includes the first three elements of the following,  and may
+#' include the elements following:
 #' \item{projection}{A list of lists of matrices showing the total number of
 #' individuals per stage per occasion. The first list corresponds to each
 #' pop-patch followed by each population. The inner list corresponds to
@@ -3898,7 +3893,7 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' class \code{lefkoProj}.
 #' 
 #' @section Notes:
-#' Users are encourage to run density dependent projections with
+#' Users are encouraged to run density dependent projections with
 #' \code{lefkoMat} objects as inputs. Users using simple lists of matrices
 #' should first develop a life history model and import matrices using
 #' function \code{\link{create_lM}()}. Lists of matrices can still be run in
@@ -3915,7 +3910,7 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' elements in the user-supplied vector.
 #' 
 #' Starting vectors can be input in one of two ways: 1) as \code{start_vec}
-#' input, which is a vector of numbers of the numbers of individuals in each
+#' input, which is a vector of the numbers of individuals in each
 #' stage, stage pair, or age-stage, with the length of the vector necessarily
 #' as long as there are rows in the matrices of the MPM; or 2) as
 #' \code{start_frame} input, which is a data frame showing only those stages,
@@ -3976,9 +3971,8 @@ mpm_create <- function(historical = FALSE, stage = TRUE, age = FALSE, devries = 
 #' sparse. Speed can also be maximized by keeping the default setting,
 #' \code{integeronly = TRUE}, since the default behavior is to run each
 #' projection (replicate) until either the end, or the population size drops
-#' to 0. Setting \code{integeronly = FALSE} may increase runtime dramatically,
-#' since the population size can reach extremely small levels without dropping
-#' to 0.
+#' to 0. Setting \code{integeronly = TRUE} may decrease runtime dramatically,
+#' since the population will go extinct once a fractional individual is left.
 #' 
 #' @seealso \code{\link{start_input}()}
 #' @seealso \code{\link{density_input}()}
@@ -4088,17 +4082,17 @@ projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, sto
 
 #' Estimate Stochastic Population Growth Rate
 #' 
-#' Function \code{slambda3()} estimates the stochastic population growth rate,
-#' \eqn{a}, defined as the long-term arithmetic mean of the log population 
-#' growth rate estimated per simulated occasion. This function can handle
-#' lefkoMat objects, lefkoMatList objects, and lists of full A matrices as
-#' input. 
+#' Function \code{slambda3()} estimates the log stochastic population growth
+#' rate, \eqn{a}, defined as the long-term arithmetic mean of the log
+#' population growth rate estimated per simulated occasion. This function can
+#' handle lefkoMat objects, lefkoMatList objects, and lists of full A matrices
+#' as input. 
 #' 
 #' @name slambda3
 #' 
 #' @param mpm A matrix projection model of class \code{lefkoMat}, a 
 #' bootstrapped MPM object of class \code{lefkoMatList}, or a simple list of
-#' full matrix projection matrices.
+#' full projection matrices.
 #' @param times Number of occasions to iterate. Defaults to \code{10000}.
 #' @param historical An optional logical value only used if object \code{mpm}
 #' is a list of matrices, rather than a \code{lefkoMat} object. Defaults to
@@ -4393,7 +4387,7 @@ slambda3 <- function(mpm, times = 10000L, historical = FALSE, tweights = NULL, f
 #' @param main_times An integer vector giving the years / times to use.
 #' @param mat A matrix giving the transition probabilities from each time to
 #' each time. Must have the same number of columns and rows as there are
-#' elements in vector \code{times}.
+#' elements in vector \code{main_times}.
 #' @param times The number of times to project forward. Defaults to 10000.
 #' @param start The start time to use. Defaults to the first time in vector
 #' \code{main_times}.
@@ -4600,12 +4594,12 @@ NULL
 
 #' Convert modelextract Coefficient Vector to vrm_frame Vector
 #' 
-#' @name vrmf_inator
-#' 
 #' This function reorders the coefficient vector developed by function
 #' \code{modelextract} in the \code{lefko3} C++ header file \code{main_utils.h}
 #' to match the order required to create the \code{vrm_frame} element within
 #' a new \code{vrm_input} object.
+#' 
+#' @name vrmf_inator
 #' 
 #' @param coef_vec The main \code{coefficients} vector from the model proxy
 #' object used.
@@ -4753,7 +4747,7 @@ NULL
 #' name as \code{none} if \code{FALSE}, or as the default \code{modelparams}
 #' name if \code{TRUE}. Defaults to \code{FALSE}.
 #' 
-#' @return A three column data frame, of which the first describes the
+#' @return A three-column data frame, of which the first describes the
 #' parameters in reasonably plain English, the second gives the name of the
 #' parameter within the MPM generating functions, and the third is to be
 #' edited with the names of the variables as they appear in the models.
@@ -4779,7 +4773,7 @@ create_pm <- function(name_terms = FALSE) {
 #' 
 #' This function takes a \code{lefkoMod} object, which consists of vital rate
 #' models, their associated \code{dredge} model tables, and related metadata,
-#' and converts them to minimal data frame lists useable in MPM creation and
+#' and converts them to minimal data frame lists usable in MPM creation and
 #' projection. The main advantage to using this approach is in memory savings.
 #' 
 #' @name miniMod
@@ -4802,7 +4796,7 @@ create_pm <- function(name_terms = FALSE) {
 #' variable. Only needed if object \code{hfv_data} not provided but individual
 #' covariates used in vital rate models.
 #' @param all_indcovb The name of individual covariate a if quantitative and
-#' non-categorical, or of the categories used if the cvoariate is a factor
+#' non-categorical, or of the categories used if the covariate is a factor
 #' variable. Only needed if object \code{hfv_data} not provided but individual
 #' covariates used in vital rate models.
 #' @param all_indcovc The name of individual covariate a if quantitative and
@@ -4953,7 +4947,7 @@ NULL
 #' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 #' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 #' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-#' fecundity transitions. Defaults to \code{1} for survival transition, with
+#' fecundity transition. Defaults to \code{1} for survival transition, with
 #' impacts only on the construction of deVries-format hMPMs.
 #' @param target_mpm If modifying a \code{lefkoMatList} object, then this
 #' allows the user to specify which MPMs to modify. To modify, enter a vector
@@ -4983,7 +4977,7 @@ NULL
 #' vector composed of the midpoints of each size bin, or simply of sizes
 #' characteristic of the size bins. If denoting the boundary of an automated
 #' size classification group, then should denote the absolute minimum size of
-#' that group, or the absolute size of that group (see \code{Notes}).
+#' that group, or the absolute maximum size of that group (see \code{Notes}).
 #' @param stagenames A vector of stage names, in the same order as elements in
 #' sizes. Can also be set to \code{ipm} for automated size classification (see
 #' \code{Notes} section).
@@ -5092,7 +5086,7 @@ NULL
 #' center, and maximum of each size bin, as well as its width. If minimum and
 #' maximum ages were specified, then these are also included. Also includes an 
 #' empty string variable that can be used to describe stages meaningfully. This
-#' object can be used as the \code{stageframe} input for \code{\link{flefko3}()} 
+#' object can be used as the \code{stageframe} input for \code{\link{flefko3}()}, 
 #' \code{\link{flefko2}()}, \code{\link{rlefko3}()}, and \code{\link{rlefko2}()}.
 #' 
 #' Variables in this data frame include the following:
@@ -5385,13 +5379,13 @@ actualstage3 <- function(data, check_stage = TRUE, check_age = FALSE, historical
 #' transitions are assumed to be subject to this time delay. Does not apply to
 #' the additive limit function, which uses only the current population.
 #' @param alpha A vector indicating the numeric values to use as the
-#' alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
+#' alpha term in the two-parameter Ricker, Beverton-Holt, or Usher function, or
 #' the value of the carrying capacity \emph{K} to use in the logistic or
 #' additive limit functions (see \code{Notes} section for more on this term).
 #' If a single number is provided, then all noted transitions are assumed to be
 #' subject to this value of alpha. Defaults to \code{1}.
 #' @param beta A vector indicating the numeric values to use as the beta term
-#' in the two parameter Ricker, Beverton-Holt, or Usher function, or the
+#' in the two-parameter Ricker, Beverton-Holt, or Usher function, or the
 #' multiplier on the previous population size in the additive limit function.
 #' Also used to indicate whether to use \emph{K} as a hard limit in the
 #' logistic equation (see section \code{Notes} below). If a single number is
@@ -5411,7 +5405,7 @@ actualstage3 <- function(data, check_stage = TRUE, check_age = FALSE, historical
 #' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 #' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 #' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-#' fecundity transitions. Defaults to \code{1} for survival transition, with
+#' fecundity transition. Defaults to \code{1} for survival transition, with
 #' impacts only on the construction of deVries-format hMPMs.
 #' 
 #' @return A data frame of class \code{lefkoDens}. This object can be used as
@@ -5439,8 +5433,8 @@ actualstage3 <- function(data, check_stage = TRUE, check_age = FALSE, historical
 #' occasion \emph{t}+1 is a survival transition probability (1), or a fecundity
 #' rate (2).}
 #' \item{type_t12}{Designates whether the transition from occasion \emph{t}-1 to
-#' occasion \emph{t} is a survival transition probability (1), a fecundity rate
-#' (2).}
+#' occasion \emph{t} is a survival transition probability (1) or a fecundity
+#' rate (2).}
 #' 
 #' @section Notes:
 #' This function provides inputs when density dependence is operationalized
@@ -5609,7 +5603,7 @@ density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2
 #' between occasions \emph{t}-1 and \emph{t}. Only necessary if a historical
 #' MPM in deVries format is desired. This should be entered as \code{1},
 #' \code{S}, or \code{s} for a survival transition; or \code{2}, \code{F}, or
-#' \code{f} for a fecundity transitions. Defaults to \code{1} for survival
+#' \code{f} for a fecundity transition. Defaults to \code{1} for survival
 #' transition, with impacts only on the construction of deVries-format hMPMs.
 #' 
 #' @return A data frame of class \code{lefkoSD}. This object can be used as
@@ -5639,7 +5633,7 @@ density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2
 #' transition.}
 #' \item{multiplier}{A multiplier for proxy transitions or for fecundity.}
 #' \item{convtype}{Designates whether the transition from occasion \emph{t} to
-#' occasion \emph{t}+1 is a survival transition probability (1), a fecundity
+#' occasion \emph{t}+1 is a survival transition probability (1) or a fecundity
 #' rate (2), or a fecundity multiplier (3).}
 #' \item{convtype_t12}{Designates whether the transition from occasion
 #' \emph{t}-1 to occasion \emph{t} is a survival transition probability (1), or
@@ -5655,7 +5649,7 @@ density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2
 #' Fecundity multiplier data supplied via the \code{supplemental()} function
 #' acts in the same way as non-zero entries supplied via a reproductive matrix,
 #' but gets priority in all matrix creations. Thus, in cases where fecundity
-#' multipliers are provided for the same function via the reproductive matrix
+#' multipliers are provided for the same transition via the reproductive matrix
 #' and function \code{supplemental()}, the latter is used.
 #' 
 #' Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
@@ -5682,7 +5676,7 @@ density_input <- function(mpm, stage3 = NULL, stage2 = NULL, stage1 = NULL, age2
 #' purely age-specific, and do not set reproductive transitions in MPM
 #' creation). For example, if all stage 2 to stage 3 transitions above age 2
 #' yield fecundity, then stage 2 to stage 3 can be set to
-#' \code{multiplier = 1.0} with \code{convtype = 3}, and the same transition
+#' \code{multiplier = 1.0} with \code{type = 3}, and the same transition
 #' for \code{age2 = c(1, 2)} can be set to \code{multiplier = c(0, 0)}.
 #' 
 #' Several operations may be included per transition. Operations on the same
@@ -5782,7 +5776,7 @@ supplemental <- function(historical = TRUE, stagebased = TRUE, agebased = FALSE,
     .Call('_lefko3_supplemental', PACKAGE = 'lefko3', historical, stagebased, agebased, stageframe, stage3, stage2, stage1, age2, eststage3, eststage2, eststage1, estage2, givenrate, offset, multiplier, type, type_t12)
 }
 
-#' Create A Supplement Skeleton Data Frame
+#' Create a Supplement Skeleton Data Frame
 #' 
 #' @name sup_skeleton
 #' 
@@ -5805,7 +5799,7 @@ sup_skeleton <- function(rows = NULL) {
 #' Function \code{edit_lM()} edits existing \code{lefkoMat} and
 #' \code{lefkoMatList} objects with external data supplied by the user. The
 #' effects are similar to function \code{\link{supplemental}()}, though
-#' function \code{edit_lM()} allows individuals matrices within \code{lefkoMat}
+#' function \code{edit_lM()} allows individual matrices within \code{lefkoMat}
 #' objects to be edited after creation, while \code{\link{supplemental}()}
 #' provides external data that modifies all matrices within a \code{lefkoMat}
 #' object, or within all the \code{lefkoMat} objects within a
@@ -5813,7 +5807,7 @@ sup_skeleton <- function(rows = NULL) {
 #' 
 #' @name edit_lM
 #' 
-#' @param mpm The \code{lefkoMat} and \code{lefkoMatList} object to be edited.
+#' @param mpm The \code{lefkoMat} or \code{lefkoMatList} object to be edited.
 #' @param pop A string vector denoting the populations to be edited. Defaults
 #' to \code{NULL}, in which case all populations are edited.
 #' @param patch A string vector denoting the patches to be edited. Defaults
@@ -5865,7 +5859,7 @@ sup_skeleton <- function(rows = NULL) {
 #' occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 #' deVries format is desired. This should be entered as \code{1}, \code{S}, or
 #' \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-#' fecundity transitions. Defaults to \code{1} for survival transition, with
+#' fecundity transition. Defaults to \code{1} for survival transition, with
 #' impacts only on the construction of deVries-format hMPMs.
 #' @param target_mpm If modifying a \code{lefkoMatList} object, then this
 #' allows the user to specify which MPMs to modify. To modify, enter a vector
@@ -5988,11 +5982,11 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 
 #' Sum Positive and Negative LTRE or Elasticity Contributions
 #' 
-#' @name .demolition4
-#' 
 #' Function \code{demolition4()} takes \code{lefkoElas} and \code{lefkoLTRE}
 #' inputs and returns a data frame summarizing their positive and negative
 #' contributions.
+#' 
+#' @name .demolition4
 #' 
 #' @param cmats Any \code{lefkoElas} or \code{lefkoLTRE} object.
 #' 
@@ -6087,7 +6081,7 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' large and sparse matrices supplied as \code{lefkoMat} objects or as
 #' individual matrices, and can be used with large historical matrices, IPMs, 
 #' age x stage matrices, as well as smaller ahistorical matrices, and general
-#' projetions.
+#' projections.
 #' 
 #' @param mpm A \code{lefkoMat} object, a \code{lefkoMatList} object, a list of
 #' projection matrices, a \code{lefkoProj} object, or a single projection
@@ -6100,7 +6094,7 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' @param force_sparse A logical value or string detailing whether to force
 #' sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},
 #' which only forces sparse matrix coding if simple matrices are input that are
-#' both sparse (i.e, percentage of matrix elements that are non-zero <= 50%)
+#' both sparse (i.e, percentage of matrix elements that are non-zero <= 50)
 #' and have more than 20 rows. Can also be set to \code{"yes"}, \code{"no"},
 #' \code{TRUE}, or \code{FALSE}. Note that sparse matrix coding is always used
 #' for \code{lefkoMat} objects with matrices in sparse format (class
@@ -6110,7 +6104,7 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' If a \code{lefkoMat} object is provided, then this function will return the
 #' \code{labels} data frame with a new column named \code{lambda} showing the
 #' dominant eigenvalues for each matrix. If a \code{lefkoMatList} object is
-#' provided, then a two element list in which the first element is a vector
+#' provided, then a two-element list in which the first element is a vector
 #' composed of the mean lambda values of each \code{lefkoMat} element within
 #' the list is provided, and the second element is a list of \code{lefkoMat}
 #' lambda summaries as previously described. If a list of matrices is provided,
@@ -6121,7 +6115,7 @@ edit_lM <- function(mpm, pop = NULL, patch = NULL, year2 = NULL, stage3 = NULL, 
 #' 
 #' If a \code{lefkoProj} object is provided, then the output consists of a list
 #' with three elements. The second and third elements are lists of matrices
-#' with each lower-level list elements corresponding to \code{labels} rows,
+#' with each lower-level list element corresponding to \code{labels} rows,
 #' and matrices within these lists showing the actual \eqn{\lambda} and
 #' \code{log} \eqn{\lambda} for each consecutive year or time index (columns)
 #' within each replicate (row).
@@ -6251,7 +6245,7 @@ lambda3 <- function(mpm, style = NULL, force_sparse = NULL) {
 #' greatest to lowest absolute magnitude (\code{3}). Defaults to type \code{3}.
 #' 
 #' @return A data frame arranging all elements in the matrix chosen from
-#' greatest and smallest. This can be a data frame of only positive elements,
+#' greatest to smallest. This can be a data frame of only positive elements,
 #' of only negative elements, or all elements in order of absolute magnitude.
 #' 
 #' @section Notes:
@@ -6332,8 +6326,7 @@ matrix_interp <- function(object, mat_chosen = 1L, part = 1L, type = 3L) {
 #' as \code{proj1}.
 #' 
 #' @return A list of class \code{lefkoProj}, which always includes the first
-#' three elements of the following, and also includes the remaining elements
-#' below when a \code{lefkoMat} object is used as input:
+#' three elements of the following, and may include the elements following:
 #' \item{projection}{A list of lists of matrices showing the total number of
 #' individuals per stage per occasion. The first list corresponds to each
 #' pop-patch followed by each population (this top-level list is a single

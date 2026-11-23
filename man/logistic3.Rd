@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{logistic3}
 \alias{logistic3}
-\title{Two-Parameter logistic Function}
+\title{Logistic Function}
 \usage{
 logistic3(
   start_value,
@@ -26,7 +26,7 @@ logistic3(
 value of phi to enforce. Otherwise, equals \code{0} and enforces no limit.}
 
 \item{lambda}{The value of the discrete population growth rate to use.
-Equal to the natural logarithm of the instantaneous growth rate, r.}
+Equal to \eqn{e} raised to the instantaneous growth rate, \eqn{r}.}
 
 \item{time_steps}{The number of time steps to run the projection. Must be a
 positive integer.}
@@ -50,7 +50,7 @@ be forced to the interval [0, 1].}
 if phi is to be treated as different from N in the logistic model.}
 }
 \value{
-A numeric vector of values showing values projected under the-
+A numeric vector of values showing values projected under the
 logistic function.
 }
 \description{

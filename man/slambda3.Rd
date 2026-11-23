@@ -15,7 +15,7 @@ slambda3(
 \arguments{
 \item{mpm}{A matrix projection model of class \code{lefkoMat}, a 
 bootstrapped MPM object of class \code{lefkoMatList}, or a simple list of
-full matrix projection matrices.}
+full projection matrices.}
 
 \item{times}{Number of occasions to iterate. Defaults to \code{10000}.}
 
@@ -51,11 +51,11 @@ mean of the log population growth rate across simulated occasions.}
 \item{se}{The standard error of a.}
 }
 \description{
-Function \code{slambda3()} estimates the stochastic population growth rate,
-\eqn{a}, defined as the long-term arithmetic mean of the log population 
-growth rate estimated per simulated occasion. This function can handle
-lefkoMat objects, lefkoMatList objects, and lists of full A matrices as
-input.
+Function \code{slambda3()} estimates the log stochastic population growth
+rate, \eqn{a}, defined as the long-term arithmetic mean of the log
+population growth rate estimated per simulated occasion. This function can
+handle lefkoMat objects, lefkoMatList objects, and lists of full A matrices
+as input.
 }
 \section{Notes}{
 

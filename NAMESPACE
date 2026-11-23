@@ -97,38 +97,50 @@ importFrom(MASS,glm.nb)
 importFrom(Matrix,colSums)
 importFrom(MuMIn,dredge)
 importFrom(Rcpp,evalCpp)
-importFrom(VGAM,posnegbinomial)
-importFrom(VGAM,pospoisson)
-importFrom(VGAM,predictvglm)
-importFrom(VGAM,vglm)
-importFrom(glmmTMB,glmmTMB)
-importFrom(glmmTMB,nbinom2)
-importFrom(glmmTMB,truncated_nbinom2)
-importFrom(glmmTMB,truncated_poisson)
-importFrom(grDevices,palette)
-importFrom(grDevices,xy.coords)
+importFrom(VGAM,
+  posnegbinomial,
+  pospoisson,
+  predictvglm,
+  vglm
+)
+importFrom(glmmTMB,
+  glmmTMB,
+  nbinom2,
+  truncated_nbinom2,
+  truncated_poisson
+)
+importFrom(grDevices,
+  palette,
+  xy.coords
+)
 importFrom(graphics,lines)
-importFrom(lme4,glmer)
-importFrom(lme4,lmer)
-importFrom(methods,as)
-importFrom(methods,is)
+importFrom(lme4,
+  glmer,
+  lmer
+)
+importFrom(methods,
+  as,
+  is
+)
 importFrom(pscl,zeroinfl)
 importFrom(rlang,expr)
-importFrom(stats,as.formula)
-importFrom(stats,complete.cases)
-importFrom(stats,getCall)
-importFrom(stats,glm)
-importFrom(stats,lm)
-importFrom(stats,logLik)
-importFrom(stats,median)
-importFrom(stats,na.action)
-importFrom(stats,na.fail)
-importFrom(stats,na.omit)
-importFrom(stats,pchisq)
-importFrom(stats,poisson)
-importFrom(stats,rnorm)
-importFrom(stats,sd)
-importFrom(stats,setNames)
-importFrom(stats,var)
-importFrom(stats,xtabs)
+importFrom(stats,
+  as.formula,
+  complete.cases,
+  getCall,
+  glm,
+  lm,
+  logLik,
+  median,
+  na.action,
+  na.fail,
+  na.omit,
+  pchisq,
+  poisson,
+  rnorm,
+  sd,
+  setNames,
+  var,
+  xtabs
+)
 useDynLib(lefko3)

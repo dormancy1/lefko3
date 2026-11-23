@@ -204,7 +204,7 @@ runs a series of tests to assess which statistical distributions match the
 variables within these datasets. The input format is equivalent to the input
 format of function \code{\link{modelsearch}()}, allowing users to assess
 vital rate variable distributions assuming the same internal dataset
-subsetting used by the latter function and simply copy and pasting the
+subsetting used by the latter function and simply copying and pasting the
 parameter options from one function to the other.
 }
 \section{Notes}{

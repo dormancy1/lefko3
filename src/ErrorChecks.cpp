@@ -422,7 +422,7 @@ Rcpp::List cond_hmpm(List hmpm, Nullable<CharacterVector> matchoice = R_NilValue
 //' @param lDiff An object of class \code{lefkoDiff}.
 //' @param ref Choice of mpm to use as reference. Defaults to \code{1}, which
 //' means that the \code{ahstages}, \code{hstages}, and \code{labels} elements
-//' for mpm1 will be used for all calculations. Only \code{1} amd \code{2} are
+//' for mpm1 will be used for all calculations. Only \code{1} and \code{2} are
 //' possible inputs.
 //' @param matchoice A character denoting whether to use A, U, or F matrices.
 //' Defaults to \code{A} matrices.

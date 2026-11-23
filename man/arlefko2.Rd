@@ -45,7 +45,7 @@ arlefko2(
 \item{data}{A vertical demographic data frame, with variables corresponding 
 to the naming conventions in functions \code{\link{verticalize3}()} and
 \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
-class \code{hfv_list}.}
+class \code{hfvlist}.}
 
 \item{stageframe}{A stageframe object that includes information on the size,
 observation status, propagule status, reproduction status, immaturity status,
@@ -79,7 +79,7 @@ should match those used in the \code{stageframe} exactly. If left blank, then
 noted in the associated \code{stageframe}.}
 
 \item{alive}{A vector of names of binomial variables corresponding to status
-as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 ans \emph{t},
+as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 and \emph{t},
 respectively.}
 
 \item{obsst}{A vector of names of binomial variables corresponding to
@@ -125,7 +125,7 @@ below).}
 \item{repmatrix}{An optional reproduction matrix. This matrix is composed
 mostly of 0s, with non-zero entries acting as element identifiers and
 multipliers for fecundity (with 1 equaling full fecundity). If left blank,
-and no \code{supplement} is provided, then \code{aflefko2()} will assume that
+and no \code{supplement} is provided, then \code{arlefko2()} will assume that
 all stages marked as reproductive produce offspring at 1x that of estimated
 fecundity, and that offspring production will yield the first stage noted as
 propagule or immature.  To prevent this behavior, input just \code{0}, which
@@ -138,8 +138,8 @@ matrix.}
 either with given values or with other estimated transitions. Note that this
 function supplements overwrite data provided in \code{supplement}.}
 
-\item{agecol}{The variable name or column number coding for age in time
-\emph{t}.}
+\item{agecol}{The variable name or column corresponding to age in time
+\emph{t}. Defaults to \code{"obsage"}.}
 
 \item{yearcol}{The variable name or column number corresponding to occasion 
 \emph{t} in the dataset.}
@@ -188,7 +188,7 @@ information used in matrix calculation within the output list. Defaults to
 \code{FALSE}.}
 
 \item{initial_nan}{A single logical value indicating whether to initialize
-matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
 be used with sparse matrices.}
 
 \item{sparse_output}{A logical value indicating whether to output matrices
@@ -196,9 +196,9 @@ in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 output in standard matrix format.}
 }
 \value{
-If the user inputs a standard \code{hfv_data} object in argument
+If the user inputs a standard \code{hfvdata} object in argument
 \code{data}, then this function will return an object of class
-\code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+\code{lefkoMat}. If the user inputs an object of class \code{hfvlist} in
 argument \code{data}, then the output will be an object of class
 \code{lefkoMatList}, in which each element is an object of class
 \code{lefkoMat}.
@@ -224,9 +224,7 @@ row in each age-by-stage matrix.}
 \item{ahstages}{A data frame detailing the characteristics of associated
 ahistorical stages, in the form of a modified stageframe that includes
 status as an entry stage through reproduction.}
-\item{labels}{A data frame giving the patch and year of each matrix in order.
-In \code{aflefko2()}, only one population may be analyzed at once, and so
-\code{pop = NA}}
+\item{labels}{A data frame giving the patch and year of each matrix in order.}
 \item{dataqc}{A vector showing the numbers of individuals and rows in the
 vertical dataset used as input.}
 \item{matrixqc}{A short vector describing the number of non-zero elements in
@@ -254,7 +252,7 @@ immature and propagule stages.
 Users may at times wish to estimate MPMs using a dataset incorporating
 multiple patches or subpopulations. Should the aim of analysis be a general
 MPM that does not distinguish these patches or subpopulations, the
-\code{patchcol} variable should be left to \code{NA}, which is the default.
+\code{patchcol} variable should be left as \code{NA}, which is the default.
 Otherwise the variable identifying patch needs to be named.
 
 Input options including multiple variable names must be entered in the order

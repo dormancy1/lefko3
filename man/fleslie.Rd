@@ -154,7 +154,7 @@ model for survival probability. Defaults to \code{0}.}
 \item{fec_dev}{A numeric value to be added to the y-intercept in the linear
 model for fecundity. Defaults to \code{0}.}
 
-\item{density}{A numeric value indicating density value to use to propagate
+\item{density}{A numeric value indicating the density value to use to propagate
 matrices. Only needed if density is an explanatory term used in linear
 models. Defaults to \code{NA}.}
 
@@ -203,7 +203,7 @@ output in standard matrix format.}
 \value{
 If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 object in argument \code{modelsuite}, or individual vital rate models are
-input separately,then this function will return an object of class
+input separately, then this function will return an object of class
 \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 in argument \code{modelsuite}, then the output will be an object of class
 \code{lefkoMatList}, in which each element is an object of class

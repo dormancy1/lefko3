@@ -3483,7 +3483,7 @@ Rcpp::List stovokor(const StringVector& surv, const StringVector& obs,
 //' name as \code{none} if \code{FALSE}, or as the default \code{modelparams}
 //' name if \code{TRUE}. Defaults to \code{FALSE}.
 //' 
-//' @return A three column data frame, of which the first describes the
+//' @return A three-column data frame, of which the first describes the
 //' parameters in reasonably plain English, the second gives the name of the
 //' parameter within the MPM generating functions, and the third is to be
 //' edited with the names of the variables as they appear in the models.
@@ -3511,12 +3511,12 @@ Rcpp::DataFrame create_pm(bool name_terms = false) {
 
 //' Convert modelextract Coefficient Vector to vrm_frame Vector
 //' 
-//' @name vrmf_inator
-//' 
 //' This function reorders the coefficient vector developed by function
 //' \code{modelextract} in the \code{lefko3} C++ header file \code{main_utils.h}
 //' to match the order required to create the \code{vrm_frame} element within
 //' a new \code{vrm_input} object.
+//' 
+//' @name vrmf_inator
 //' 
 //' @param coef_vec The main \code{coefficients} vector from the model proxy
 //' object used.
@@ -3801,7 +3801,7 @@ Rcpp::NumericVector vrmf_inator (NumericVector coef_vec, bool zi = false) {
 //' 
 //' This function takes a \code{lefkoMod} object, which consists of vital rate
 //' models, their associated \code{dredge} model tables, and related metadata,
-//' and converts them to minimal data frame lists useable in MPM creation and
+//' and converts them to minimal data frame lists usable in MPM creation and
 //' projection. The main advantage to using this approach is in memory savings.
 //' 
 //' @name miniMod
@@ -3824,7 +3824,7 @@ Rcpp::NumericVector vrmf_inator (NumericVector coef_vec, bool zi = false) {
 //' variable. Only needed if object \code{hfv_data} not provided but individual
 //' covariates used in vital rate models.
 //' @param all_indcovb The name of individual covariate a if quantitative and
-//' non-categorical, or of the categories used if the cvoariate is a factor
+//' non-categorical, or of the categories used if the covariate is a factor
 //' variable. Only needed if object \code{hfv_data} not provided but individual
 //' covariates used in vital rate models.
 //' @param all_indcovc The name of individual covariate a if quantitative and

@@ -192,7 +192,7 @@
 #' linear model for juvenile reproduction probability. Defaults to \code{0}.
 #' @param jmatst_dev A numeric value to be added to the y-intercept in the
 #' linear model for juvenile maturity probability. Defaults to \code{0}.
-#' @param density A numeric value indicating density value to use to propagate
+#' @param density A numeric value indicating the density value to use to propagate
 #' matrices. Only needed if density is an explanatory term used in one or more
 #' vital rate models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
@@ -237,7 +237,7 @@
 #'
 #' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 #' object in argument \code{modelsuite}, or individual vital rate models are
-#' input separately,then this function will return an object of class
+#' input separately, then this function will return an object of class
 #' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 #' in argument \code{modelsuite}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
@@ -258,7 +258,8 @@
 #' \item{hstages}{A data frame matrix showing the pairing of ahistorical stages
 #' used to create historical stage pairs.}
 #' \item{agestages}{A data frame showing age-stage pairs. In this function, it
-#' is set to \code{NA}. Only used in output to function \code{aflefko2}().}
+#' is set to \code{NA}. Only used in output from functions \code{aflefko2}() and
+#' \code{arlefko2()}.}
 #' \item{ahstages}{A data frame detailing the characteristics of associated
 #' ahistorical stages, in the form of a modified stageframe that includes
 #' status as an entry stage through reproduction.}
@@ -288,7 +289,7 @@
 #' advise this approach, as populations should typically be treated as
 #' statistically independent).
 #' 
-#' The default behavior of this function is to estimate fecundity with regards
+#' The default behavior of this function is to estimate fecundity with regard
 #' to transitions specified via associated fecundity multipliers in the
 #' \code{supplement}. If this field is left empty, then fecundity will be
 #' estimated at full for all transitions leading from reproductive stages to
@@ -302,10 +303,9 @@
 #'
 #' Input options including multiple variable names must be entered in the order
 #' of variables in occasion \emph{t}+1, \emph{t}, and \emph{t}-1. Rearranging
-#' the order will lead to erroneous calculations, and will may lead to fatal
-#' errors.
+#' the order will lead to erroneous calculations, and may lead to fatal errors.
 #' 
-#' The \code{ipm_method} function gives the option of using two different means
+#' The \code{ipm_method} argument gives the option of using two different means
 #' of estimating the probability of size transition. The midpoint method
 #' (\code{"midpoint"}) refers to the method in which the probability is
 #' estimated by first estimating the probability associated with transition from
@@ -316,7 +316,7 @@
 #' associated with a specific size not totaling to 1.0 and even specific size
 #' transition probabilities capable of being estimated at values greater than
 #' 1.0. The alternative and default method, \code{"CDF"}, uses the corresponding
-#' cumulative density function to estimate the probability of size transition as
+#' cumulative distribution function to estimate the probability of size transition as
 #' the cumulative probability of size transition at the greater limit of the
 #' size class minus the cumulative probability of size transition at the lower
 #' limit of the size class. This latter method avoids this bias. Note, however,
@@ -326,8 +326,8 @@
 #' Under the Gaussian and gamma size distributions, the number of estimated
 #' parameters may differ between the two \code{ipm_method} settings. Because
 #' the midpoint method has a tendency to incorporate upward bias in the
-#' estimation of size transition probabilities, it is more likely to yield non-
-#' zero values when the true probability is extremely close to 0. This will
+#' estimation of size transition probabilities, it is more likely to yield
+#' non-zero values when the true probability is extremely close to 0. This will
 #' result in the \code{summary.lefkoMat} function yielding higher numbers of
 #' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 #' 
@@ -820,7 +820,7 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' linear model for juvenile reproduction probability. Defaults to \code{0}.
 #' @param jmatst_dev A numeric value to be added to the y-intercept in the
 #' linear model for juvenile maturity probability. Defaults to \code{0}.
-#' @param density A numeric value indicating density value to use to propagate
+#' @param density A numeric value indicating the density value to use to propagate
 #' matrices. Only needed if density is an explanatory term used in one or more
 #' vital rate models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
@@ -861,7 +861,7 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #'
 #' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 #' object in argument \code{modelsuite}, or individual vital rate models are
-#' input separately,then this function will return an object of class
+#' input separately, then this function will return an object of class
 #' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 #' in argument \code{modelsuite}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
@@ -883,7 +883,8 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' used to create historical stage pairs. Set to \code{NA} for ahistorical
 #' matrices.}
 #' \item{agestages}{A data frame showing age-stage pairs. In this function, it
-#' is set to \code{NA}. Only used in output to function \code{aflefko2}().}
+#' is set to \code{NA}. Only used in output from functions \code{aflefko2}() and
+#' \code{arlefko2()}.}
 #' \item{ahstages}{A data frame detailing the characteristics of associated
 #' ahistorical stages, in the form of a modified stageframe that includes
 #' status as an entry stage through reproduction.}
@@ -937,7 +938,7 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' states of those variables within the \code{modelsuite}. If they do not match,
 #' then they will be treated as zeroes in vital rate estimation.
 #' 
-#' The \code{ipm_method} function gives the option of using two different means
+#' The \code{ipm_method} argument gives the option of using two different means
 #' of estimating the probability of size transition. The midpoint method
 #' (\code{"midpoint"}) refers to the method in which the probability is
 #' estimated by first estimating the probability associated with transition from
@@ -948,7 +949,7 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' associated with a specific size not totaling to 1.0 and even specific size
 #' transition probabilities capable of being estimated at values greater than
 #' 1.0. The alternative and default method, \code{"CDF"}, uses the corresponding
-#' cumulative density function to estimate the probability of size transition as
+#' cumulative distribution function to estimate the probability of size transition as
 #' the cumulative probability of size transition at the greater limit of the
 #' size class minus the cumulative probability of size transition at the lower
 #' limit of the size class. The latter method avoids this bias. Note, however,
@@ -958,8 +959,8 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' Under the Gaussian and gamma size distributions, the number of estimated
 #' parameters may differ between the two \code{ipm_method} settings. Because
 #' the midpoint method has a tendency to incorporate upward bias in the
-#' estimation of size transition probabilities, it is more likely to yield non-
-#' zero values when the true probability is extremely close to 0. This will
+#' estimation of size transition probabilities, it is more likely to yield
+#' non-zero values when the true probability is extremely close to 0. This will
 #' result in the \code{summary.lefkoMat} function yielding higher numbers of
 #' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 #' 
@@ -1422,7 +1423,7 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' linear model for juvenile reproduction probability. Defaults to \code{0}.
 #' @param jmatst_dev A numeric value to be added to the y-intercept in the
 #' linear model for juvenile maturity probability. Defaults to \code{0}.
-#' @param density A numeric value indicating density value to use to propagate
+#' @param density A numeric value indicating the density value to use to propagate
 #' matrices. Only needed if density is an explanatory term used in one or more
 #' vital rate models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
@@ -1471,7 +1472,7 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #'
 #' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 #' object in argument \code{modelsuite}, or individual vital rate models are
-#' input separately,then this function will return an object of class
+#' input separately, then this function will return an object of class
 #' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 #' in argument \code{modelsuite}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
@@ -1551,7 +1552,7 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' states of those variables within the \code{modelsuite}. If they do not match,
 #' then they will be treated as zeroes in vital rate estimation.
 #' 
-#' The \code{ipm_method} function gives the option of using two different means
+#' The \code{ipm_method} argument gives the option of using two different means
 #' of estimating the probability of size transition. The midpoint method
 #' (\code{"midpoint"}) refers to the method in which the probability is
 #' estimated by first estimating the probability associated with transition from
@@ -1562,7 +1563,7 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' associated with a specific size not totaling to 1.0 and even specific size
 #' transition probabilities capable of being estimated at values greater than
 #' 1.0. The alternative and default method, \code{"CDF"}, uses the corresponding
-#' cumulative density function to estimate the probability of size transition as
+#' cumulative distribution function to estimate the probability of size transition as
 #' the cumulative probability of size transition at the greater limit of the
 #' size class minus the cumulative probability of size transition at the lower
 #' limit of the size class. The latter method avoids this bias. Note, however,
@@ -1572,8 +1573,8 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' Under the Gaussian and gamma size distributions, the number of estimated
 #' parameters may differ between the two \code{ipm_method} settings. Because
 #' the midpoint method has a tendency to incorporate upward bias in the
-#' estimation of size transition probabilities, it is more likely to yield non-
-#' zero values when the true probability is extremely close to 0. This will
+#' estimation of size transition probabilities, it is more likely to yield
+#' non-zero values when the true probability is extremely close to 0. This will
 #' result in the \code{summary.lefkoMat} function yielding higher numbers of
 #' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 #' 
@@ -1850,7 +1851,7 @@ aflefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' model for survival probability. Defaults to \code{0}.
 #' @param fec_dev A numeric value to be added to the y-intercept in the linear
 #' model for fecundity. Defaults to \code{0}.
-#' @param density A numeric value indicating density value to use to propagate
+#' @param density A numeric value indicating the density value to use to propagate
 #' matrices. Only needed if density is an explanatory term used in linear
 #' models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
@@ -1887,7 +1888,7 @@ aflefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #'
 #' @return If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 #' object in argument \code{modelsuite}, or individual vital rate models are
-#' input separately,then this function will return an object of class
+#' input separately, then this function will return an object of class
 #' \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 #' in argument \code{modelsuite}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
@@ -2041,7 +2042,7 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' @param data A vertical demographic data frame, with variables corresponding 
 #' to the naming conventions in functions \code{\link{verticalize3}()} and
 #' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
-#' class \code{hfv_list}.
+#' class \code{hfvlist}.
 #' @param stageframe A stageframe object that includes information on the size,
 #' observation status, propagule status, reproduction status, immaturity status,
 #' and maturity status of each ahistorical stage.
@@ -2055,7 +2056,7 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' @param patch A variable designating which patches or subpopulations will have
 #' matrices estimated. Should be set to specific patch names, or to \code{"all"}
 #' if matrices should be estimated for all patches. Defaults to \code{NA}, in
-#' which case patch designations are ignored..
+#' which case patch designations are ignored.
 #' @param censor If \code{TRUE}, then data will be removed according to the
 #' variable set in \code{censorcol}, such that only data with censor values
 #' equal to \code{censorkeep} will remain. Defaults to \code{FALSE}.
@@ -2148,15 +2149,15 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
 #' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #'
-#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' @return If the user inputs a standard \code{hfvdata} object in argument
 #' \code{data}, then this function will return an object of class
-#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfvlist} in
 #' argument \code{data}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
 #' \code{lefkoMat}.
@@ -2176,7 +2177,8 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' \item{hstages}{A data frame matrix showing the pairing of ahistorical stages
 #' used to create historical stage pairs.}
 #' \item{agestages}{A data frame showing age-stage pairs. In this function, it
-#' is set to NA. Only used in output to function \code{aflefko2}().}
+#' is set to NA. Only used in output from functions \code{aflefko2}() and
+#' \code{arlefko2()}.}
 #' \item{ahstages}{A data frame detailing the characteristics of associated
 #' ahistorical stages, in the form of a modified stageframe that includes
 #' status as an entry stage through reproduction.}
@@ -2199,7 +2201,7 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general
 #' MPM that does not distinguish these patches or subpopulations, the
-#' \code{patchcol} variable should be left to \code{NA}, which is the default.
+#' \code{patchcol} variable should be left as \code{NA}, which is the default.
 #' Otherwise the variable identifying patch needs to be named.
 #'
 #' Input options including multiple variable names must be entered in the order
@@ -2358,7 +2360,7 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param data A vertical demographic data frame, with variables corresponding 
 #' to the naming conventions in functions \code{\link{verticalize3}()} and
 #' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
-#' class \code{hfv_list}.
+#' class \code{hfvlist}.
 #' @param stageframe A stageframe object that includes information on the size,
 #' observation status, propagule status, reproduction status, immaturity status,
 #' and maturity status of each ahistorical stage.
@@ -2372,7 +2374,7 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param patch A variable designating which patches or subpopulations will have
 #' matrices estimated. Should be set to specific patch names, or to \code{"all"}
 #' if matrices should be estimated for all patches. Defaults to \code{NA}, in
-#' which case patch designations are ignored..
+#' which case patch designations are ignored.
 #' @param censor If \code{TRUE}, then data will be removed according to the
 #' variable set in \code{censorcol}, such that only data with censor values
 #' equal to \code{censorkeep} will remain. Defaults to \code{FALSE}.
@@ -2457,15 +2459,15 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
 #' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' @return If the user inputs a standard \code{hfvdata} object in argument
 #' \code{data}, then this function will return an object of class
-#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfvlist} in
 #' argument \code{data}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
 #' \code{lefkoMat}.
@@ -2485,7 +2487,8 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' \item{hstages}{A data frame matrix showing the pairing of ahistorical stages
 #' used to create historical stage pairs. Set to NA for ahistorical matrices.}
 #' \item{agestages}{A data frame showing age-stage pairs. In this function, it
-#' is set to NA. Only used in output to function \code{aflefko2}().}
+#' is set to NA. Only used in output from functions \code{aflefko2}() and
+#' \code{arlefko2()}.}
 #' \item{ahstages}{A data frame detailing the characteristics of associated
 #' ahistorical stages, in the form of a modified stageframe that includes
 #' status as an entry stage through reproduction.}
@@ -2508,7 +2511,7 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general
 #' MPM that does not distinguish these patches or subpopulations, the
-#' \code{patchcol} variable should be left to \code{NA}, which is the default.
+#' \code{patchcol} variable should be left as \code{NA}, which is the default.
 #' Otherwise the variable identifying patch needs to be named.
 #'
 #' Input options including multiple variable names must be entered in the order
@@ -2647,7 +2650,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param data A vertical demographic data frame, with variables corresponding 
 #' to the naming conventions in functions \code{\link{verticalize3}()} and
 #' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
-#' class \code{hfv_list}.
+#' class \code{hfvlist}.
 #' @param stageframe A stageframe object that includes information on the size,
 #' observation status, propagule status, reproduction status, immaturity status,
 #' and maturity status of each ahistorical stage. Should also incorporate bin
@@ -2674,7 +2677,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' \code{alive}, \code{size}, \code{repst}, and \code{matst} to characteristics
 #' noted in the associated \code{stageframe}.
 #' @param alive A vector of names of binomial variables corresponding to status
-#' as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 ans \emph{t},
+#' as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 and \emph{t},
 #' respectively.
 #' @param obsst A vector of names of binomial variables corresponding to
 #' observation status in occasions \emph{t}+1, \emph{t}, and \emph{t}-1,
@@ -2711,7 +2714,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param repmatrix An optional reproduction matrix. This matrix is composed
 #' mostly of 0s, with non-zero entries acting as element identifiers and
 #' multipliers for fecundity (with 1 equaling full fecundity). If left blank,
-#' and no \code{supplement} is provided, then \code{aflefko2()} will assume that
+#' and no \code{supplement} is provided, then \code{arlefko2()} will assume that
 #' all stages marked as reproductive produce offspring at 1x that of estimated
 #' fecundity, and that offspring production will yield the first stage noted as
 #' propagule or immature.  To prevent this behavior, input just \code{0}, which
@@ -2732,8 +2735,6 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' the dataset.
 #' @param indivcol The variable name or column number coding individual
 #' identity.
-#' @param agecol The variable name or column number coding for age in time
-#' \emph{t}.
 #' @param censorcol The variable name or column number denoting the censor
 #' status. Only needed if \code{censor = TRUE}.
 #' @param censorkeep The value of the censor variable denoting data elements to
@@ -2760,15 +2761,15 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
 #' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' @return If the user inputs a standard \code{hfvdata} object in argument
 #' \code{data}, then this function will return an object of class
-#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfvlist} in
 #' argument \code{data}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
 #' \code{lefkoMat}.
@@ -2794,9 +2795,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' \item{ahstages}{A data frame detailing the characteristics of associated
 #' ahistorical stages, in the form of a modified stageframe that includes
 #' status as an entry stage through reproduction.}
-#' \item{labels}{A data frame giving the patch and year of each matrix in order.
-#' In \code{aflefko2()}, only one population may be analyzed at once, and so
-#' \code{pop = NA}}
+#' \item{labels}{A data frame giving the patch and year of each matrix in order.}
 #' \item{dataqc}{A vector showing the numbers of individuals and rows in the
 #' vertical dataset used as input.}
 #' \item{matrixqc}{A short vector describing the number of non-zero elements in
@@ -2814,7 +2813,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general
 #' MPM that does not distinguish these patches or subpopulations, the
-#' \code{patchcol} variable should be left to \code{NA}, which is the default.
+#' \code{patchcol} variable should be left as \code{NA}, which is the default.
 #' Otherwise the variable identifying patch needs to be named.
 #'
 #' Input options including multiple variable names must be entered in the order
@@ -2922,10 +2921,10 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' @param data A vertical demographic data frame, with variables corresponding 
 #' to the naming conventions in functions \code{\link{verticalize3}()} and
 #' \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
-#' class \code{hfv_list}.
+#' class \code{hfvlist}.
 #' @param start_age The age from which to start the matrix. Defaults to
-#' \code{NA}, age \code{1} is used if \code{prebreeding = TRUE}, and age
-#' \code{0} is used if \code{prebreeding = FALSE}.
+#' \code{NA}, in which case age \code{1} is used if \code{prebreeding = TRUE},
+#' and age \code{0} is used if \code{prebreeding = FALSE}.
 #' @param last_age The final age to use in the matrix. Defaults to \code{NA}, in
 #' which case the highest age in the dataset is used.
 #' @param continue A logical value designating whether to allow continued
@@ -2938,7 +2937,7 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' to \code{NA}, which is interpreted to mean that fecundity should be assessed
 #' until the final observed age.
 #' @param alive A vector of names of binomial variables corresponding to status
-#' as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 ans \emph{t},
+#' as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 and \emph{t},
 #' respectively.
 #' @param repst A vector of names of variables coding reproductive status in
 #' occasions \emph{t}+1 and \emph{t}, respectively. Defaults to 
@@ -2996,15 +2995,15 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' information used in matrix calculation within the output list. Defaults to
 #' \code{FALSE}.
 #' @param initial_nan A single logical value indicating whether to initialize
-#' matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+#' matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
 #' be used with sparse matrices.
 #' @param sparse_output A logical value indicating whether to output matrices
 #' in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 #' output in standard matrix format.
 #' 
-#' @return If the user inputs a standard \code{hfv_data} object in argument
+#' @return If the user inputs a standard \code{hfvdata} object in argument
 #' \code{data}, then this function will return an object of class
-#' \code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+#' \code{lefkoMat}. If the user inputs an object of class \code{hfvlist} in
 #' argument \code{data}, then the output will be an object of class
 #' \code{lefkoMatList}, in which each element is an object of class
 #' \code{lefkoMat}.
@@ -3024,7 +3023,8 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' \item{hstages}{A data frame matrix showing the pairing of ahistorical stages
 #' used to create historical stage pairs. Set to NA for ahistorical matrices.}
 #' \item{agestages}{A data frame showing age-stage pairs. In this function, it
-#' is set to NA. Only used in output to function \code{aflefko2}().}
+#' is set to NA. Only used in output from functions \code{aflefko2}() and
+#' \code{arlefko2()}.}
 #' \item{ahstages}{A data frame detailing the characteristics of associated
 #' ahistorical stages, in the form of a modified stageframe that includes
 #' status as an entry stage through reproduction.}
@@ -3038,14 +3038,14 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' in function-based MPMs. Empty in this function.}
 #'
 #' @section Notes:
-#' In order to accomodate survival to time \emph{t}+1 in the final year of a
+#' In order to accommodate survival to time \emph{t}+1 in the final year of a
 #' study, the maximum age assessed if no input \code{last_age} is provided is
 #' one time step past the final described age.
 #' 
 #' Users may at times wish to estimate MPMs using a dataset incorporating
 #' multiple patches or subpopulations. Should the aim of analysis be a general
 #' MPM that does not distinguish these patches or subpopulations, the
-#' \code{patchcol} variable should be left to \code{NA}, which is the default.
+#' \code{patchcol} variable should be left as \code{NA}, which is the default.
 #' Otherwise the variable identifying patch needs to be named.
 #'
 #' Input options including multiple variable names must be entered in the order
@@ -3130,8 +3130,8 @@ rleslie <- function(data, start_age = NA, last_age = NA, continue = TRUE,
 #' Under the Gaussian and gamma size distributions, the number of estimated
 #' parameters may differ between the two \code{ipm_method} settings. Because
 #' the midpoint method has a tendency to incorporate upward bias in the
-#' estimation of size transition probabilities, it is more likely to yield non-
-#' zero values when the true probability is extremely close to 0. This will
+#' estimation of size transition probabilities, it is more likely to yield
+#' non-zero values when the true probability is extremely close to 0. This will
 #' result in the \code{summary.lefkoMat} function yielding higher numbers of
 #' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 #' 
@@ -3448,11 +3448,11 @@ summary.lefkoMat <- function(object, colsums = TRUE, check_cycle = TRUE, ...) {
 #' the mean number of individuals, and summaries of the column sums of the survival-transition
 #' matrices across all \code{lefkoMat} objects.
 #' 
-#' if \code{elem_summaries = TRUE}, then \code{\link{summary.lefkoMat}{}} output
+#' If \code{elem_summaries = TRUE}, then \code{\link{summary.lefkoMat}{}} output
 #' is also shown for each \code{lefkoMat} object per entered \code{lefkoMatList}
 #' object.
 #' 
-#' Stage discontinuities may also be also checked across all \code{lefkoMat}
+#' Stage discontinuities may also be checked across all \code{lefkoMat}
 #' objects with function \code{cycle_check}. This function will also yield
 #' warnings if any survival-transition matrices include elements outside of the
 #' interval [0,1], if any fecundity matrices contain negative elements, and if
@@ -3462,8 +3462,8 @@ summary.lefkoMat <- function(object, colsums = TRUE, check_cycle = TRUE, ...) {
 #' Under the Gaussian and gamma size distributions, the number of estimated
 #' parameters may differ between the two \code{ipm_method} settings. Because
 #' the midpoint method has a tendency to incorporate upward bias in the
-#' estimation of size transition probabilities, it is more likely to yield non-
-#' zero values when the true probability is extremely close to 0. This will
+#' estimation of size transition probabilities, it is more likely to yield
+#' non-zero values when the true probability is extremely close to 0. This will
 #' result in the \code{summary.lefkoMat} function yielding higher numbers of
 #' estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{sup_skeleton}
 \alias{sup_skeleton}
-\title{Create A Supplement Skeleton Data Frame}
+\title{Create a Supplement Skeleton Data Frame}
 \usage{
 sup_skeleton(rows = NULL)
 }
@@ -14,7 +14,7 @@ A data frame with the format of a supplement, of class
 \code{lefkoSD}.
 }
 \description{
-Create A Supplement Skeleton Data Frame
+Create a Supplement Skeleton Data Frame
 }
 \examples{
 new_supp <- sup_skeleton(3)

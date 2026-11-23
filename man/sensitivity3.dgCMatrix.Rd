@@ -23,8 +23,8 @@ This function returns a single deterministic sensitivity matrix.
 \description{
 \code{sensitivity3.dgCMatrix()} returns the sensitivities of \eqn{\lambda} to
 elements of a single, sparse matrix. Because this handles only one matrix,
-sensitivities are inherently deterministic and based on the dominant eigen
-value as the best metric of the population growth rate.
+sensitivities are inherently deterministic and based on the dominant
+eigenvalue as the best metric of the population growth rate.
 }
 \section{Notes}{
 

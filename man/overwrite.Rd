@@ -52,13 +52,13 @@ transition.}
 occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 deVries format is desired. This should be entered as \code{1}, \code{S}, or
 \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-fecundity transitions. Defaults to \code{1} for survival transition, with
+fecundity transition. Defaults to \code{1} for survival transition, with
 impacts only on the construction of deVries-format hMPMs.}
 }
 \value{
 A data frame that puts the above vectors together and can be used as
 input in \code{\link{flefko3}()}, \code{\link{flefko2}()},
-\code{\link{rlefko3}()},\code{\link{rlefko2}()}, and
+\code{\link{rlefko3}()}, \code{\link{rlefko2}()}, and
 \code{\link{aflefko2}()}.
 
 Variables in this data frame include the following:
@@ -76,7 +76,7 @@ the transition designated by \code{stage3}, \code{stage2}, and \code{stage1}.}
 occasion \emph{t}+1 is a survival-transition probability (1) or a fecundity
 rate (2).}
 \item{convtype_t12}{Designates whether the transition from occasion
-\emph{t}-1 to occasion \emph{t} is a survival transition probability (1), a
+\emph{t}-1 to occasion \emph{t} is a survival transition probability (1) or a
 fecundity rate (2).}
 }
 \description{

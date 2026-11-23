@@ -501,7 +501,7 @@ individual. Defaults to \code{1}.}
 reproduction in occasion \emph{t}+1, given survival to and observation in
 that occasion of an individual that was immature in occasion \emph{t}. This
 model is technically not a model of reproduction probability for individuals
-that are immature, rather reproduction probability here is given for
+that are immature rather, reproduction probability here is given for
 individuals that are mature in occasion \emph{t}+1 but immature in occasion
 \emph{t}. Defaults to \code{1}.}
 \item{juv_maturity_model}{Best-fit model of the binomial probability of
@@ -536,7 +536,7 @@ the best-fit model.}
 \item{qc}{Data frame with five variables: 1) Name of vital rate, 2) number
 of individuals used to model that vital rate, 3) number of individual
 transitions used to model that vital rate, 4) parameter distribution used to
-model the vital rats, and 5) accuracy of model, given as detailed in Notes
+model the vital rate, and 5) accuracy of model, given as detailed in Notes
 section.}
 \item{subdata}{An optional list of data frames, each of which is the data
 frame used to develop each model in the \code{lefkoMod} object, in order.}
@@ -544,7 +544,7 @@ frame used to develop each model in the \code{lefkoMod} object, in order.}
 \description{
 Function \code{modelsearch()} runs exhaustive model building and selection
 for each vital rate needed to estimate a function-based MPM or IPM. It
-returns best-fit models for each vital rate, model table showing all models
+returns best-fit models for each vital rate, model tables showing all models
 tested, and model quality control data. The final output can be used as input
 in other functions within this package.
 }
@@ -570,12 +570,12 @@ constant rate or probability.
 Including annual covariates is easy via the arguments \code{annucova},
 \code{annucovb}, and \code{annucovc} together with \code{test.annucova},
 \code{test.annucovb}, and \code{test.annucovc}. Rather than incorporate
-a nnual covariates into the dataset, the values corresponding to each year
+annual covariates into the dataset, the values corresponding to each year
 may be concatenated into a numeric vector, and then used in one of these
 three arguments. Function \code{modelsearch()} will then append the value
 associated with each year into the dataset, and proceed with model building.
-Two-way interactions can be explored with other main effects fixed variables
-by setting \code{interactions = TRUE}.
+Two-way interactions among fixed main-effect variables can be explored by
+setting \code{interactions = TRUE}.
 
 Setting \code{suite = "cons"} prevents the inclusion of size and reproductive
 status as fixed, independent factors in modeling. However, it does not
@@ -633,7 +633,7 @@ imposed by the \code{\link[MuMIn]{dredge}()} function in package
 Accuracy of vital rate models is calculated differently depending on vital
 rate and assumed distribution. For all vital rates assuming a binomial
 distribution, including survival, observation status, reproductive status,
-and juvenile version of these, accuracy is calculated as the percent of
+and juvenile versions of these, accuracy is calculated as the percent of
 predicted responses equal to actual responses. In all other models, accuracy
 is actually assessed as a simple R-squared in which the observed response
 values per data subset are compared to the predicted response values
@@ -650,8 +650,8 @@ can be dealt with at the start of modeling by setting
 \code{historical = TRUE} for the historical case.
 
 This function handles generalized linear models (GLMs) under zero-inflated
-distributions using the \code{\link[pscl]{zeroinfl}()} function, and zero-
-truncated distributions using the \code{\link[VGAM]{vglm}()} function. Model
+distributions using the \code{\link[pscl]{zeroinfl}()} function, and
+zero-truncated distributions using the \code{\link[VGAM]{vglm}()} function. Model
 dredging may fail with these functions, leading to the global model being
 accepted as the best-fit model. However, model dredges of mixed models work
 for all distributions. We encourage the use of mixed models in all cases.
@@ -677,7 +677,7 @@ than the default, because only survival and fecundity should be estimated in
 these cases. Also, the \code{suite} setting can be set to either \code{age}
 or \code{cons}, as the results will be exactly the same.
 
-Users wishing to test age, density, group, or individual covariates, must
+Users wishing to test age, density, group, or individual covariates must
 include \code{test.age = TRUE}, \code{test.density = TRUE},
 \code{test.group = TRUE}, or \code{test.indcova = TRUE} (or
 \code{test.indcovb = TRUE} or \code{test.indcovc = TRUE}, whichever is most

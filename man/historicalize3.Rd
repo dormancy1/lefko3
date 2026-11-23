@@ -108,13 +108,13 @@ tertiary size entry in occasion \emph{t}+1.}
 
 \item{repstra2col}{A variable name or column number corresponding to the
 production of reproductive structures, such as flowers, in occasion \emph{t}.
-This can be binomial or count data, and is used to in analysis of the
+This can be binomial or count data, and is used in analysis of the
 probability of reproduction.}
 
 \item{repstra3col}{A variable name or column number corresponding to the
 production of reproductive structures, such as flowers, in occasion
-\emph{t}+1. This can be binomial or count data, and is used to in analysis
-of the probability of reproduction.}
+\emph{t}+1. This can be binomial or count data, and is used in analysis of
+the probability of reproduction.}
 
 \item{repstrb2col}{A second variable name or column number corresponding to
 the production of reproductive structures, such as flowers, in occasion
@@ -269,7 +269,7 @@ used if \code{stageassign} is set to a valid stageframe. Defaults to
 
 \item{NOasObs}{If \code{TRUE}, then will treat individuals that are
 interpreted as not observed in the dataset as though they were observed
-during stage assignment. This can be useful when a MPM is desired without
+during stage assignment. This can be useful when an MPM is desired without
 separation of observable and unobservable stages. Only used if
 \code{stageassign} is set to a stageframe. Defaults to \code{FALSE}.}
 
@@ -379,7 +379,7 @@ arise with no concurrent \code{NoMatch} entries. These are important warnings
 and suggest that there is likely a problem with the stageframe. The most
 common such problems are: 1) stages have significant overlap in
 characteristics, with the most common being overlapping size bins caused by
-erroneous definitions of size bin halfwidths; and 2) some individuals exist
+erroneous definitions of size bin half-widths; and 2) some individuals exist
 in states not defined within the stageframe.
 
 In some datasets with unobservable stages, observation status
@@ -387,7 +387,7 @@ In some datasets with unobservable stages, observation status
 is used that does not yield sizes greater than 0 in all cases in which
 individuals were observed. Such situations may arise, for example, in plants
 when leaf number is the dominant size variable used, but individuals
-occasionally occur with inflorescences but no leaves. In this instances,
+occasionally occur with inflorescences but no leaves. In these instances,
 it helps to mark related variables as \code{sizeb} and \code{sizec}, because
 observation status will be interpreted in relation to all 3 size variables.
 Alternatively, observation status may be input via \code{obs2col} and

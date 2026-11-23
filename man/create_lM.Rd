@@ -89,8 +89,8 @@ COMADRE.
 
 Lists may be composed of a mix of matrices in standard R format (i.e. created
 via the \code{matrix()} function), and in \code{dgCMatrix} sparse format
-(i.e. created via the \code{Matrix::Matrix()} function with
-\code{sparse = TRUE}.) All matrices will be forced to one or the other,
+(e.g. created via the \code{Matrix::Matrix()} function with
+\code{sparse = TRUE}). All matrices will be forced to one or the other,
 depending on the value given for the \code{sparse_output} argument.
 
 U and F decomposition assumes that elements holding fecundity values are
@@ -121,11 +121,11 @@ sample databases supplied within package \code{Rcompadre} will not work with
 this function.
 
 This function does not and cannot replace the wonderful tools offered to
-explore the COMPADRE and COMADRE packages. Please see package
-\code{Rcompadre} to use those tools. Note that function \code{import_Com()}
+explore the COMPADRE and COMADRE databases. Please see package
+\code{Rcompadre} to use those tools. Note that function \code{create_lM()}
 has no relationship to the \code{Rcompadre} development team.
 
-Function \code{import_Com()} requires that the dimensions of all matrices
+Function \code{create_lM()} requires that the dimensions of all matrices
 imported into a single \code{lefkoMat} object be equal.
 
 The reproductive and maturity status of each stage is determined by patterns

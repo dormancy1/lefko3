@@ -62,9 +62,9 @@ NULL values for the U and F elements.
 }
 \description{
 \code{elasticity3.list()} returns the elasticities of lambda to elements
-of a single matrix. This function can handle large and sparse matrices, and 
-so can be used with large historical matrices, IPMs, age x stage matrices,
-as well as smaller ahistorical matrices.
+of each matrix in a list of matrices. This function can handle large and
+sparse matrices, and so can be used with large historical matrices, IPMs,
+age x stage matrices, as well as smaller ahistorical matrices.
 }
 \section{Notes}{
 

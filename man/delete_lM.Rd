@@ -36,7 +36,7 @@ Function \code{delete_lM()} deletes matrices from \code{lefkoMat} and
 
 If \code{mat_num} is not provided, then at least one of \code{pop},
 \code{patch}, or \code{year} must be provided. If at least two of \code{pop},
-\code{patch}, and \code{year} are provided, then function \code{detele_lM()}
+\code{patch}, and \code{year} are provided, then function \code{delete_lM()}
 will identify matrices to remove as the intersection of provided inputs.
 }
 

@@ -40,11 +40,11 @@ rleslie(
 \item{data}{A vertical demographic data frame, with variables corresponding 
 to the naming conventions in functions \code{\link{verticalize3}()} and
 \code{\link{historicalize3}()}. Alternatively, a list of bootstrapped data of
-class \code{hfv_list}.}
+class \code{hfvlist}.}
 
 \item{start_age}{The age from which to start the matrix. Defaults to
-\code{NA}, age \code{1} is used if \code{prebreeding = TRUE}, and age
-\code{0} is used if \code{prebreeding = FALSE}.}
+\code{NA}, in which case age \code{1} is used if \code{prebreeding = TRUE},
+and age \code{0} is used if \code{prebreeding = FALSE}.}
 
 \item{last_age}{The final age to use in the matrix. Defaults to \code{NA}, in
 which case the highest age in the dataset is used.}
@@ -62,7 +62,7 @@ to \code{NA}, which is interpreted to mean that fecundity should be assessed
 until the final observed age.}
 
 \item{alive}{A vector of names of binomial variables corresponding to status
-as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 ans \emph{t},
+as alive (\code{1}) or dead (\code{0}) in occasions \emph{t}+1 and \emph{t},
 respectively.}
 
 \item{repst}{A vector of names of variables coding reproductive status in
@@ -141,7 +141,7 @@ information used in matrix calculation within the output list. Defaults to
 \code{FALSE}.}
 
 \item{initial_nan}{A single logical value indicating whether to initialize
-matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
+matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Cannot
 be used with sparse matrices.}
 
 \item{sparse_output}{A logical value indicating whether to output matrices
@@ -149,9 +149,9 @@ in sparse format. Defaults to \code{FALSE}, in which case all matrices are
 output in standard matrix format.}
 }
 \value{
-If the user inputs a standard \code{hfv_data} object in argument
+If the user inputs a standard \code{hfvdata} object in argument
 \code{data}, then this function will return an object of class
-\code{lefkoMat}. If the user inputs an object of class \code{hfv_list} in
+\code{lefkoMat}. If the user inputs an object of class \code{hfvlist} in
 argument \code{data}, then the output will be an object of class
 \code{lefkoMatList}, in which each element is an object of class
 \code{lefkoMat}.
@@ -171,7 +171,8 @@ output in the \code{matrix} class, or in the \code{dgCMatrix} class from the
 \item{hstages}{A data frame matrix showing the pairing of ahistorical stages
 used to create historical stage pairs. Set to NA for ahistorical matrices.}
 \item{agestages}{A data frame showing age-stage pairs. In this function, it
-is set to NA. Only used in output to function \code{aflefko2}().}
+is set to NA. Only used in output from functions \code{aflefko2}() and
+\code{arlefko2()}.}
 \item{ahstages}{A data frame detailing the characteristics of associated
 ahistorical stages, in the form of a modified stageframe that includes
 status as an entry stage through reproduction.}
@@ -192,14 +193,14 @@ and occasion time associated with each matrix.
 }
 \section{Notes}{
 
-In order to accomodate survival to time \emph{t}+1 in the final year of a
+In order to accommodate survival to time \emph{t}+1 in the final year of a
 study, the maximum age assessed if no input \code{last_age} is provided is
 one time step past the final described age.
 
 Users may at times wish to estimate MPMs using a dataset incorporating
 multiple patches or subpopulations. Should the aim of analysis be a general
 MPM that does not distinguish these patches or subpopulations, the
-\code{patchcol} variable should be left to \code{NA}, which is the default.
+\code{patchcol} variable should be left as \code{NA}, which is the default.
 Otherwise the variable identifying patch needs to be named.
 
 Input options including multiple variable names must be entered in the order

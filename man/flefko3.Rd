@@ -291,7 +291,7 @@ linear model for juvenile reproduction probability. Defaults to \code{0}.}
 \item{jmatst_dev}{A numeric value to be added to the y-intercept in the
 linear model for juvenile maturity probability. Defaults to \code{0}.}
 
-\item{density}{A numeric value indicating density value to use to propagate
+\item{density}{A numeric value indicating the density value to use to propagate
 matrices. Only needed if density is an explanatory term used in one or more
 vital rate models. Defaults to \code{NA}.}
 
@@ -350,7 +350,7 @@ output in standard matrix format.}
 \value{
 If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 object in argument \code{modelsuite}, or individual vital rate models are
-input separately,then this function will return an object of class
+input separately, then this function will return an object of class
 \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 in argument \code{modelsuite}, then the output will be an object of class
 \code{lefkoMatList}, in which each element is an object of class
@@ -371,7 +371,8 @@ output in R's \code{matrix} class, or in the \code{dgCMatrix} class from the
 \item{hstages}{A data frame matrix showing the pairing of ahistorical stages
 used to create historical stage pairs.}
 \item{agestages}{A data frame showing age-stage pairs. In this function, it
-is set to \code{NA}. Only used in output to function \code{aflefko2}().}
+is set to \code{NA}. Only used in output from functions \code{aflefko2}() and
+\code{arlefko2()}.}
 \item{ahstages}{A data frame detailing the characteristics of associated
 ahistorical stages, in the form of a modified stageframe that includes
 status as an entry stage through reproduction.}
@@ -410,7 +411,7 @@ models across populations should label them as patches (though we do not
 advise this approach, as populations should typically be treated as
 statistically independent).
 
-The default behavior of this function is to estimate fecundity with regards
+The default behavior of this function is to estimate fecundity with regard
 to transitions specified via associated fecundity multipliers in the
 \code{supplement}. If this field is left empty, then fecundity will be
 estimated at full for all transitions leading from reproductive stages to
@@ -424,10 +425,9 @@ does not distinguish these patches or subpopulations, the
 
 Input options including multiple variable names must be entered in the order
 of variables in occasion \emph{t}+1, \emph{t}, and \emph{t}-1. Rearranging
-the order will lead to erroneous calculations, and will may lead to fatal
-errors.
+the order will lead to erroneous calculations, and may lead to fatal errors.
 
-The \code{ipm_method} function gives the option of using two different means
+The \code{ipm_method} argument gives the option of using two different means
 of estimating the probability of size transition. The midpoint method
 (\code{"midpoint"}) refers to the method in which the probability is
 estimated by first estimating the probability associated with transition from
@@ -438,7 +438,7 @@ this method can produce biased results, with total size transitions
 associated with a specific size not totaling to 1.0 and even specific size
 transition probabilities capable of being estimated at values greater than
 1.0. The alternative and default method, \code{"CDF"}, uses the corresponding
-cumulative density function to estimate the probability of size transition as
+cumulative distribution function to estimate the probability of size transition as
 the cumulative probability of size transition at the greater limit of the
 size class minus the cumulative probability of size transition at the lower
 limit of the size class. This latter method avoids this bias. Note, however,
@@ -448,8 +448,8 @@ distributions.
 Under the Gaussian and gamma size distributions, the number of estimated
 parameters may differ between the two \code{ipm_method} settings. Because
 the midpoint method has a tendency to incorporate upward bias in the
-estimation of size transition probabilities, it is more likely to yield non-
-zero values when the true probability is extremely close to 0. This will
+estimation of size transition probabilities, it is more likely to yield
+non-zero values when the true probability is extremely close to 0. This will
 result in the \code{summary.lefkoMat} function yielding higher numbers of
 estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 

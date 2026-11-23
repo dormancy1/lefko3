@@ -887,7 +887,7 @@ Rcpp::List thefifthhousemate(List mpm, DataFrame allstages, DataFrame hstages,
 //' 
 //' Function \code{hist_null()} uses ahistorical MPMs to create the equivalent
 //' MPMs in the structure of historical MPMs. These MPMs have the same
-//' dimensions and stage structure of hMPMs but assume no influence of
+//' dimensions and stage structure as hMPMs but assume no influence of
 //' individual history, and so can be compared to actual hMPMs.
 //' 
 //' @name hist_null
@@ -1119,7 +1119,7 @@ Rcpp::List hist_null (RObject mpm, int format = 1, bool err_check = false) {
 //' matrices in sparse format, if input as standard matrices.
 //' 
 //' @return Yields a \code{lefkoMat} object, a \code{lefkoMatList} object, or
-//' a list of matrices. If a \code{lefkoMat} object. then will have the
+//' a list of matrices. If a \code{lefkoMat} object, then it will have the
 //' following characteristics:
 //' 
 //' \item{A}{A list of full mean projection matrices in order of sorted
@@ -2579,7 +2579,7 @@ Rcpp::List add_stage (const RObject mpm, int add_before = 0,
 //' such columns are found, then function \code{cycle_check}
 //' will export an integer vector giving the column numbers with problems.
 //' These column numbers may then be checked against the \code{stage_id} column
-//' of the associated stageframe in the case of a ahistorical or age-based MPM,
+//' of the associated stageframe in the case of an ahistorical or age-based MPM,
 //' against the row number of the associated \code{hstages} data frame in the
 //' case of a historical MPM, or against the row number of the associated
 //' \code{agestages} data frame in the case of an age-by-stage MPM.

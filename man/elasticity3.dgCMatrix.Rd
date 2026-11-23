@@ -24,7 +24,7 @@ format.
 \description{
 \code{elasticity3.dgCMatrix()} returns the elasticities of lambda to elements
 of a single matrix.  Because this handles only one matrix, the elasticities
-are inherently deterministic and based on the dominant eigen value as the
+are inherently deterministic and based on the dominant eigenvalue as the
 best metric of the population growth rate.
 }
 \examples{

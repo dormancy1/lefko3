@@ -198,9 +198,9 @@ stage-based MPMs.}
 the main vertical dataset coding for the stages of each individual in
 occasions \emph{t}+1 and \emph{t}, and \emph{t}-1, if historical. The names
 of stages in these variables should match those used in the
-\code{stageframe} exactly. If left blank, then \code{rlefko3()} will attempt
+\code{stageframe} exactly. If left blank, then \code{mpm_create()} will attempt
 to infer stages by matching values of \code{alive}, \code{obsst},
-\code{size}, \code{sizev}, \code{sizec}, \code{repst}, and \code{matst} to
+\code{size}, \code{sizeb}, \code{sizec}, \code{repst}, and \code{matst} to
 characteristics noted in the associated \code{stageframe}. Only used in raw,
 stage-based MPMs.}
 
@@ -285,9 +285,9 @@ and of 14 elements in all other cases. Consists of scalar additions to the
 y-intercepts of vital rate linear models used to estimate vital rates in
 function-based MPMs. Defaults to \code{0} values for all vital rates.}
 
-\item{density}{A numeric value indicating density value to use to propagate
+\item{density}{A numeric value indicating the density value to use to propagate
 matrices. Only needed if density is an explanatory term used in one or more
-vital rate models. Defaults to \code{NA}. Only used in function_based MPMs.}
+vital rate models. Defaults to \code{NA}. Only used in function-based MPMs.}
 
 \item{CDF}{A logical value indicating whether to use the cumulative
 distribution function to estimate size transition probabilities in
@@ -371,7 +371,7 @@ function-based MPMs, and in stage-based MPMs in which a valid \code{hfvdata}
 class data frame with stages already assigned is provided.}
 
 \item{initial_nan}{A single logical value indicating whether to initialize
-matrices was all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
+matrices with all elements set to \code{NaN}. Defaults to \code{FALSE}. Can
 only be used with raw MPMs not in sparse format, and should not be used to
 create normal MPMs intended for projection.}
 
@@ -381,13 +381,13 @@ output in standard matrix format.}
 }
 \value{
 The dominant output is an object of class \code{lefkoMat}. If
-data of class \code{hfv_list} for empirical models, or modelsuites of class
+data of class \code{hfvlist} for empirical models, or modelsuites of class
 \code{lefkoModList} for function-based models are provided, then a list of
 class \code{lefkoMatList} is provided. The latter is a list in which each
 element is a separate \code{lefkoMat} object, providing output for a
 bootstrapped MPM analysis. 
 
-Class \code{lefkoMat} objects are lists holds one full matrix projection
+Class \code{lefkoMat} objects are lists that hold one full matrix projection
 model and all of its metadata. The structure has the following elements:
 
 \item{A}{A list of full projection matrices in order of sorted patches and
@@ -442,7 +442,7 @@ If used, the reproduction matrix (field \code{repmatrix}) may be supplied as
 either historical or ahistorical. If provided as historical, then
 a historical MPM must be estimated.
 
-If neither a supplement nor a reproduction matrix are used, and the MPM
+If neither a supplement nor a reproduction matrix is used, and the MPM
 to create is stage-based, then fecundity will be assumed to occur from all
 reproductive stages to all propagule and immature stages.
 }
@@ -457,8 +457,7 @@ does not distinguish these patches or subpopulations, the
 
 Input options including multiple variable names must be entered in the order
 of variables in occasion \emph{t}+1, \emph{t}, and \emph{t}-1. Rearranging
-the order will lead to erroneous calculations, and will may lead to fatal
-errors.
+the order will lead to erroneous calculations, and may lead to fatal errors.
 
 This function provides two different means of estimating the probability of
 size transition. The midpoint method (\code{CDF = FALSE}) refers to the
@@ -470,7 +469,7 @@ then multiplying that value by the bin width of the size class. Doak et al.
 results, with total size transitions associated with a specific size not
 totaling to 1.0 and even specific size transition probabilities capable of
 being estimated at values greater than 1.0. The alternative and default
-method (\code{CDF = TRUE}) uses the cumulative density function to estimate
+method (\code{CDF = TRUE}) uses the cumulative distribution function to estimate
 the probability of size transition as the cumulative probability of size
 transition at the greater limit of the size class minus the cumulative
 probability of size transition at the lower limit of the size class. This
@@ -480,10 +479,10 @@ and unbiased for negative binomial and Poisson distributions.
 Under the Gaussian and gamma size distributions, the number of estimated
 parameters may differ between the two \code{ipm_method} settings. Because
 the midpoint method has a tendency to incorporate upward bias in the
-estimation of size transition probabilities, it is more likely to yield non-
-zero values when the true probability is extremely close to 0. This will
+estimation of size transition probabilities, it is more likely to yield
+non-zero values when the true probability is extremely close to 0. This will
 result in the \code{summary.lefkoMat()} function yielding higher numbers of
-estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
+estimated parameters than \code{CDF = TRUE} yields in some cases.
 }
 
 \examples{

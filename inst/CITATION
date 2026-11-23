@@ -13,7 +13,7 @@ bibentry(bibtype="Article",
          url         = "https://doi.org/10.1111/2041-210X.13526",
 	
          header      = "To cite lefko3 in publications, please use:",
-         textVersion = paste("Richard P. Shefferson, Shun Kurokawa, Johan Ehrlen, and Raziel Davison (2021).",
+         textVersion = paste("Richard P. Shefferson, Shun Kurokawa, and Johan Ehrlen (2021).",
                              "lefko3: Historical and Ahistorical Population Projection Matrix Analysis. ",
                              "Methods in Ecology and Evolution 12(2): 378-382.")
 )

@@ -46,12 +46,12 @@ be forced to the interval [0, 1].}
 if phi is to be treated as different from N in the two-parameter model.}
 }
 \value{
-A numeric vector of values showing values projected under the two-
-parameter Usher function.
+A numeric vector of values showing values projected under the
+two-parameter Usher function.
 }
 \description{
-Function \code{usher3()} creates a vector of values produced by the two-
-parameter Usher function as applied with a user-specified time lag.
+Function \code{usher3()} creates a vector of values produced by the
+two-parameter Usher function as applied with a user-specified time lag.
 The Usher function is given as 
 \eqn{\phi_{t+1} = \phi_t / (1 + e^{\alpha n_t + \beta})}. Here,
 if no \code{separate_N} vector is provided, then \eqn{n_t = \phi_t}.

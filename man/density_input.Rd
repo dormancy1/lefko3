@@ -58,14 +58,14 @@ transitions are assumed to be subject to this time delay. Does not apply to
 the additive limit function, which uses only the current population.}
 
 \item{alpha}{A vector indicating the numeric values to use as the
-alpha term in the two parameter Ricker, Beverton-Holt, or Usher function, or
+alpha term in the two-parameter Ricker, Beverton-Holt, or Usher function, or
 the value of the carrying capacity \emph{K} to use in the logistic or
 additive limit functions (see \code{Notes} section for more on this term).
 If a single number is provided, then all noted transitions are assumed to be
 subject to this value of alpha. Defaults to \code{1}.}
 
 \item{beta}{A vector indicating the numeric values to use as the beta term
-in the two parameter Ricker, Beverton-Holt, or Usher function, or the
+in the two-parameter Ricker, Beverton-Holt, or Usher function, or the
 multiplier on the previous population size in the additive limit function.
 Also used to indicate whether to use \emph{K} as a hard limit in the
 logistic equation (see section \code{Notes} below). If a single number is
@@ -88,7 +88,7 @@ transition.}
 occasions \emph{t}-1 and \emph{t}. Only necessary if a historical MPM in
 deVries format is desired. This should be entered as \code{1}, \code{S}, or
 \code{s} for a survival transition; or \code{2}, \code{F}, or \code{f} for a
-fecundity transitions. Defaults to \code{1} for survival transition, with
+fecundity transition. Defaults to \code{1} for survival transition, with
 impacts only on the construction of deVries-format hMPMs.}
 }
 \value{
@@ -117,8 +117,8 @@ limit function.}
 occasion \emph{t}+1 is a survival transition probability (1), or a fecundity
 rate (2).}
 \item{type_t12}{Designates whether the transition from occasion \emph{t}-1 to
-occasion \emph{t} is a survival transition probability (1), a fecundity rate
-(2).}
+occasion \emph{t} is a survival transition probability (1) or a fecundity
+rate (2).}
 }
 \description{
 Function \code{density_input()} provides all necessary data to incorporate

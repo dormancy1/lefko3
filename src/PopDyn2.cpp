@@ -408,11 +408,11 @@ Rcpp::DataFrame bambi2(const DataFrame& stages) {
 
 //' Sum Positive and Negative LTRE or Elasticity Contributions
 //' 
-//' @name .demolition4
-//' 
 //' Function \code{demolition4()} takes \code{lefkoElas} and \code{lefkoLTRE}
 //' inputs and returns a data frame summarizing their positive and negative
 //' contributions.
+//' 
+//' @name .demolition4
 //' 
 //' @param cmats Any \code{lefkoElas} or \code{lefkoLTRE} object.
 //' 
@@ -1120,7 +1120,7 @@ Rcpp::List demolition3sp(const arma::sp_mat& e_amat, const DataFrame& bambesque,
 //' large and sparse matrices supplied as \code{lefkoMat} objects or as
 //' individual matrices, and can be used with large historical matrices, IPMs, 
 //' age x stage matrices, as well as smaller ahistorical matrices, and general
-//' projetions.
+//' projections.
 //' 
 //' @param mpm A \code{lefkoMat} object, a \code{lefkoMatList} object, a list of
 //' projection matrices, a \code{lefkoProj} object, or a single projection
@@ -1133,7 +1133,7 @@ Rcpp::List demolition3sp(const arma::sp_mat& e_amat, const DataFrame& bambesque,
 //' @param force_sparse A logical value or string detailing whether to force
 //' sparse matrix encoding for simple matrix input. Defaults to \code{"auto"},
 //' which only forces sparse matrix coding if simple matrices are input that are
-//' both sparse (i.e, percentage of matrix elements that are non-zero <= 50%)
+//' both sparse (i.e, percentage of matrix elements that are non-zero <= 50)
 //' and have more than 20 rows. Can also be set to \code{"yes"}, \code{"no"},
 //' \code{TRUE}, or \code{FALSE}. Note that sparse matrix coding is always used
 //' for \code{lefkoMat} objects with matrices in sparse format (class
@@ -1143,7 +1143,7 @@ Rcpp::List demolition3sp(const arma::sp_mat& e_amat, const DataFrame& bambesque,
 //' If a \code{lefkoMat} object is provided, then this function will return the
 //' \code{labels} data frame with a new column named \code{lambda} showing the
 //' dominant eigenvalues for each matrix. If a \code{lefkoMatList} object is
-//' provided, then a two element list in which the first element is a vector
+//' provided, then a two-element list in which the first element is a vector
 //' composed of the mean lambda values of each \code{lefkoMat} element within
 //' the list is provided, and the second element is a list of \code{lefkoMat}
 //' lambda summaries as previously described. If a list of matrices is provided,
@@ -1154,7 +1154,7 @@ Rcpp::List demolition3sp(const arma::sp_mat& e_amat, const DataFrame& bambesque,
 //' 
 //' If a \code{lefkoProj} object is provided, then the output consists of a list
 //' with three elements. The second and third elements are lists of matrices
-//' with each lower-level list elements corresponding to \code{labels} rows,
+//' with each lower-level list element corresponding to \code{labels} rows,
 //' and matrices within these lists showing the actual \eqn{\lambda} and
 //' \code{log} \eqn{\lambda} for each consecutive year or time index (columns)
 //' within each replicate (row).
@@ -2264,7 +2264,7 @@ Rcpp::RObject lambda3(RObject& mpm, Nullable<RObject> style = R_NilValue,
 //' greatest to lowest absolute magnitude (\code{3}). Defaults to type \code{3}.
 //' 
 //' @return A data frame arranging all elements in the matrix chosen from
-//' greatest and smallest. This can be a data frame of only positive elements,
+//' greatest to smallest. This can be a data frame of only positive elements,
 //' of only negative elements, or all elements in order of absolute magnitude.
 //' 
 //' @section Notes:
@@ -2851,8 +2851,7 @@ Rcpp::DataFrame matrix_interp (RObject object, int mat_chosen = 1,
 //' as \code{proj1}.
 //' 
 //' @return A list of class \code{lefkoProj}, which always includes the first
-//' three elements of the following, and also includes the remaining elements
-//' below when a \code{lefkoMat} object is used as input:
+//' three elements of the following, and may include the elements following:
 //' \item{projection}{A list of lists of matrices showing the total number of
 //' individuals per stage per occasion. The first list corresponds to each
 //' pop-patch followed by each population (this top-level list is a single

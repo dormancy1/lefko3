@@ -101,7 +101,7 @@ survival transition.}
 between occasions \emph{t}-1 and \emph{t}. Only necessary if a historical
 MPM in deVries format is desired. This should be entered as \code{1},
 \code{S}, or \code{s} for a survival transition; or \code{2}, \code{F}, or
-\code{f} for a fecundity transitions. Defaults to \code{1} for survival
+\code{f} for a fecundity transition. Defaults to \code{1} for survival
 transition, with impacts only on the construction of deVries-format hMPMs.}
 }
 \value{
@@ -132,7 +132,7 @@ transition designated by \code{age2}.}
 transition.}
 \item{multiplier}{A multiplier for proxy transitions or for fecundity.}
 \item{convtype}{Designates whether the transition from occasion \emph{t} to
-occasion \emph{t}+1 is a survival transition probability (1), a fecundity
+occasion \emph{t}+1 is a survival transition probability (1) or a fecundity
 rate (2), or a fecundity multiplier (3).}
 \item{convtype_t12}{Designates whether the transition from occasion
 \emph{t}-1 to occasion \emph{t} is a survival transition probability (1), or
@@ -157,7 +157,7 @@ MPMs.
 Fecundity multiplier data supplied via the \code{supplemental()} function
 acts in the same way as non-zero entries supplied via a reproductive matrix,
 but gets priority in all matrix creations. Thus, in cases where fecundity
-multipliers are provided for the same function via the reproductive matrix
+multipliers are provided for the same transition via the reproductive matrix
 and function \code{supplemental()}, the latter is used.
 
 Entries in \code{stage3}, \code{stage2}, and \code{stage1} can include
@@ -184,7 +184,7 @@ should also be included in the supplement (Type 1 and 2 conversions can be
 purely age-specific, and do not set reproductive transitions in MPM
 creation). For example, if all stage 2 to stage 3 transitions above age 2
 yield fecundity, then stage 2 to stage 3 can be set to
-\code{multiplier = 1.0} with \code{convtype = 3}, and the same transition
+\code{multiplier = 1.0} with \code{type = 3}, and the same transition
 for \code{age2 = c(1, 2)} can be set to \code{multiplier = c(0, 0)}.
 
 Several operations may be included per transition. Operations on the same

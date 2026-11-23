@@ -37,7 +37,7 @@ whether any columns have no transitions to them from other columns. If any
 such columns are found, then function \code{cycle_check}
 will export an integer vector giving the column numbers with problems.
 These column numbers may then be checked against the \code{stage_id} column
-of the associated stageframe in the case of a ahistorical or age-based MPM,
+of the associated stageframe in the case of an ahistorical or age-based MPM,
 against the row number of the associated \code{hstages} data frame in the
 case of a historical MPM, or against the row number of the associated
 \code{agestages} data frame in the case of an age-by-stage MPM.

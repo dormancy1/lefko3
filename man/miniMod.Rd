@@ -42,7 +42,7 @@ variable. Only needed if object \code{hfv_data} not provided but individual
 covariates used in vital rate models.}
 
 \item{all_indcovb}{The name of individual covariate a if quantitative and
-non-categorical, or of the categories used if the cvoariate is a factor
+non-categorical, or of the categories used if the covariate is a factor
 variable. Only needed if object \code{hfv_data} not provided but individual
 covariates used in vital rate models.}
 
@@ -58,7 +58,7 @@ An object of class \code{vrm_input}. See function
 \description{
 This function takes a \code{lefkoMod} object, which consists of vital rate
 models, their associated \code{dredge} model tables, and related metadata,
-and converts them to minimal data frame lists useable in MPM creation and
+and converts them to minimal data frame lists usable in MPM creation and
 projection. The main advantage to using this approach is in memory savings.
 }
 \examples{

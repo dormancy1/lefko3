@@ -292,7 +292,7 @@ linear model for juvenile reproduction probability. Defaults to \code{0}.}
 \item{jmatst_dev}{A numeric value to be added to the y-intercept in the
 linear model for juvenile maturity probability. Defaults to \code{0}.}
 
-\item{density}{A numeric value indicating density value to use to propagate
+\item{density}{A numeric value indicating the density value to use to propagate
 matrices. Only needed if density is an explanatory term used in one or more
 vital rate models. Defaults to \code{NA}.}
 
@@ -357,7 +357,7 @@ output in standard matrix format.}
 \value{
 If the user inputs a standard \code{lefkoMod} or \code{vrm_input}
 object in argument \code{modelsuite}, or individual vital rate models are
-input separately,then this function will return an object of class
+input separately, then this function will return an object of class
 \code{lefkoMat}. If the user inputs an object of class \code{lefkoModList}
 in argument \code{modelsuite}, then the output will be an object of class
 \code{lefkoMatList}, in which each element is an object of class
@@ -446,7 +446,7 @@ Care should be taken to match the random status of year and patch to the
 states of those variables within the \code{modelsuite}. If they do not match,
 then they will be treated as zeroes in vital rate estimation.
 
-The \code{ipm_method} function gives the option of using two different means
+The \code{ipm_method} argument gives the option of using two different means
 of estimating the probability of size transition. The midpoint method
 (\code{"midpoint"}) refers to the method in which the probability is
 estimated by first estimating the probability associated with transition from
@@ -457,7 +457,7 @@ this method can produce biased results, with total size transitions
 associated with a specific size not totaling to 1.0 and even specific size
 transition probabilities capable of being estimated at values greater than
 1.0. The alternative and default method, \code{"CDF"}, uses the corresponding
-cumulative density function to estimate the probability of size transition as
+cumulative distribution function to estimate the probability of size transition as
 the cumulative probability of size transition at the greater limit of the
 size class minus the cumulative probability of size transition at the lower
 limit of the size class. The latter method avoids this bias. Note, however,
@@ -467,8 +467,8 @@ binomial distributions.
 Under the Gaussian and gamma size distributions, the number of estimated
 parameters may differ between the two \code{ipm_method} settings. Because
 the midpoint method has a tendency to incorporate upward bias in the
-estimation of size transition probabilities, it is more likely to yield non-
-zero values when the true probability is extremely close to 0. This will
+estimation of size transition probabilities, it is more likely to yield
+non-zero values when the true probability is extremely close to 0. This will
 result in the \code{summary.lefkoMat} function yielding higher numbers of
 estimated parameters than the \code{ipm_method = "CDF"} yields in some cases.
 

@@ -116,18 +116,18 @@ the duration of calculations. Defaults to \code{FALSE}.}
 individuals projected in each stage at each occasion to the nearest
 integer. Defaults to \code{FALSE}.}
 
-\item{substoch}{An integer value indicating whether to force survival-
-transition matrices to be substochastic in density dependent and density
+\item{substoch}{An integer value indicating whether to force
+survival-transition matrices to be substochastic in density dependent and density
 independent simulations. Defaults to \code{0}, which does not enforce
 substochasticity. Alternatively, \code{1} forces all survival-transition
 elements to range from 0.0 to 1.0, and forces fecundity to be non-negative;
-and \code{2} forces all column rows in the survival-transition matrices to
-total no more than 1.0, in addition to the actions outlined for option
+and \code{2} forces all columns in the survival-transition matrices to
+sum to no more than 1.0, in addition to the actions outlined for option
 \code{1}. Both settings \code{1} and \code{2} change negative fecundity
 elements to \code{0.0}.}
 
 \item{ipm_cdf}{A logical value indicating whether to estimate size
-transitions using the cumulative density function in cases with continuous
+transitions using the cumulative distribution function in cases with continuous
 distributions. Defaults to \code{TRUE}, with the midpoint method used if
 \code{FALSE}.}
 
@@ -191,7 +191,7 @@ below).}
 \item{repmatrix}{An optional reproduction matrix. This matrix is composed
 mostly of \code{0}s, with non-zero entries acting as element identifiers and
 multipliers for fecundity (with \code{1} equaling full fecundity). If left
-blank, and no \code{supplement} is provided, then \code{flefko3()} will
+blank, and no \code{supplement} is provided, then \code{f_projection3()} will
 assume that all stages marked as reproductive produce offspring at 1x that of
 estimated fecundity, and that offspring production will yield the first stage
 noted as propagule or immature. May be the dimensions of either a historical
@@ -214,7 +214,7 @@ the naming conventions used in this package. If given, then
 Alternatively, an object of class \code{vrm_input}, serving the same role.
 Although this is optional input, it is recommended, and without it separate
 vital rate model inputs (named \code{XX_model}) are required. If conducting
-bootstrapped projection, then an object of \code{lefkoModList} is required.}
+bootstrapped projection, then an object of class \code{lefkoModList} is required.}
 
 \item{paramnames}{A data frame with three columns, the first describing all
 terms used in linear modeling, the second (must be called \code{mainparams})
@@ -226,8 +226,8 @@ required if \code{modelsuite} is not supplied.}
 
 \item{year}{Either a single integer value corresponding to the year to
 project, or a vector of \code{times} elements with the year to use at each
-time step. Defaults to \code{NA}, in which the first year in the set of years
-in the dataset is projected. If a vector shorter than \code{times} is
+time step. Defaults to \code{NA}, in which case the first year in the set of
+years in the dataset is projected. If a vector shorter than \code{times} is
 supplied, then this vector will be cycled.}
 
 \item{patch}{A value of \code{NA}, a single string value corresponding to the
@@ -243,12 +243,12 @@ such numeric values. Defaults to \code{NA}.}
 \item{ind_terms}{An optional data frame with 3 columns and \code{times} rows
 giving the values of individual covariates a, b, and c, respectively, for
 each projected time. Unused terms must be set to \code{0} (use of \code{NA}
-will produce errors.)}
+will produce errors).}
 
 \item{ann_terms}{An optional data frame with 3 columns and \code{times} rows
 giving the values of annual covariates a, b, and c, respectively, for each
 projected time. Unused terms must be set to \code{0} (use of \code{NA} will
-produce errors.)}
+produce errors).}
 
 \item{dev_terms}{An optional data frame with 14 columns and \code{times}
 rows showing the values of the deviation terms to be added to each linear
@@ -257,7 +257,7 @@ primary size, 4: secondary size, 5: tertiary size, 6: reproduction, 7:
 fecundity, 8: juvenile survival, 9: juvenile observation, 10: juvenile
 primary size, 11: juvenile secondary size, 12: juvenile tertiary size, 13:
 juvenile reproduction, and 14: juvenile maturity transition.  Unused terms
-must be set to \code{0} (use of \code{NA} will produce errors.)}
+must be set to \code{0} (use of \code{NA} will produce errors).}
 
 \item{surv_model}{A linear model predicting survival probability. This can 
 be a model of class \code{glm} or \code{glmer}, and requires a predicted
@@ -392,8 +392,7 @@ greater than zero. Can also be entered as a logical value if forced sparse
 \value{
 If running a single (including replicated) projection, then the
 output is a list of class \code{lefkoProj}, which always includes the first
-three elements of the following, and also includes the remaining elements
-below when a \code{lefkoMat} object is used as input:
+three elements of the following,  and may include the elements following:
 \item{projection}{A list of lists of matrices showing the total number of
 individuals per stage per occasion. The first list corresponds to each
 pop-patch followed by each population (this top-level list is a single
@@ -443,8 +442,8 @@ Population projection can be a very time-consuming activity, and it is most
 time-consuming when matrices need to be created at each time step. We have
 created this function to work as quickly as possible, but some options will
 slow analysis. First, the \code{err_check} option should always be set to
-\code{FALSE}, as the added created output will not only slow the analysis
-down but also potentially crash the memory if matrices are large enough.
+\code{FALSE}, as the additional output will not only slow the analysis
+but may also exhaust available memory if matrices are large enough.
 Second, the \code{repvalue} option should be set to \code{FALSE} unless
 reproductive values are genuinely needed, since this step requires
 concurrent backward projection and so in some cases may double total run
@@ -453,15 +452,15 @@ age/stage structure at each time step, then setting \code{growthonly = TRUE}
 will yield the quickest possible run time. Finally, the default behavior of
 the function is to round down fractional values of individuals, and to stop
 running projections (replicates) when the population drops to 0. Setting
-\code{integeronly = FALSE} will have the impact of increasing runtime,
-potentially dramatically, since the population can reach a point in which
-the population size is extremely small but not equal to 0.
+\code{integeronly = TRUE} may have the impact of decreasing runtime,
+potentially dramatically, since the population can go extinct once a
+fractional individual is left.
 
 Projections with large matrices may take a long time to run. To assess the
 likely running time, try using a low number of iterations on a single
 replicate first. For example, set \code{nreps = 1} and \code{times = 10} for
 a trial run. If a full run is set and takes too long, press the STOP button
-in RStudio to cancel the projection run, or click \code{esc}.
+in RStudio to cancel the projection run, or click \code{Esc}.
 
 This function currently allows three forms of density dependence. The first
 modifies matrix elements on the basis of the input provided in option

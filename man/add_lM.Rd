@@ -27,7 +27,7 @@ Not necessary if \code{Umats} and \code{Fmats} are both provided.}
 Not necessary if \code{Amats} and \code{Fmats} are both provided, or if
 \code{UFdecomp = TRUE} and \code{entrystage} is provided.}
 
-\item{Fmats}{Either a single \code{F} matrix, or a list of \code{U} matrices.
+\item{Fmats}{Either a single \code{F} matrix, or a list of \code{F} matrices.
 Not necessary if \code{Amats} and \code{Umats} are both provided, or if
 \code{UFdecomp = TRUE} and \code{entrystage} is provided.}
 
