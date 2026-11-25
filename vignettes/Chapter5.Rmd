@@ -494,11 +494,11 @@ This conditional matrix takes the theoretically possible elements in which stage
 
 ``` r
 lambda3(tmeans2r)
-#>   pop patch    lambda
-#> 1   1     1 0.9603356
+#>   pop patch   lambda
+#> 1   1     1 0.960452
 lambda3(tmeans3r)
 #>   pop patch    lambda
-#> 1   1  <NA> 0.9602458
+#> 1   1  <NA> 0.9603622
 
 set.seed(42)
 cypann2s <- slambda3(cypmatrix2)
@@ -506,11 +506,11 @@ set.seed(42)
 cypann3s <- slambda3(cypmatrix3)
 
 cypann2s
-#>   pop patch          a        var        sd          se
-#> 1   1     1 -0.0404529 0.01774991 0.1332288 0.001332288
+#>   pop patch           a        var        sd          se
+#> 1   1     1 -0.04033177 0.01774876 0.1332245 0.001332245
 cypann3s
-#>   pop patch          a        var        sd          se
-#> 1   1  <NA> -0.0405452 0.01907289 0.1381046 0.001381046
+#>   pop patch           a        var        sd          se
+#> 1   1  <NA> -0.04042404 0.01907147 0.1380995 0.001380995
 ```
   
   <p style="text-indent: 20px">The ahistorical and historical $\lambda$ values are the same, as are the ahistorical and historical estimates of $a = \text{log} \lambda _{S}$. Let's estimate standard errors for these terms. Doing so will require bootstrapping our original dataset, creating new vital rate models for each bootstrap, creating bootstrapped MPMs to match the bootstrapped datasets and vital rate model sets, and then running functions `lambda3()` and `slambda3()` on these replicates. To limit the amount of time that this will take, we will only create 3 bootstrapped replicates, though normally we might create 100, 500, or 1000.</p>
@@ -649,6 +649,10 @@ cypmodels3_boot <- modelsearch(cypboot, historical = TRUE, approach = "mixed",
 #> 
 #> Developing global model of survival probability...
 #> 
+#> Global model estimation failed. Dropping individual identity term.
+#> 
+#> Redeveloping global model of survival probability...
+#> 
 #> Global model of survival probability developed. Proceeding with model dredge...
 #> 
 #> Developing global model of observation probability...
@@ -687,15 +691,15 @@ cypann3s_boot <- slambda3(cypmatrix3_boot)
 
 # Standard errors for ahistorical and historical lambda
 sd(cyplambda2$lambdas) / sqrt(3)
-#> [1] 0.01637293
+#> [1] 0.01634442
 sd(cyplambda3$lambdas) / sqrt(3)
-#> [1] 0.02338363
+#> [1] 0.02046234
 
 # Standard errors for ahistorical and historical stochastic lambda
 sd(cypann2s_boot$a) / sqrt(3)
-#> [1] 0.01677682
+#> [1] 0.01674649
 sd(cypann3s_boot$a) / sqrt(3)
-#> [1] 0.0242268
+#> [1] 0.02117257
 ```
   
   <p style="text-indent: 20px">Next let's take a look at a plot of annual deterministic growth rates (stochastic growth rate is calculated as a single value across time, and so is not included). We find that annual $\lambda$ estimates differ only slightly between ahistorical and historical analyses.</p>
@@ -773,7 +777,7 @@ tm2sens_s <- sensitivity3(cypmatrix2, stochastic = TRUE, seed = 42)
 
 # The highest deterministic sensitivity value:
 max(tm2sens$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)])
-#> [1] 0.2005747
+#> [1] 0.2005572
 # This value is associated with element:
 which(tm2sens$ah_sensmats[[1]] == 
   max(tm2sens$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)]))
@@ -781,7 +785,7 @@ which(tm2sens$ah_sensmats[[1]] ==
 
 # The highest stochastic sensitivity value:
 max(tm2sens_s$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)])
-#> [1] 0.17746
+#> [1] 0.1774331
 # This value is associated with element:
 which(tm2sens_s$ah_sensmats[[1]] == 
   max(tm2sens_s$ah_sensmats[[1]][which(tmeans2r$A[[1]] > 0)]))
@@ -800,35 +804,32 @@ tm3sens_s <- sensitivity3(cypmatrix3, stochastic = TRUE, times = 500, seed = 42)
 
 # The highest deterministic sensitivity value:
 max(as.matrix(tm3sens$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)])
-#> [1] 0.04982395
+#> [1] 0.04982502
 # This value is associated with element:
 which(as.matrix(tm3sens$h_sensmats[[1]]) == 
   max(as.matrix(tm3sens$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)]))
-#>  [1] 962658 962820 962874 963198 963252 963306 963468 963738 963792 963846
-#> [11] 963900 964116 964224 964332 964602 964656 964818 964872 964926 964980
-#> [21] 965088
+#>  [1] 962658 962712 963036 963090 963198 963252 963792 963954 964008 964170 964494 964980
 # The highest stochastic sensitivity value:
 max(as.matrix(tm3sens_s$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)])
-#> [1] 0.04159724
+#> [1] 0.04159657
 # This value is associated with element:
 which(as.matrix(tm3sens_s$h_sensmats[[1]]) == 
   max(as.matrix(tm3sens_s$h_sensmats[[1]])[which(as.matrix(tmeans3r$A[[1]]) > 0)]))
-#>  [1] 962604 962658 962712 962766 962820 962874 962928 962982 963036 963090
-#> [11] 963144 963198 963252 963306 963360 963414 963468 963522 963576 963630
-#> [21] 963684 963738 963792 963846 963900 963954 964008 964062 964116 964170
-#> [31] 964224 964278 964332 964386 964440 964494 964548 964602 964656 964710
-#> [41] 964764 964818 964872 964926 964980 965034 965088 965142 965196
+#>  [1] 962604 962658 962712 962766 962820 962874 962928 962982 963036 963090 963144 963198 963252 963306
+#> [15] 963360 963414 963468 963522 963576 963630 963684 963738 963792 963846 963900 963954 964008 964062
+#> [29] 964116 964170 964224 964278 964332 964386 964440 964494 964548 964602 964656 964710 964764 964818
+#> [43] 964872 964926 964980 965034 965088 965142 965196
 
 # The highest deterministic sensitivity value (historically-corrected):
 max(as.matrix(tm3sens$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)])
-#> [1] 0.2003021
+#> [1] 0.2002846
 # This value is associated with element:
 which(as.matrix(tm3sens$ah_sensmats[[1]]) ==
   max(as.matrix(tm3sens$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)]))
 #> [1] 378
 # The highest stochastic sensitivity value (historically-corrected):
 max(as.matrix(tm3sens_s$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)])
-#> [1] 0.1780934
+#> [1] 0.1780663
 # This value is associated with element:
 which(as.matrix(tm3sens_s$ah_sensmats[[1]]) ==
   max(as.matrix(tm3sens_s$ah_sensmats[[1]])[which(as.matrix(tmeans2r$A[[1]]) > 0)]))

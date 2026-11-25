@@ -6,8 +6,8 @@
 
 ## USER VISIBLE CHANGES
 
-* Typos, grammatical errors, and inconsistencies fixed in all help files and
-  function definitions.
+* Typos, grammatical errors, and inconsistencies fixed in all help files,
+  vignettes, and function definitions.
   
 ## BUG FIXES
 

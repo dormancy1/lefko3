@@ -48,10 +48,10 @@ Figure 8.1. Life history model of *Lathyrus vernus* using the log leaf volume as
 
 ``` r
 summary(c(lathyrus$Volume88, lathyrus$Volume89, lathyrus$Volume90, lathyrus$Volume91))
-#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs 
 #>     1.8    14.7   123.0   484.2   732.5  7032.0    1248
 summary(c(lathyrus$lnVol88, lathyrus$lnVol89, lathyrus$lnVol90, lathyrus$lnVol91))
-#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.     NAs 
 #>   0.600   2.700   4.800   4.777   6.600   8.900    1248
 ```
   
@@ -518,10 +518,6 @@ lathmodelsln2_boot <- modelsearch(lathboot, historical = FALSE,
 #> 
 #> Developing global model of survival probability...
 #> 
-#> Global model estimation failed. Dropping individual identity term.
-#> 
-#> Redeveloping global model of survival probability...
-#> 
 #> Global model of survival probability developed. Proceeding with model dredge...
 #> 
 #> Developing global model of observation probability...
@@ -596,10 +592,6 @@ lathmodelsln2_boot <- modelsearch(lathboot, historical = FALSE,
 #> 
 #> Developing global model of survival probability...
 #> 
-#> Global model estimation failed. Dropping individual identity term.
-#> 
-#> Redeveloping global model of survival probability...
-#> 
 #> Global model of survival probability developed. Proceeding with model dredge...
 #> 
 #> Developing global model of observation probability...
@@ -845,10 +837,6 @@ lathmodelsln2_boot <- modelsearch(lathboot, historical = FALSE,
 #> Finished selecting best-fit models.
 #> 
 #> Developing global model of survival probability...
-#> 
-#> Global model estimation failed. Dropping individual identity term.
-#> 
-#> Redeveloping global model of survival probability...
 #> 
 #> Global model of survival probability developed. Proceeding with model dredge...
 #> 
@@ -896,11 +884,11 @@ sl2_boot <- slambda3(lathmat2age_boot)
 
 # Standard error of deterministic lambda
 sd(lambda2_boot$lambdas) / sqrt(10)
-#> [1] 0.003978824
+#> [1] 0.001936911
 
 # Standard error of stochastic lambda
 sd(sl2_boot$a) / sqrt(10)
-#> [1] 0.003501188
+#> [1] 0.001562796
 ```
 
   <p style="text-indent: 20px">Now let's look at the stable stage distribution, using the population matrices rather than the patch matrices. The output for the ahistorical MPM is a data frame with matrix of origin, stage name, and stable stage proportion in each row. Because the default output for the `stablestage3()` function will give us the stable distribution of age-stages, we will collapse the output across age to produce a true stable stage distribution.</p>
@@ -923,7 +911,7 @@ sto_dist <- apply(as.matrix(c(1:21)), 1, function(X) {
 })
 
 barplot(t(cbind.data.frame(det_dist, sto_dist)), beside = T,  ylab = "Proportion",
-  xaxt = "n", ylim = c(0, 0.2), col = c("black", "red"), bty = "n")
+  xaxt = "n", ylim = c(0, 0.6), col = c("black", "red"), bty = "n")
 text(cex=1, x=seq(from = 0.5, to = 3 * length(lathframeln$stage), by = 3),
   y=-0.055, lathframeln$stage, xpd=TRUE, srt=45)
 legend("topright", c("deterministic", "stochastic"), col = c("black", "red"),
@@ -963,7 +951,7 @@ lathmat2msens_s <- sensitivity3(lathmat2age, stochastic = TRUE, seed = 42)
 
 # The highest deterministic sensitivity value:
 max(lathmat2msens$ah_sensmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.1699621
+#> [1] 0.1699626
 # This value is associated with element: "
 which(lathmat2msens$ah_sensmats[[1]] == 
   max(lathmat2msens$ah_sensmats[[1]][which(lathmat2mean$A[[1]] > 0)]))
@@ -971,7 +959,7 @@ which(lathmat2msens$ah_sensmats[[1]] ==
 
 # The highest stochastic sensitivity value:
 max(lathmat2msens_s$ah_sensmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.4560652
+#> [1] 0.4560463
 # This value is associated with element:
 which(as.matrix(lathmat2msens_s$ah_sensmats[[1]]) ==
   max(as.matrix(lathmat2msens_s$ah_sensmats[[1]])[which(lathmat2mean$A[[1]] > 0)]))
@@ -990,13 +978,13 @@ lathmat2melas_s <- elasticity3(lathmat2age, stochastic = TRUE, seed = 42)
 
 # The highest deterministic elasticity value:
 max(lathmat2melas$ah_elasmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.03229505
+#> [1] 0.03229497
 # The largest determnistic elasticity is associated with element:
 which(lathmat2melas$ah_elasmats[[1]] == max(lathmat2melas$ah_elasmats[[1]]))
 #> [1] 3201
 # The highest stochastic elasticity value:
 max(lathmat2melas_s$ah_elasmats[[1]][which(lathmat2mean$A[[1]] > 0)])
-#> [1] 0.216682
+#> [1] 0.2166828
 # The largest stochastic elasticity is associated with element:
 which(as.matrix(lathmat2melas_s$ah_elasmats[[1]]) == max(lathmat2melas_s$ah_elasmats[[1]]))
 #> [1] 3905
@@ -1019,7 +1007,7 @@ rownames(elas_put_together) <- apply(as.matrix(c(1:dim(lathmat2melas$agestages)[
 barplot(t(elas_put_together), beside=T, names.arg = rep(NA,
     length(rownames(elas_put_together))), ylab = "Elasticity", xlab = "Stage",
   col = c("black", "orangered"), bty = "n")
-text(cex=0.5, y = -0.007, x = seq(from = 0, to = 2.98*length(rownames(elas_put_together)),
+text(cex=0.5, y = -0.028, x = seq(from = 0, to = 2.98*length(rownames(elas_put_together)),
     by = 3), rownames(elas_put_together), xpd=TRUE, srt=45)
 legend("topleft", c("deterministic", "stochastic"), col = c("black", "orangered"),
   pch = 15, bty = "n")
