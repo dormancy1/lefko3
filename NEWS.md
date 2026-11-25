@@ -11,7 +11,10 @@
   
 ## BUG FIXES
 
-* 
+* Fixed issue with projection3() resetting some population vectors during
+  projection of historical and age-by-stage MPMs.
+  
+* Fixed creation of ahistorical elasticities from historical elasticities.
 
 # lefko3 6.7.3 (2026-04-24)
 

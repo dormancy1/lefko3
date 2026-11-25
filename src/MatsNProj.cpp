@@ -17691,13 +17691,9 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
         
         for (int i = 0; i < startframe_rows; i++) { 
           for (int j = 0; j < agestages_rows; j++) {
-            for (int k = 0; k < agestages_rows; k++) {
-              if (LefkoUtils::stringcompare_simple(String(agestages_stage(j)),
-                    String(startframe_stage2(i)))) {
-                if (agestages_age(k) == startframe_age2(i)) {
-                  start_elems(i) = k;
-                }
-              }
+            if (stringcompare_simple(String(agestages_stage(j)), String(startframe_stage2(i))) &&
+                agestages_age(j) == startframe_age2(i)) {
+              start_elems(i) = j;
             }
           }
         }
@@ -17706,16 +17702,11 @@ void projection3_single(List& fin_out, const List& mpm, int nreps = 1, int times
         StringVector hstages_stage1 = as<StringVector>(hstages["stage_1"]);
         int hstages_rows = hstages_stage2.length();
         
-        for (int i = 0; i < startframe_rows; i++) { 
+        for (int i = 0; i < startframe_rows; i++) {
           for (int j = 0; j < hstages_rows; j++) {
-            for (int k = 0; k < hstages_rows; k++) {
-              if (LefkoUtils::stringcompare_simple(String(hstages_stage2(j)),
-                    String(startframe_stage2(i)))) {
-                if (LefkoUtils::stringcompare_simple(String(hstages_stage1(k)),
-                    String(startframe_stage1(i)))) {
-                  start_elems(i) = k;
-                }
-              }
+            if (stringcompare_simple(String(hstages_stage2(j)), String(startframe_stage2(i))) &&
+                stringcompare_simple(String(hstages_stage1(j)), String(startframe_stage1(i)))) {
+              start_elems(i) = j;
             }
           }
         }
@@ -20548,10 +20539,9 @@ Rcpp::List stoch_senselas(const List& mpm, int times = 10000,
           arma::mat elasah(ahstages_num, ahstages_num, fill::zeros);
           
           arma::mat hslice = as<arma::mat>(senscube(k));
-          for (int i = 0; i < hstages_num; i++) {
-            for (int j = 0; j < hstages_num; j++) {
-              elasah((hstages_id2(j) - 1), (hstages_id1(i) - 1)) =
-                elasah((hstages_id2(j) - 1), (hstages_id1(i) - 1)) + hslice(j, i);
+          for (int j = 0; j < hstages_num; j++) {
+            for (int i = 0; i < hstages_num; i++) {
+              elasah((hstages_id2(j) - 1), (hstages_id1(j) - 1)) += hslice(j, i);
             }
           }
           senscube_ah(k) = elasah;
@@ -20559,10 +20549,9 @@ Rcpp::List stoch_senselas(const List& mpm, int times = 10000,
           arma::sp_mat elasah(ahstages_num, ahstages_num);
           
           arma::sp_mat hslice = as<arma::sp_mat>(senscube(k));
-          for (int i = 0; i < hstages_num; i++) {
-            for (int j = 0; j < hstages_num; j++) {
-              elasah((hstages_id2(j) - 1), (hstages_id1(i) - 1)) =
-                elasah((hstages_id2(j) - 1), (hstages_id1(i) - 1)) + hslice(j, i);
+          for (int j = 0; j < hstages_num; j++) {
+            for (int i = 0; i < hstages_num; i++) {
+              elasah((hstages_id2(j) - 1), (hstages_id1(j) - 1)) += hslice(j, i);
             }
           }
           
