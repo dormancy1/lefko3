@@ -50,7 +50,7 @@ A, U, and F matrices in the output \code{lefkoElas} object.}
 This function returns an object of class \code{lefkoElas}, which is a
 list with 8 elements. The first, \code{h_elasmats}, is a list of historical
 elasticity matrices (\code{NULL} if an ahMPM is used as input). The second,
-\code{ah_sensmats}, is a list of either ahistorical elasticity matrices if an
+\code{ah_elasmats}, is a list of either ahistorical elasticity matrices if an
 ahMPM is used as input, or, if an hMPM is used as input, then the result is a
 list of elasticity matrices in which historical elasticities have been summed
 by the stage in occasions \emph{t} and \emph{t}+1 to produce

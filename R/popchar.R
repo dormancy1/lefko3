@@ -704,7 +704,7 @@ sf_distrib <- function(data, sizea = NA, sizeb = NA, sizec = NA, obs3 = NA,
 #'   type = c(1, 1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
 #'   stageframe = lathframeln, historical = TRUE)
 #' 
-#' # While we do not use MPMs to initialize f_projections3(), we do use MPMs to
+#' # While we do not use MPMs to initialize f_projection3(), we do use MPMs to
 #' # initialize functions start_input() and density_input().
 #' lathmat3ln <- flefko3(year = "all", patch = "all", data = lathvertln,
 #'   stageframe = lathframeln, supplement = lathsupp3, paramnames = mod_params,

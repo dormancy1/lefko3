@@ -5,6 +5,3 @@
 ^README.md$
 ^\.positai$
 ^\.claude$
-src/*.o
-src/lefko3.so
-vignettes/*.orig

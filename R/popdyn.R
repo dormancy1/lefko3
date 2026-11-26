@@ -1831,7 +1831,7 @@ repvalue3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
 #' 
 #' @return This function returns a vector data frame characterizing the 
 #' reproductive values for stages of a population projection matrix. This is 
-#' given as the left eigenvector associated with largest real part of the
+#' given as the left eigenvector associated with the largest real part of the
 #' dominant eigenvalue, divided by the first non-zero element of the left 
 #' eigenvector.
 #' 
@@ -1935,7 +1935,7 @@ repvalue3.matrix <- function(mats, force_sparse = "auto", ...)
 #' 
 #' @return This function returns a vector data frame characterizing the 
 #' reproductive values for stages of a population projection matrix. This is 
-#' given as the left eigenvector associated with largest real part of the
+#' given as the left eigenvector associated with the largest real part of the
 #' dominant eigenvalue, divided by the first non-zero element of the left 
 #' eigenvector.
 #' 
@@ -2266,7 +2266,7 @@ repvalue3.lefkoMatList <- function(mats, stochastic = FALSE, times = 10000,
 #' 
 #' @return This function returns a list of vector data frames characterizing the 
 #' reproductive values for stages of each population projection matrix. This is 
-#' given as the left eigenvector associated with largest real part of the
+#' given as the left eigenvector associated with the largest real part of the
 #' dominant eigenvalue, divided by the first non-zero element of the left 
 #' eigenvector.
 #' 
@@ -3605,7 +3605,7 @@ elasticity3 <- function(mats, ...) UseMethod("elasticity3")
 #' @return This function returns an object of class \code{lefkoElas}, which is a
 #' list with 8 elements. The first, \code{h_elasmats}, is a list of historical
 #' elasticity matrices (\code{NULL} if an ahMPM is used as input). The second,
-#' \code{ah_sensmats}, is a list of either ahistorical elasticity matrices if an
+#' \code{ah_elasmats}, is a list of either ahistorical elasticity matrices if an
 #' ahMPM is used as input, or, if an hMPM is used as input, then the result is a
 #' list of elasticity matrices in which historical elasticities have been summed
 #' by the stage in occasions \emph{t} and \emph{t}+1 to produce

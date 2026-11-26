@@ -197,13 +197,13 @@
 #' vital rate models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
 #' @param random.inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{a} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{b} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{c} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param negfec A logical value denoting whether fecundity values estimated to
 #' be negative should be reset to \code{0}. Defaults to \code{FALSE}.
@@ -825,13 +825,13 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' vital rate models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
 #' @param random.inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{a} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{b} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{c} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param negfec A logical value denoting whether fecundity values estimated to
 #' be negative should be reset to \code{0}. Defaults to \code{FALSE}.
@@ -918,7 +918,7 @@ flefko3 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' incorporate state in occasion \emph{t}-1. Only use models developed testing
 #' for ahistorical effects.
 #' 
-#' The default behavior of this function is to estimate fecundity with regards
+#' The default behavior of this function is to estimate fecundity with regard
 #' to transitions specified via associated fecundity multipliers in the
 #' \code{supplement}. If this field is left empty, then fecundity will be
 #' estimated at full for all transitions leading from reproductive stages to
@@ -1428,13 +1428,13 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' vital rate models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
 #' @param random.inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{a} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{b} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{c} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param final_age The final age to model in the matrix, where the first age
 #' will be age \code{0} if post-breeding, and \code{1} if pre-breeding. Defaults
@@ -1528,7 +1528,7 @@ flefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' incorporate state in occasion \emph{t}-1. Only use models developed testing
 #' for ahistorical effects.
 #' 
-#' The default behavior of this function is to estimate fecundity with regards
+#' The default behavior of this function is to estimate fecundity with regard
 #' to transitions specified via associated fecundity multipliers in the
 #' \code{supplement}. If this field is left empty, then fecundity will be
 #' estimated at full for all transitions leading from reproductive stages to
@@ -1856,13 +1856,13 @@ aflefko2 <- function(year = "all", patch = "all", stageframe, supplement = NULL,
 #' models. Defaults to \code{NA}.
 #' @param fecmod A scalar multiplier of fecundity. Defaults to \code{1.0}.
 #' @param random.inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{a} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{b} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random.indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{c} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param negfec A logical value denoting whether fecundity values estimated to
 #' be negative should be reset to \code{0}. Defaults to \code{FALSE}.
@@ -2192,7 +2192,7 @@ fleslie <- function(year = "all", patch = NULL, prebreeding = TRUE,
 #' in function-based MPMs. Empty in this function.}
 #'
 #' @section Notes:
-#' The default behavior of this function is to estimate fecundity with regards
+#' The default behavior of this function is to estimate fecundity with regard
 #' to transitions specified via associated fecundity multipliers in the
 #' \code{supplement}. If this field is left empty, then fecundity will be
 #' estimated at full for all transitions leading from reproductive stages to
@@ -2502,7 +2502,7 @@ rlefko3 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' in function-based MPMs. Empty in this function.}
 #'
 #' @section Notes:
-#' The default behavior of this function is to estimate fecundity with regards
+#' The default behavior of this function is to estimate fecundity with regard
 #' to transitions specified via associated fecundity multipliers in the
 #' \code{supplement}. If this field is left empty, then fecundity will be
 #' estimated at full for all transitions leading from reproductive stages to
@@ -2804,7 +2804,7 @@ rlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' in function-based MPMs. Empty in this function.}
 #' 
 #' @section Notes:
-#' The default behavior of this function is to estimate fecundity with regards
+#' The default behavior of this function is to estimate fecundity with regard
 #' to transitions specified via associated fecundity multipliers in the
 #' \code{supplement}. If this field is left empty, then fecundity will be
 #' estimated at full for all transitions leading from reproductive stages to
@@ -3076,13 +3076,13 @@ arlefko2 <- function(data, stageframe, year = "all", pop = NULL, patch = NULL,
 #' 
 #' @export
 rleslie <- function(data, start_age = NA, last_age = NA, continue = TRUE,
-  fecage_min = NA, fecage_max = NA, alive = c("alive3", "alive2", "alive1"),
-  repst = c("repstatus3", "repstatus2", "repstatus1"),
-  fec = c("feca3", "feca2", "feca1"), agecol = "obsage", year = "all",
-  supplement = NULL, pop = NULL, patch = NULL, yearcol = NULL, popcol = NULL,
-  patchcol = NULL, indivcol = NULL, censor = FALSE, censorcol = NULL,
-  censorkeep = 0, fectime = 2, fecmod = 1.0, prebreeding = TRUE, reduce = FALSE,
-  simple = FALSE, err_check = FALSE, initial_nan = FALSE, sparse_output = FALSE) {
+  fecage_min = NA, fecage_max = NA, alive = c("alive3", "alive2"),
+  repst = c("repstatus3", "repstatus2"), fec = c("feca3", "feca2"),
+  agecol = "obsage", year = "all", supplement = NULL, pop = NULL, patch = NULL,
+  yearcol = NULL, popcol = NULL, patchcol = NULL, indivcol = NULL,
+  censor = FALSE, censorcol = NULL, censorkeep = 0, fectime = 2, fecmod = 1.0,
+  prebreeding = TRUE, reduce = FALSE, simple = FALSE, err_check = FALSE,
+  initial_nan = FALSE, sparse_output = FALSE) {
 
   output <- mpm_create(historical = FALSE, stage = FALSE, age = TRUE,
     devries = FALSE, reduce = reduce, data = data, supplement = supplement,

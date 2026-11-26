@@ -46,9 +46,9 @@ A data frame with the following variables:
 \item{patch}{The identity of the patch.}
 \item{a}{Estimate of stochastic growth rate, estimated as the arithmetic
 mean of the log population growth rate across simulated occasions.}
-\item{var}{The estimated variance of a.}
-\item{sd}{The standard deviation of a.}
-\item{se}{The standard error of a.}
+\item{var}{The estimated variance of \eqn{a}.}
+\item{sd}{The standard deviation of \eqn{a}.}
+\item{se}{The standard error of \eqn{a}.}
 }
 \description{
 Function \code{slambda3()} estimates the log stochastic population growth

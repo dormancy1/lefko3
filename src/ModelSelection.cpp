@@ -3823,11 +3823,11 @@ Rcpp::NumericVector vrmf_inator (NumericVector coef_vec, bool zi = false) {
 //' non-categorical, or of the categories used if the covariate is a factor
 //' variable. Only needed if object \code{hfv_data} not provided but individual
 //' covariates used in vital rate models.
-//' @param all_indcovb The name of individual covariate a if quantitative and
+//' @param all_indcovb The name of individual covariate b if quantitative and
 //' non-categorical, or of the categories used if the covariate is a factor
 //' variable. Only needed if object \code{hfv_data} not provided but individual
 //' covariates used in vital rate models.
-//' @param all_indcovc The name of individual covariate a if quantitative and
+//' @param all_indcovc The name of individual covariate c if quantitative and
 //' non-categorical, or of the categories used if the covariate is a factor
 //' variable. Only needed if object \code{hfv_data} not provided but individual
 //' covariates used in vital rate models.

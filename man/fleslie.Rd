@@ -161,15 +161,15 @@ models. Defaults to \code{NA}.}
 \item{fecmod}{A scalar multiplier of fecundity. Defaults to \code{1.0}.}
 
 \item{random.inda}{A logical value denoting whether to treat individual
-covariate \code{a} as a random, categorical variable. Otherwise is treated as
+covariate \code{a} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{random.indb}{A logical value denoting whether to treat individual
-covariate \code{b} as a random, categorical variable. Otherwise is treated as
+covariate \code{b} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{random.indc}{A logical value denoting whether to treat individual
-covariate \code{c} as a random, categorical variable. Otherwise is treated as
+covariate \code{c} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{negfec}{A logical value denoting whether fecundity values estimated to

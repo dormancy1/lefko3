@@ -453,7 +453,7 @@ image3(lathmat2age, used = 1)
 
 ![Figure 8.3. Image of first A Matrix](Ch8.11-1.png)
   
-  <p style="text-indent: 20px">The clear squares refer to zero elements, and the red elements refer to non-zero values corresponding to survival transitions and fecundity. The vast number of zeros may be surprising, but this matrix is a supermatrix organized by age first, with stage organizing within-age blocks. The first age is age 1, and includes seedligns but may also include adults, if that is when they were first observed. The number of elements estimated is greater now than in the typical ahistorical MPM, because now we have added age as a major factor for analysis. This matrix is overwhelmingly composed of elements that must be 0, and so it is a rather sparse matrix ((1070.67 + 54)  / 3969 = 28.3% of elements).</p>
+  <p style="text-indent: 20px">The clear squares refer to zero elements, and the red elements refer to non-zero values corresponding to survival transitions and fecundity. The vast number of zeros may be surprising, but this matrix is a supermatrix organized by age first, with stage organizing within-age blocks. The first age is age 1, and includes seedlings but may also include adults, if that is when they were first observed. The number of elements estimated is greater now than in the typical ahistorical MPM, because now we have added age as a major factor for analysis. This matrix is overwhelmingly composed of elements that must be 0, and so it is a rather sparse matrix ((1070.67 + 54)  / 3969 = 28.3% of elements).</p>
   
   <p style="text-indent: 20px">We can view the order of ages and stages using the `agestages` element of the lefkoMat object we produced, as below. Note that our matrix is 63 rows by 63 columns, and this object gives us the exact order used.</p>
 
@@ -965,7 +965,7 @@ which(as.matrix(lathmat2msens_s$ah_sensmats[[1]]) ==
 #> [1] 3888
 ```
   
-  <p style="text-indent: 20px">The highest deterministic value appears to be associated with the transition from flowering size 6 adults in age 3 or higher to dormant adult (element 3762, in column 60, row 45). The stochastic sensitivity analysis suggests element 3888, which is associated with the transition from three year old flowering size 8 adults to dormant adult (column 62, row 45). Inspecting the sensitivity matrix (type `lathmat2msens$ah_sensmats[[1]]` to view the full deterministic sensitivity matrix, or `lathmat2msens_s$ah_sensmats[[1]]` to view the full stochastic sensitivity matrix) also shows that transitions near these elements are associated with rather high sensitivities.</p>
+  <p style="text-indent: 20px">The highest deterministic value appears to be associated with the transition from flowering size 6 adults in age 3 or higher to dormant adult (element 3762, in column 60, row 45). The stochastic sensitivity analysis suggests element 3888, which is associated with the transition from three-year-old flowering size 8 adults to dormant adult (column 62, row 45). Inspecting the sensitivity matrix (type `lathmat2msens$ah_sensmats[[1]]` to view the full deterministic sensitivity matrix, or `lathmat2msens_s$ah_sensmats[[1]]` to view the full stochastic sensitivity matrix) also shows that transitions near these elements are associated with rather high sensitivities.</p>
   
   <p style="text-indent: 20px">Let's now assess the elasticity of $\lambda$ or $\lambda_S$ to matrix elements.</p>
 

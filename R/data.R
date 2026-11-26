@@ -326,7 +326,7 @@
 #' Populations, in Horizontal Format
 #' 
 #' A dataset containing the states and fates of \emph{Pyrola japonica} and
-#' \emph{Pyrola subaphylla}, family Ericaceae, from populations in the vicinity
+#' \emph{Pyrola subaphylla}, family Pyrolaceae, from populations in the vicinity
 #' of Mt. Bandai, Fukushima Prefecture, Japan, resulting from monitoring that
 #' occurred annually between 2015 and 2020.
 #' 

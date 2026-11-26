@@ -2478,7 +2478,7 @@ create_lM <- function(mats, stageframe = NULL, hstages = NA, agestages = NA,
 #' Not necessary if \code{Amats} and \code{Umats} are both provided, or if
 #' \code{UFdecomp = TRUE} and \code{entrystage} is provided.
 #' @param UFdecomp A logical value indicating whether U and F matrices should be
-#' inferred from A matrices and the given \code{entrystage}. Defaults to TRUE.
+#' inferred from A matrices and the given \code{entrystage}. Defaults to \code{FALSE}.
 #' @param entrystage The stage or stages produced by reproductive individuals.
 #' Used to determine which transitions are reproductive for U-F decomposition.
 #' Defaults to \code{1}, which corresponds to the first stage in the stageframe.

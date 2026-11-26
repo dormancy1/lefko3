@@ -243,7 +243,7 @@ corresponding to these matrices.
 }
 \section{Notes}{
 
-The default behavior of this function is to estimate fecundity with regards
+The default behavior of this function is to estimate fecundity with regard
 to transitions specified via associated fecundity multipliers in the
 \code{supplement}. If this field is left empty, then fecundity will be
 estimated at full for all transitions leading from reproductive stages to

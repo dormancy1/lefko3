@@ -653,7 +653,7 @@ legend("topleft", c("det ahistorical", "det historical", "sto ahistorical",
 
 ![Figure 2.5. Ahistorical vs. historically-corrected deterministic and stochastic elasticity to stages](Ch2.36-1.png)
   
-  <p style="text-indent: 20px">Historical analyses generally find that population growth rate is less elastic in response to seedlingsand more elastic to tiny adults than in ahistorical analyses. Stochastic and deterministic population growth rates are barely elastic in response to dormant seeds and seedlings. Note the dramatic impact of environmental stochasticity and individual history combined on the impact of tiny adults.</p>
+  <p style="text-indent: 20px">Historical analyses generally find that population growth rate is less elastic in response to seedlings and more elastic to tiny adults than in ahistorical analyses. Stochastic and deterministic population growth rates are barely elastic in response to dormant seeds and seedlings. Note the dramatic impact of environmental stochasticity and individual history combined on the impact of tiny adults.</p>
   
   <p style="text-indent: 20px">Let's now look at the elasticities of different kinds of transitions. We will use the `summary()` function, which outputs data frames summarizing elasticity sums by the kind of transition. First, we will compare ahistorical against historically-corrected transitions.</p>
 

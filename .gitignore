@@ -8,5 +8,3 @@ educ
 /doc/
 /Meta/
 .positai
-src/*.o
-src/lefko3.so

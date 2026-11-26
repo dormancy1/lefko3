@@ -1568,7 +1568,7 @@
 ## BUG FIXES
 
 * Corrected parameterization of negative binomial distribution in function
-  modelsarch().
+  modelsearch().
 
 # lefko3 3.0.0 (2020-10-22)
 

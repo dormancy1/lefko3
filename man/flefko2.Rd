@@ -296,15 +296,15 @@ vital rate models. Defaults to \code{NA}.}
 \item{fecmod}{A scalar multiplier of fecundity. Defaults to \code{1.0}.}
 
 \item{random.inda}{A logical value denoting whether to treat individual
-covariate \code{a} as a random, categorical variable. Otherwise is treated as
+covariate \code{a} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{random.indb}{A logical value denoting whether to treat individual
-covariate \code{b} as a random, categorical variable. Otherwise is treated as
+covariate \code{b} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{random.indc}{A logical value denoting whether to treat individual
-covariate \code{c} as a random, categorical variable. Otherwise is treated as
+covariate \code{c} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{negfec}{A logical value denoting whether fecundity values estimated to
@@ -408,7 +408,7 @@ This function will yield incorrect estimates if the models utilized
 incorporate state in occasion \emph{t}-1. Only use models developed testing
 for ahistorical effects.
 
-The default behavior of this function is to estimate fecundity with regards
+The default behavior of this function is to estimate fecundity with regard
 to transitions specified via associated fecundity multipliers in the
 \code{supplement}. If this field is left empty, then fecundity will be
 estimated at full for all transitions leading from reproductive stages to

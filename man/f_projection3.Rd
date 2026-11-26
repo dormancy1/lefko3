@@ -147,15 +147,15 @@ used in the negative binomial probability density kernel. Defaults to
 \code{100000000}, but can be reset to other values during error checking.}
 
 \item{random_inda}{A logical value denoting whether to treat individual
-covariate \code{a} as a random, categorical variable. Otherwise is treated as
+covariate \code{a} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{random_indb}{A logical value denoting whether to treat individual
-covariate \code{b} as a random, categorical variable. Otherwise is treated as
+covariate \code{b} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{random_indc}{A logical value denoting whether to treat individual
-covariate \code{c} as a random, categorical variable. Otherwise is treated as
+covariate \code{c} as a random, categorical variable. Otherwise treated as
 a fixed, numeric variable. Defaults to \code{FALSE}.}
 
 \item{err_check}{A logical value indicating whether to append extra output
@@ -595,7 +595,7 @@ lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "mat", "Sd", "Sdl
   type = c(1, 1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
   stageframe = lathframeln, historical = TRUE)
 
-# While we do not use MPMs to initialize f_projections3(), we do use MPMs to
+# While we do not use MPMs to initialize f_projection3(), we do use MPMs to
 # initialize functions start_input() and density_input().
 lathmat3ln <- flefko3(year = "all", patch = "all", data = lathvertln,
   stageframe = lathframeln, supplement = lathsupp3, paramnames = mod_params,

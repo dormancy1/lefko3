@@ -1996,13 +1996,13 @@ NULL
 #' used in the negative binomial probability density kernel. Defaults to
 #' \code{100000000}, but can be reset to other values during error checking.
 #' @param random_inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{a} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random_indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{b} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random_indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{c} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param err_check A logical value indicating whether to append extra output
 #' for debugging purposes. Defaults to \code{FALSE}.
@@ -2480,13 +2480,13 @@ NULL
 #' used in the negative binomial probability density kernel. Defaults to
 #' \code{100000000}, but can be reset to other values during error checking.
 #' @param random_inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{a} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random_indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{b} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param random_indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated as
+#' covariate \code{c} as a random, categorical variable. Otherwise treated as
 #' a fixed, numeric variable. Defaults to \code{FALSE}.
 #' @param err_check A logical value indicating whether to append extra output
 #' for debugging purposes. Defaults to \code{FALSE}.
@@ -2885,7 +2885,7 @@ NULL
 #'   type = c(1, 1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
 #'   stageframe = lathframeln, historical = TRUE)
 #' 
-#' # While we do not use MPMs to initialize f_projections3(), we do use MPMs to
+#' # While we do not use MPMs to initialize f_projection3(), we do use MPMs to
 #' # initialize functions start_input() and density_input().
 #' lathmat3ln <- flefko3(year = "all", patch = "all", data = lathvertln,
 #'   stageframe = lathframeln, supplement = lathsupp3, paramnames = mod_params,
@@ -3115,15 +3115,15 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #' \code{FALSE} if approximate probabilities calculated via the midpoint method
 #' are preferred.
 #' @param random_inda A logical value denoting whether to treat individual
-#' covariate \code{a} as a random, categorical variable. Otherwise is treated
+#' covariate \code{a} as a random, categorical variable. Otherwise treated
 #' as a fixed, numeric variable. Defaults to \code{FALSE}. Only used in
 #' function-based MPMs.
 #' @param random_indb A logical value denoting whether to treat individual
-#' covariate \code{b} as a random, categorical variable. Otherwise is treated
+#' covariate \code{b} as a random, categorical variable. Otherwise treated
 #' as a fixed, numeric variable. Defaults to \code{FALSE}. Only used in
 #' function-based MPMs.
 #' @param random_indc A logical value denoting whether to treat individual
-#' covariate \code{c} as a random, categorical variable. Otherwise is treated
+#' covariate \code{c} as a random, categorical variable. Otherwise treated
 #' as a fixed, numeric variable. Defaults to \code{FALSE}. Only used in
 #' function-based MPMs.
 #' @param negfec A logical value denoting whether fecundity values estimated to
@@ -3373,7 +3373,7 @@ f_projection3 <- function(format, prebreeding = TRUE, start_age = NA_integer_, l
 #'   type = c(1, 1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
 #'   stageframe = lathframeln, historical = TRUE)
 #' 
-#' # While we do not use MPMs to initialize f_projections3(), we do use MPMs to
+#' # While we do not use MPMs to initialize f_projection3(), we do use MPMs to
 #' # initialize functions start_input() and density_input().
 #' lathmat3ln <- mpm_create(historical = TRUE, year = "all", patch = "all",
 #'   data = lathvertln, stageframe = lathframeln, supplement = lathsupp3,
@@ -4118,9 +4118,9 @@ projection3 <- function(mpm, nreps = 1L, times = 10000L, historical = FALSE, sto
 #' \item{patch}{The identity of the patch.}
 #' \item{a}{Estimate of stochastic growth rate, estimated as the arithmetic
 #' mean of the log population growth rate across simulated occasions.}
-#' \item{var}{The estimated variance of a.}
-#' \item{sd}{The standard deviation of a.}
-#' \item{se}{The standard error of a.}
+#' \item{var}{The estimated variance of \eqn{a}.}
+#' \item{sd}{The standard deviation of \eqn{a}.}
+#' \item{se}{The standard error of \eqn{a}.}
 #' 
 #' @section Notes:
 #' The log stochastic population growth rate, \eqn{a}, is as given in equation
@@ -4795,11 +4795,11 @@ create_pm <- function(name_terms = FALSE) {
 #' non-categorical, or of the categories used if the covariate is a factor
 #' variable. Only needed if object \code{hfv_data} not provided but individual
 #' covariates used in vital rate models.
-#' @param all_indcovb The name of individual covariate a if quantitative and
+#' @param all_indcovb The name of individual covariate b if quantitative and
 #' non-categorical, or of the categories used if the covariate is a factor
 #' variable. Only needed if object \code{hfv_data} not provided but individual
 #' covariates used in vital rate models.
-#' @param all_indcovc The name of individual covariate a if quantitative and
+#' @param all_indcovc The name of individual covariate c if quantitative and
 #' non-categorical, or of the categories used if the covariate is a factor
 #' variable. Only needed if object \code{hfv_data} not provided but individual
 #' covariates used in vital rate models.

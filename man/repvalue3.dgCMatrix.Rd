@@ -14,7 +14,7 @@
 \value{
 This function returns a vector data frame characterizing the 
 reproductive values for stages of a population projection matrix. This is 
-given as the left eigenvector associated with largest real part of the
+given as the left eigenvector associated with the largest real part of the
 dominant eigenvalue, divided by the first non-zero element of the left 
 eigenvector.
 }

@@ -32,7 +32,7 @@ Not necessary if \code{Amats} and \code{Umats} are both provided, or if
 \code{UFdecomp = TRUE} and \code{entrystage} is provided.}
 
 \item{UFdecomp}{A logical value indicating whether U and F matrices should be
-inferred from A matrices and the given \code{entrystage}. Defaults to TRUE.}
+inferred from A matrices and the given \code{entrystage}. Defaults to \code{FALSE}.}
 
 \item{entrystage}{The stage or stages produced by reproductive individuals.
 Used to determine which transitions are reproductive for U-F decomposition.

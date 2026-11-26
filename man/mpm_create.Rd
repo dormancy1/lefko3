@@ -296,17 +296,17 @@ function-based MPMs. Defaults to \code{TRUE}, and should only be changed to
 are preferred.}
 
 \item{random_inda}{A logical value denoting whether to treat individual
-covariate \code{a} as a random, categorical variable. Otherwise is treated
+covariate \code{a} as a random, categorical variable. Otherwise treated
 as a fixed, numeric variable. Defaults to \code{FALSE}. Only used in
 function-based MPMs.}
 
 \item{random_indb}{A logical value denoting whether to treat individual
-covariate \code{b} as a random, categorical variable. Otherwise is treated
+covariate \code{b} as a random, categorical variable. Otherwise treated
 as a fixed, numeric variable. Defaults to \code{FALSE}. Only used in
 function-based MPMs.}
 
 \item{random_indc}{A logical value denoting whether to treat individual
-covariate \code{c} as a random, categorical variable. Otherwise is treated
+covariate \code{c} as a random, categorical variable. Otherwise treated
 as a fixed, numeric variable. Defaults to \code{FALSE}. Only used in
 function-based MPMs.}
 
@@ -582,7 +582,7 @@ lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "mat", "Sd", "Sdl
   type = c(1, 1, 1, 1, 1, 3, 3), type_t12 = c(1, 2, 1, 2, 1, 1, 1),
   stageframe = lathframeln, historical = TRUE)
 
-# While we do not use MPMs to initialize f_projections3(), we do use MPMs to
+# While we do not use MPMs to initialize f_projection3(), we do use MPMs to
 # initialize functions start_input() and density_input().
 lathmat3ln <- mpm_create(historical = TRUE, year = "all", patch = "all",
   data = lathvertln, stageframe = lathframeln, supplement = lathsupp3,
