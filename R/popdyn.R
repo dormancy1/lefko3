@@ -1,3 +1,29 @@
+#' Reorder Historically-Corrected Matrices to Match ahstages
+#' 
+#' The C++ functions that produce historically-corrected sensitivity and
+#' elasticity matrices index rows and columns by \code{stage_id}. The
+#' \code{ahstages} element returned alongside them is sorted by the matrix
+#' creation functions, and need not be in \code{stage_id} order. This function
+#' reorders the matrices so that row and column \code{i} correspond to row
+#' \code{i} of \code{ahstages}.
+#' 
+#' @name .ah_reorder
+#' 
+#' @param mat_list A list of dense or sparse historically-corrected matrices.
+#' @param ahstages The \code{ahstages} element of the input \code{lefkoMat}.
+#' 
+#' @return A list of matrices of the same class as the input.
+#' 
+#' @keywords internal
+#' @noRd
+.ah_reorder <- function(mat_list, ahstages) {
+  ids <- as.integer(ahstages$stage_id)
+  if (is.null(mat_list) || length(ids) == 0) return(mat_list)
+  if (all(ids == seq_along(ids))) return(mat_list)
+  
+  lapply(mat_list, function(X) X[ids, ids, drop = FALSE])
+}
+
 #' Estimate Stable Stage Distribution
 #' 
 #' \code{stablestage3()} is a generic function that returns the stable stage 
@@ -2694,7 +2720,8 @@ sensitivity3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
       
     } else {
       he_list <- lapply(baldrick, function(X) {X$h_smat})
-      ahe_list <- lapply(baldrick, function(X) {X$ah_smat})
+      ahe_list <- .ah_reorder(lapply(baldrick, function(X) {X$ah_smat}),
+        mats$ahstages)
       
       output <- list(h_sensmats = he_list, ah_sensmats = ahe_list,
         hstages = hlabels, ahstages = ahlabels, agestages = agelabels,
@@ -2730,7 +2757,8 @@ sensitivity3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
     new_labels <- mats$labels[lab_indices, c(1, 2)]
     
     if (!all(is.na(mats$hstages))) {
-      output <- list(h_sensmats = returned_cubes[[1]], ah_sensmats = returned_cubes[[2]],
+      output <- list(h_sensmats = returned_cubes[[1]],
+        ah_sensmats = .ah_reorder(returned_cubes[[2]], mats$ahstages),
         hstages = mats$hstages, agestages = mats$agestages,
         ahstages = mats$ahstages, labels = new_labels)
     } else {
@@ -3796,12 +3824,12 @@ elasticity3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
     if (all(is.na(mats$hstages))) {
       
       output <- list(h_elasmats = NULL, ah_elasmats = baldrick, hstages = NULL,
-        agestages = mats$agestages, ahstages = ahlabels, agestages = agelabels,
-        labels = new_labels)
+        ahstages = ahlabels, agestages = agelabels, labels = new_labels)
     } else {
       
       he_list <- lapply(baldrick, function(X) {X$h_emat})
-      ahe_list <- lapply(baldrick, function(X) {X$ah_emat})
+      ahe_list <- .ah_reorder(lapply(baldrick, function(X) {X$ah_emat}),
+        mats$ahstages)
       
       hlabels <- mats$hstages
       ahlabels <- mats$ahstages #Originally only the first two columns
@@ -3840,7 +3868,8 @@ elasticity3.lefkoMat <- function(mats, stochastic = FALSE, times = 10000,
     new_labels <- mats$labels[lab_indices, c(1, 2)]
     
     if (!all(is.na(mats$hstages))) {
-      output <- list(h_elasmats = returned_cubes[[1]], ah_elasmats = returned_cubes[[2]],
+      output <- list(h_elasmats = returned_cubes[[1]],
+        ah_elasmats = .ah_reorder(returned_cubes[[2]], mats$ahstages),
         hstages = mats$hstages, agestages = mats$agestages, 
         ahstages = mats$ahstages, labels = new_labels)
     } else {

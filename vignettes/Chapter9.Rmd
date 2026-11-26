@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 library(lefko3)
 ```
 
-  <p style="text-indent: 20px">In this vignette, we will import a MPM created elsewhere into `lefko3` and analyze it via LTRE and sLTRE analysis. These are inherently ahistorical MPMs, and so we do not include historical analyses in this vignette.</p>
+  <p style="text-indent: 20px">In this vignette, we will import an MPM created elsewhere into `lefko3` and analyze it via LTRE and sLTRE analysis. These are inherently ahistorical MPMs, and so we do not include historical analyses in this vignette.</p>
   
   <p style="text-indent: 20px">To reduce vignette size, we have prevented some statements from running if they produce long stretches of output. Examples include most `summary()` calls. In these cases, we include hashtagged versions of these calls, and we encourage the user to run these statements without hashtags to examine the output.</p>
   
@@ -38,7 +38,7 @@ Figure 9.1. Life history model of *Anthyllis vulneraria*. Solid arrows indicate 
   
 #### Step 1. Life history model development 
   
-  <p style="text-indent: 20px">We will first describe the life history characterizing the dataset with a `stageframe`. Since we do not have the original demographic dataset that produced the published matrices, we do not need to know the exact sizes of plants and so will use proxy values. These proxy values need to be unique and non-negative, and they need non-overlapping bins usable as size classes defining each stage. However, since we are not analyzing size itself, they do not need any further basis in reality. Other characteristics must be exact and realistic to make sure that the analyses work properly, including all other stage descriptions such as reproductive status, propagule status, and observation status. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5. However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead.</p>
+  <p style="text-indent: 20px">We will first describe the life history characterizing the dataset with a `stageframe`. Since we do not have the original demographic dataset that produced the published matrices, we do not need to know the exact sizes of plants and so will use proxy values. If using a data set from which stages should be called, then these proxy values need to be unique and non-negative, and they need non-overlapping bins usable as size classes defining each stage. In our case, we do not have the original dataset and so can ignore the need for uniqueness and non-overlapping bins. Other characteristics must be exact and realistic to make sure that the analyses work properly, including all other stage descriptions such as reproductive status, propagule status, and observation status. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5. However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead.</p>
 ```{r Ch9.1}
 sizevector <- c(1, 1, 2, 3) # These sizes are not from the original paper
 stagevector <- c("Sdl", "Veg", "SmFlo", "LFlo")
@@ -206,7 +206,7 @@ anth_lefkoMat <- create_lM(mats_list, anthframe, hstages = NA,
 #summary(anth_lefkoMat)
 ```
   
-  <p style="text-indent: 20px">The summary of this new `lefkoMat` object shows us that we have 27 matrices with 4 rows and columns each. The estimated numbers of transitions corresponds to the non-zero entries in each matrix. We see that we are covering 1 population, 9 patches, and 3 time steps. All of the survival probabilities observed fell within the bounds of 0 to 1, so everything seems alright.</p>
+  <p style="text-indent: 20px">The summary of this new `lefkoMat` object shows us that we have 27 matrices with 4 rows and columns each. The estimated numbers of transitions correspond to the non-zero entries in each matrix. We see that we are covering 1 population, 9 patches, and 3 time steps. All of the survival probabilities observed fell within the bounds of 0 to 1, so everything seems alright.</p>
   
 #### Step 3. MPM analysis 
   
@@ -230,13 +230,13 @@ lines(lambda ~ year2, data = subset(lambda2, patch == 6), col = "gray", lty= 2, 
 lines(lambda ~ year2, data = subset(lambda2, patch == 7), col = "gray", lty= 2, lwd = 2)
 lines(lambda ~ year2, data = subset(lambda2, patch == 8), col = "gray", lty= 2, lwd = 2)
 lines(lambda ~ year2, data = subset(lambda2, patch == 9), col = "gray", lty= 2, lwd = 2)
-abline(a = lambda2m$lambda[1], b = 0, lty = 1, lwd = 4, col = "orangered")
-abline(a = sl2$expa[1], b = 0, lty = 1, lwd = 4, col = "darkred")
+abline(a = lambda2m$lambda[10], b = 0, lty = 1, lwd = 4, col = "orangered")
+abline(a = sl2$expa[10], b = 0, lty = 1, lwd = 4, col = "darkred")
 legend("topleft", c("det annual", "det mean", "stochastic"), lty = c(2, 1, 1),
   col = c("gray", "orangered", "darkred"), lwd = c(2, 4, 4), bty = "n")
 ```
   
-  <p style="text-indent: 20px">These populations exhibit highly variable growth across the short field study during which they were monitored. They also appear to be declining, as shown by $\lambda$ for the overall mean matrix, and $e$ to the power of the stochastic growth rate $a = \text{log} \lambda$.</p>
+  <p style="text-indent: 20px">These populations exhibit highly variable growth across the short field study during which they were monitored. They also appear to be growing, as shown by $\lambda$ for the overall mean matrix, and $e$ to the power of the stochastic growth rate $a = \text{log} \lambda$.</p>
   
   <p style="text-indent: 20px">Let's conduct a life table response experiment (LTRE) next. This will be a deterministic LTRE, meaning that we will assess the impacts of differences in matrix elements between the core matrices input via the `lefkoMat` object `anth_lefkoMat` and the overall arithmetic grand mean matrix on differences in the deterministic growth rate, $\lambda$. We could use a different reference matrix if we wished, but the default is to use the arithmetic grand mean. Here, because we cannot analyze temporal shifts using a deterministic LTRE, we will utilize the mean matrix set instead.</p>
 ```{r Ch9.7}
@@ -244,14 +244,14 @@ trialltre_det <- ltre3(anth_lmean, sparse = "auto")
 #trialltre_det
 ```
   
-  <p style="text-indent: 20px">The resulting `lefkoLTRE` object gives the LTRE contributions for each matrix relative to the arithmetic grand mean matrix. While the differences in LTRE contributions across space are of interest, we cannot infer differences across time this way because matrices are not related additively across time. To assess the contributions across space while accounting for temporal shifts, we should conduct a stochastic LTRE (sLTRE) or small-noise approximation LTRE (SNA-LTRE) on the original annual matrices. Here, conduct a sLTRE.</p>
+  <p style="text-indent: 20px">The resulting `lefkoLTRE` object gives the LTRE contributions for each matrix relative to the arithmetic grand mean matrix. While the differences in LTRE contributions across space are of interest, we cannot infer differences across time this way because matrices are not related additively across time. To assess the contributions across space while accounting for temporal shifts, we should conduct a stochastic LTRE (sLTRE) or small-noise approximation LTRE (SNA-LTRE) on the original annual matrices. Here, we conduct an sLTRE.</p>
 ```{r Ch9.8}
 trialltre_sto <- ltre3(anth_lefkoMat, stochastic = TRUE, times = 10000,
   tweights = NA, sparse = "auto", seed = 42)
 #trialltre_sto
 ```
   
-  <p style="text-indent: 20px">The sLTRE produces output that is a bit different from the deterministic LTRE output. In the output, we see two lists of matrices prior to the MPM metadata. The first, `cont_mean`, is a list of matrices showing the contributions of differences in mean elements between the patch-level temporal mean matrices and the reference temporal mean matrix. The second, `cont_sd`, is a list of matrices showing the contributions of differences in the temporal standard deviation of each element between the patch-level and reference matrix sets. In other words, while a standard LTRE shows the impact of changes in matrix elements on $\lambda$, the sLTRE shows the impacts of changes in the temporal mean and variability of matrix elements on $\text{log} \lambda$. The `labels` element shows the order of matrices with reference to the populations or patches (remember that here, the populations are referred to as patches).</p>
+  <p style="text-indent: 20px">The sLTRE produces output that is a bit different from the deterministic LTRE output. In the output, we see two lists of matrices prior to the MPM metadata. The first, `cont_mean`, is a list of matrices showing the contributions of differences in mean elements between the patch-level temporal mean matrices and the reference temporal mean matrix. The second, `cont_sd`, is a list of matrices showing the contributions of differences in the temporal standard deviation of each element between the patch-level and reference matrix sets. In other words, while a standard LTRE shows the impact of changes in matrix elements on $\lambda$, the sLTRE shows the impacts of changes in the temporal mean and variability of matrix elements on $\text{log} \lambda_S$. The `labels` element shows the order of matrices with reference to the populations or patches (remember that here, the populations are referred to as patches).</p>
   
   <p style="text-indent: 20px">The output objects are large and can take a great deal of effort to look over and understand. Therefore, we will show three approaches to assessing these objects, using an approach similar to that used to assess elasticities. These methods can be used to assess patterns in all 9 populations, but for brevity we will focus only on the first population here. First, we will identify the elements most strongly impacting the population growth rate in each case.</p>
 ```{r Ch9.9}
@@ -356,11 +356,15 @@ legend("bottomleft", c("deterministic", "stochastic mean", "stochastic SD"),
   col = c("black", "grey", "red"), pch = 15, bty = "n")
 ```
   
-The overall greatest impact on the population growth rate is from fecundity, and these contributions are overwhelmingly negative. Clearly temporal variation has strong effects here that deserve to be assessed properly.
+The overall greatest impact on the population growth rate is from fecundity, and these contributions are overwhelmingly negative. Clearly temporal variation has minor effects here.
   
   <p style="text-indent: 20px">LTREs and sLTREs are powerful tools, and more complex versions of both analyses exist. Please consult @caswell_matrix_2001 and @davison_contributions_2013 for more information. Also see @davison_contributions_2013 for information on the small noise approximation LTRE, which is also possible in `lefko3`.</p>
   
   <p style="text-indent: 20px">Package `lefko3` also includes functions to conduct many other analyses, including deterministic and stochastic life table response experiments, and general projection including quasi-extinction analysis and density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called <a href = "https://revolutionarydemography-lefko3gentle.share.connect.posit.cloud/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
+
+## Acknowledgements
+
+  <p style="text-indent: 20px">We are grateful to R. Davison, who provided helpful comments during the making of this vignette. The project resulting in this package and this tutorial was funded by Grant-In-Aid 19H03298 from the Japan Society for the Promotion of Science.</p>
 
 ## Literature cited
 

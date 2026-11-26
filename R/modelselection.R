@@ -3178,7 +3178,7 @@ modelsearch <- function(data, stageframe = NULL, historical = TRUE,
     
     # Final output
     qcoutput <- cbind.data.frame(c("survival", "observation", "size", "sizeb", "sizec",
-        "reproduction", "fecundity", "juvenile_survival", "juvnile_observation",
+        "reproduction", "fecundity", "juvenile_survival", "juvenile_observation",
         "juvenile_size", "juvenile_sizeb", "juvenile_sizec", "juvenile_reproduction",
         "juvenile_maturity"),
       c(surv.ind, obs.ind, size.ind, sizeb.ind, sizec.ind, repst.ind, fec.ind, juvsurv.ind,

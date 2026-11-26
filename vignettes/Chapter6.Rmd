@@ -32,11 +32,11 @@ dim(lathyrus)
 #summary(lathyrus)
 ```
 
-  <p style="text-indent: 20px">This dataset includes information on 1,119 individuals arranged horizontally, so there are 1,119 rows with data. There are 38 columns. The first two columns are variables giving identifying information about each individual. This is followed by four sets of nine columns, each named `VolumeXX`, `lnVolXX`, `FCODEXX`, `FlowXX`, `IntactseedXX`, `Dead19XX`, `DormantXX`, `Missing19XX`, and `SeedlingXX`, where `XX` corresponds to the year of observation and with years organized consecutively. Thus, columns 3-11 refer to year 1988, columns 12-20 refer to year 1989, etc. This strictly repeated pattern allows us to manipulate the original dataset quickly and efficiently via `lefko3`. There are four years of data, from 1988 to 1991. Ideally, we should also have arranged the columns in the same order for each year, with years in consecutive order with no extra columns between them. This order is not required, provided that we input all variable names in correct order when transforming the dataset later.</p>
+  <p style="text-indent: 20px">This dataset includes information on 1,119 individuals arranged horizontally, so there are 1,119 rows with data. There are 38 columns. The first two columns are variables giving identifying information about each individual. This is followed by four sets of nine columns, each named `VolumeXX`, `lnVolXX`, `FCODEXX`, `FlowXX`, `IntactseedXX`, `Dead19XX`, `Dormant19XX`, `Missing19XX`, and `Seedling19XX`, where `XX` corresponds to the year of observation and with years organized consecutively. Thus, columns 3-11 refer to year 1988, columns 12-20 refer to year 1989, etc. This strictly repeated pattern allows us to manipulate the original dataset quickly and efficiently via `lefko3`. There are four years of data, from 1988 to 1991. Ideally, we should also have arranged the columns in the same order for each year, with years in consecutive order with no extra columns between them. This order is not required, provided that we input all variable names in correct order when transforming the dataset later.</p>
   
 #### Step 1. Life history model development   
   
-  <p style="text-indent: 20px">To begin, we will create a **stageframe**. A stageframe is a data frame that describes all stages in the life history of the organism, in a way usable by the functions in this package and using stage names and classifications that completely match those used in the dataset. It must include complete descriptions of all stages that occur in the dataset, with each stage defined uniquely. Since this object can be used for automated classification of individuals, all sizes, reproductive states, and other characteristics defining each stage in the dataset need to be accounted for explicitly. This can be difficult if a few data points do not fit neatly into any stage description, so great care must be taken to include all relevant size values and values of other descriptor variables occurring within the dataset. The final description of each stage occurring in the dataset must not completely overlap with any other stage, although partial overlap is allowed. We will base our stageframe on the life history model provided in @ehrlen_dynamics_2000, but use a different size classification based on leaf volume to allow IPM construction and make all mature stages other than vegetative dormancy reproductive, as shown in Figure 6.1.</p>
+  <p style="text-indent: 20px">To begin, we will create a **stageframe**. A stageframe is a data frame that describes all stages in the life history of the organism, in a way usable by the functions in this package and using stage names and classifications that completely match those used in the dataset. It must include complete descriptions of all stages that occur in the dataset, with each stage defined uniquely. Since this object can be used for automated classification of individuals, all sizes, reproductive states, and other characteristics defining each stage in the dataset need to be accounted for explicitly. This can be difficult if a few data points do not fit neatly into any stage description, so great care must be taken to include all relevant size values and values of other descriptor variables occurring within the dataset. The final description of each stage occurring in the dataset must not completely overlap with any other stage, although partial overlap is allowed. We will base our stageframe on the life history model provided in @ehrlen_dynamics_2000, but use a different size classification based on shoot volume to allow IPM construction and make all mature stages other than vegetative dormancy reproductive, as shown in Figure 6.1.</p>
   
 <img src = "lathipm.png" width = "700"></img>  
   
@@ -63,11 +63,11 @@ lathframeipm <- sf_create(sizes = sizevector, stagenames = stagevector,
 #lathframeipm
 ```
   
-  <p style="text-indent: 20px">This stageframe has 103 stages. The IPM portion technically starts with the fourth stage and keeps going through the 103rd stage. Stage names within this range are concatenations of the size centroid (designated with `sz`), and, given a limited string length, the reproductive status, maturity status, and observation status. The first three stages, which fall outside of the IPM classification, are left unaltered. Note that we are using the midpoint approach to determining the size bins here, using the default bin halfwidths of 0.5 (since all size bins are using this default, we do not include a `binhalfwidth` vector option in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead, although that would have been a more tedious approach in a high dimensonal object like an IPM.</p>
+  <p style="text-indent: 20px">This stageframe has 103 stages. The IPM portion technically starts with the fourth stage and keeps going through the 103rd stage. Stage names within this range are concatenations of the size centroid (designated with `sza`), and, given a limited string length, the reproductive status, maturity status, and/or observation status. The first three stages, which fall outside of the IPM classification, are left unaltered. Note that we are using the midpoint approach to determining the size bins here (see the `binvec` vector that we assign to argument `binhalfwidth` in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to more deliberately set the size bin minima and maxima instead, although that would have been a more tedious approach in a high dimensional object like an IPM.</p>
   
 #### Step 2a. Dataset standardization  
   
-  <p style="text-indent: 20px">To work with this dataset, we first need to format the data into *vertical format*, in which each row corresponds to the state of a single individual in two (if ahistorical) or three (if historical) consecutive time intervals. In the input to `verticalize3()` below, we utilize a repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and the columns have no gaps or shuffles. The data management functions in `lefko3` do not require such repeating patterns, but they do make the required input in the function shorter and more succinct. Because this is an IPM, we will need to estimate linear models of vital rates. This will require us to avoid NAs in size and fecundity (fortunately, in this dataset, NA is equivalent to 0), so we will set `NAas0 = TRUE` to inform R to treat NAs as zeroes. We will also set `NRasRep = TRUE` because we will assume that all adult stages other than dormancy are reproductive, and there are mature individuals in the dataset that do not reproduce but need to be included in reproductive stages.</p>
+  <p style="text-indent: 20px">To work with this dataset, we first need to format the data into *vertical format*, in which each row corresponds to the state of a single individual in two (if ahistorical) or three (if historical) consecutive monitoring occasions. In the input to `verticalize3()` below, we utilize a repeating pattern of variable names arranged in the same order for each monitoring occasion. This arrangement allows us to enter only the first variable in each set, as long as `noyears` and `blocksize` are set properly and the columns have no gaps or shuffles. The data management functions in `lefko3` do not require such repeating patterns, but they do make the required input in the function shorter and more succinct. Because this is an IPM, we will need to estimate linear models of vital rates. This will require us to avoid NAs in size and fecundity (fortunately, in this dataset, NA is equivalent to 0), so we will set `NAas0 = TRUE` to inform R to treat NAs as zeroes. We will also set `NRasRep = TRUE` because we will assume that all adult stages other than dormancy are reproductive, and there are mature individuals in the dataset that do not reproduce but need to be included in reproductive stages.</p>
   
   <p style="text-indent: 20px">Note that prior to standardizing the dataset, we will create a new variable to code individual identity, since different plants in different subpopulations use the same identifiers. To see a more detailed summary of the standardized dataset, please add `full = TRUE` to the `summary_hfv()` call.</p>
 
@@ -246,10 +246,10 @@ lathsupp2 <- supplemental(stage3 = c("Sd", "Sdl", "Sd", "Sdl"),
   type = c(1, 1, 3, 3), stageframe = lathframeipm, historical = FALSE)
 #> Warning: NA values in argument multiplier will be treated as 1 values.
 
-lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "npr", "Sd", "Sdl"), 
+lathsupp3 <- supplemental(stage3 = c("Sd", "Sd", "Sdl", "Sdl", "mat", "Sd", "Sdl"), 
   stage2 = c("Sd", "Sd", "Sd", "Sd", "Sdl", "rep", "rep"),
   stage1 = c("Sd", "rep", "Sd", "rep", "Sd", "mat", "mat"),
-  eststage3 = c(NA, NA, NA, NA, "npr", NA, NA),
+  eststage3 = c(NA, NA, NA, NA, "mat", NA, NA),
   eststage2 = c(NA, NA, NA, NA, "Sdl", NA, NA),
   eststage1 = c(NA, NA, NA, NA, "Sdl", NA, NA),
   givenrate = c(0.345, 0.345, 0.054, 0.054, NA, NA, NA),
@@ -380,7 +380,7 @@ lathmat2ipm <- flefko2(stageframe = lathframeipm, modelsuite = lathmodels2ipm,
 #summary(lathmat2ipm, check_cycle = FALSE)
 ```
   
-  <p style="text-indent: 20px">The ahistorical IPMs are certainly smaller than the historical IPMs, but are nonetheless quiet large. Although huge, these matrices are not sparse - an average of 9,180.3 elements out of 10,609 per matrix are estimated (86.5%; note that the summary() function only counts elements as estimated if they equal a value other than 0, leading the exact number of estimated elements to vary among matrices when elements are estimated at near 0).</p>
+  <p style="text-indent: 20px">The ahistorical IPMs are certainly smaller than the historical IPMs, but are nonetheless quite large. Although huge, these matrices are not sparse - an average of 9,180.3 elements out of 10,609 per matrix are estimated (86.5%; note that the summary() function only counts elements as estimated if they equal a value other than 0, leading the exact number of estimated elements to vary among matrices when elements are estimated at near 0).</p>
   
   <p style="text-indent: 20px">Let's do a further comparison - let's view a matrix plot of each kind of MPM, ahistorical and then historical. First, the ahistorical plot.</p>
 
@@ -420,14 +420,14 @@ l3mcond <- cond_hmpm(lath3ipmmean)
   
 #### Step 5. MPM analysis 
   
-  <p style="text-indent: 20px">Now let's estimate and plot the deterministic population growth rate, $\lambda$, for each year. We find that the ahistorical and historical estimates of $\lambda$ are roughly in line with each other. Please note we may also estimate standard errors for lambda, and methods to do so are illustrated in other vignettes (see particularly the vignette on Cypripedium candidum function-based MPMs). We will not do so here because the historical IPM will be too large in bootstrapped form.</p>
+  <p style="text-indent: 20px">Now let's estimate and plot the deterministic population growth rate, $\lambda$, for each year. We find that the ahistorical and historical estimates of $\lambda$ are roughly in line with each other. Please note we may also estimate standard errors for lambda, and methods to do so are illustrated in other vignettes (see particularly the vignette on *Cypripedium candidum* function-based MPMs). We will not do so here because the historical IPM will be too large in bootstrapped form.</p>
 
 ``` r
 ipm2lambda <- lambda3(lathmat2ipm)
 ipm3lambda <- lambda3(lathmat3ipm)
 
 plot(lambda ~ year2, data = ipm2lambda, xlab = "Year", ylab = "Lambda", 
-  ylim = c(0.65, 1.00), type = "l", lwd = 2, bty = "n")
+  ylim = c(0.65, 1.10), type = "l", lwd = 2, bty = "n")
 lines(lambda ~ year2, data = ipm3lambda, lwd = 2, lty = 2, col = "red")
 legend("bottomleft", c("ahistorical", "historical"), lty = c(1, 2), 
   col = c("black", "red"), lwd = 2, bty = "n")
@@ -440,19 +440,19 @@ legend("bottomleft", c("ahistorical", "historical"), lty = c(1, 2),
 ``` r
 lambda3(lath2ipmmean)
 #>   pop patch    lambda
-#> 1   1  <NA> 0.8858591
+#> 1   1     1 0.8859165
 lambda3(lath3ipmmean)
-#>   pop patch   lambda
-#> 1   1  <NA> 0.952901
+#>   pop patch    lambda
+#> 1   1     1 0.9529221
 
 set.seed(42)
 slambda3(lathmat2ipm)
 #>   pop patch          a        var        sd          se
-#> 1   1  <NA> -0.1252669 0.05120794 0.2262917 0.002262917
+#> 1   1     1 -0.1252019 0.05121248 0.2263018 0.002263018
 set.seed(42)
 slambda3(lathmat3ipm, times = 1000)
-#>   pop patch           a        var       sd          se
-#> 1   1  <NA> -0.05142917 0.04279146 0.206861 0.006541518
+#>   pop patch           a        var        sd         se
+#> 1   1     1 -0.05140694 0.04279449 0.2068683 0.00654175
 ```
   
   <p style="text-indent: 20px">The historical growth rate is larger than the ahistorical in both deterministic and stochastic analyses, although all four numbers suggest a declining population. Now let's compare the stable stage distribution from both the ahistorical and historical mean MPMs.</p>
@@ -503,7 +503,7 @@ elas_put_together <- cbind.data.frame(colSums(lath2ipmelas$ah_elasmats[[1]]),
   colSums(lath2ipmelas_s$ah_elasmats[[1]]), 
   Matrix::colSums(lath3ipmelas_s$ah_elasmats[[1]]))
 names(elas_put_together) <- c("det ahist", "det hist", "sto ahist", "sto hist")
-rownames(elas_put_together) <- lath2ipmelas$ah_stages$stage_id
+rownames(elas_put_together) <- lath2ipmelas$ahstages$stage_id
 
 lty.o <- par("lty")
 par(lty = 0)
@@ -519,7 +519,7 @@ legend("topright", c("det ahist", "det hist", "sto ahist", "sto hist"),
 par(lty = lty.o) # This statement returns plot parameters to the default
 ```
   
-  <p style="text-indent: 20px">The plot of these distributions a strong influence of history, and also shows the strong importance of vegetative dormancy and small adults. Both environmental stochasticity and individual history increase the elasticity associated with larger, though still small, adults.</p>
+  <p style="text-indent: 20px">The plot of these distributions shows a strong influence of history, and also shows the strong importance of vegetative dormancy and small adults. Both environmental stochasticity and individual history increase the elasticity associated with larger, though still small, adults.</p>
   
   <p style="text-indent: 20px">Package `lefko3` also includes functions to conduct many other analyses, including deterministic and stochastic life table response experiments, and general projection including quasi-extinction analysis and density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called <a href = "https://revolutionarydemography-lefko3gentle.share.connect.posit.cloud/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   

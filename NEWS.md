@@ -1,8 +1,4 @@
-# lefko3 X.X.X (20XX-XX-XX)
-
-## NEW FEATURES
-
-* 
+# lefko3 6.7.4 (2026-11-26)
 
 ## USER VISIBLE CHANGES
 
@@ -15,6 +11,13 @@
   projection of historical and age-by-stage MPMs.
   
 * Fixed creation of ahistorical elasticities from historical elasticities.
+  
+* Fixed ordering of elasticities and sensitivities by stageframe.
+  
+* Removed duplicated agestages element in some configurations of elasticity3()
+  output.
+  
+* Fixed inconsistent patch labeling in certain variants of matrix creation.
 
 # lefko3 6.7.3 (2026-04-24)
 

@@ -23,11 +23,11 @@ library(lefko3)
   
 ### ORGANISM AND POPULATION
   
-  <p style="text-indent: 20px">The white lady's slipper, *Cypripedium candidum*, is a rare, long-lived orchid. The study population is located within a nature preserve located in Illinois, USA. The population was monitored annually from 2004 to 2009, with two monitoring sessions per year. Monitoring sessions included complete censuses of the population divided into sections referred to as patches. Each monitoring session consisted of searches for previously recorded individuals, followed by a search for new individuals. Data recorded per individual included: number of non-flowering sprouts (also referred to as non-flowering stems), number of flowering sprouts, number of flowers per sprout, and number of fruits per sprout. Location was used to infer individual identity. More information about this population and its characteristics is given in @shefferson_estimating_2001 and @shefferson_predicting_2017.</p>
+  <p style="text-indent: 20px">The white lady's slipper, *Cypripedium candidum*, is a rare, long-lived orchid. The study population is located within a nature preserve in Illinois, USA. The population was monitored annually from 2004 to 2009, with two monitoring sessions per year. Monitoring sessions included complete censuses of the population divided into sections referred to as patches. Each monitoring session consisted of searches for previously recorded individuals, followed by a search for new individuals. Data recorded per individual included: number of non-flowering sprouts (also referred to as non-flowering stems), number of flowering sprouts, number of flowers per sprout, and number of fruits per sprout. Location was used to infer individual identity. More information about this population and its characteristics is given in @shefferson_estimating_2001 and @shefferson_predicting_2017.</p>
   
 ### BASIC WORKFLOW
   
-  <p style="text-indent: 20px">Population matrix projection modeling requires an appropriate life history model showing how all stages and transitions are related. The figure below shows a very general life history model detailing these relationships in *Cypripedium candidum*. The first stage of life is the dormant seed, although a seed may germinate in the year following seed production, in which case the first stage of life is the protocorm. The protocorm is an underground, mycoheterotrophic stage found only in the families Orchidaceae and Pyrolaceae. We will assume that there are three years of protocorm stages, followed by a seedling stage, and finally a set of stages that comprise the size-classified adult portion of life. The figure shows 49 such stages, each for a different number of stems (including zero for vegetative dormancy) and one of two reproductive statuses.</p>
+  <p style="text-indent: 20px">Population matrix projection modeling requires an appropriate life history model showing how all stages and transitions are related. The figure below shows a very general life history model detailing these relationships in *Cypripedium candidum*. The first stage of life is the dormant seed, although a seed may germinate in the year following seed production, in which case the first stage of life is the protocorm. The protocorm is an underground, mycoheterotrophic stage found in the families Orchidaceae and Pyrolaceae. We will assume that there are three years of protocorm stages, followed by a seedling stage, and finally a set of stages that comprise the size-classified adult portion of life. The figure shows 49 such stages, each for a different number of stems (including zero for vegetative dormancy) and one of two reproductive statuses.</p>
   
 <img src = "lifhist1.png" width = "700"></img>  
 
@@ -35,7 +35,7 @@ Figure 5.1. Life history model of *Cypripedium candidum*. Survival and fecundity
 
   <p style="text-indent: 20px">In this figure, the juvenile stages are limited to simple, progressive transitions. New recruits may enter the population directly from a seed produced the previous year, in which case they start in the protocorm 1 stage, or they may begin as dormant seed. Dormant seed may remain dormant, die, or germinate into the protocorm 1 stage. Protocorms exist for up to three years, yielding the protocorm 1, 2, and 3 stages. Protocorm 3 leads to the seedling stage, in which the plant may persist for many years before becoming mature. The first mature stage is usually either vegetative dormancy (`Dorm`), during which time the plant does not sprout, or a small, non-flowering adult (`1V`, which has a single stem). Once in this portion of the life history, the plant may transition among 49 mature stages, including vegetative dormancy, 1-24 stems without flowers, or 1-24 stems with at least one flower.</p>
   
-  <p style="text-indent: 20px">Let's load the dataset, focusing on the the horizontal dataset `cypdata` (the ahistorical vertical dataset `cypvert` presents the same data, but is structured differently). This dataset includes only data for adult stages, so later we will need to set juvenile transitions to constants from the literature.</p>
+  <p style="text-indent: 20px">Let's load the dataset, focusing on the horizontal dataset `cypdata` (the ahistorical vertical dataset `cypvert` presents the same data, but is structured differently). This dataset includes only data for adult stages, so later we will need to set juvenile transitions to constants from the literature.</p>
 ```{r Ch5.0}
 data(cypdata)
 #summary(cypdata)
@@ -45,7 +45,7 @@ data(cypdata)
   
   <p style="text-indent: 20px">We will first describe the life history characterizing the population, matching it to our dataset with a *stageframe* for our *Cypripedium candidum* dataset. Since this analysis will be function-based and all sizes have reasonable representation, we will include all observed size classes here. Size is count-based, and refers to all numbers of stems that occurred, representing the life history diagram shown previously. Note that we are using the midpoint approach to determining the size bins here, using the default bin half-widths of 0.5 (since all size bins are using this default, we do not include a `binhalfwidth` vector option in the `sf_create()` input). However, we could have used the `sizemin` and `sizemax` options to set the size bin minima and maxima instead.</p>
 ```{r Ch5.1}
-sizevector <- c(0, 0, 0, 0, 0, seq(from = 0, t = 24), seq(from = 1, to = 24))
+sizevector <- c(0, 0, 0, 0, 0, seq(from = 0, to = 24), seq(from = 1, to = 24))
 stagevector <- c("SD", "P1", "P2", "P3", "SL", "Dorm", "1V", "2V", "3V", "4V",
   "5V", "6V", "7V", "8V", "9V", "10V", "11V", "12V", "13V", "14V", "15V", "16V",
   "17V", "18V", "19V", "20V", "21V", "22V", "23V", "24V", "1F", "2F", "3F",
@@ -86,7 +86,7 @@ cypframe <- sf_create(sizes = sizevector, stagenames = stagevector,
   
 #### Step 2a. Data standardization 
   
-  <p style="text-indent: 20px">Now we will standardize our vertical dataset into a historically-formatted vertical (*hfv*) data frame using the `verticalize3()` function. The resulting dataset will have each individual's observed life history broken up into states corresponding to three consecutive monitoring occasions (years) per row, with plant identity marked in each row.</p>
+  <p style="text-indent: 20px">Now we will standardize our horizontal dataset into a historically-formatted vertical (*hfv*) data frame using the `verticalize3()` function. The resulting dataset will have each individual's observed life history broken up into states corresponding to three consecutive monitoring occasions (years) per row, with plant identity marked in each row.</p>
 ```{r Ch5.2}
 vertdata <- verticalize3(data = cypdata, noyears = 6, firstyear = 2004, 
   patchidcol = "patch", individcol = "plantid", blocksize = 4, 
@@ -116,7 +116,7 @@ hfv_qc(data = vertdata, vitalrates = c("surv", "obs", "size", "repst", "fec"),
   suite = "full", size = c("size3added", "size2added", "size1added"))
 ```
   
-  <p style="text-indent: 20px">The results of these tests show us that size is overdispersed and zero-truncated (the zero truncation is due to the fact that we observed instances of size equal to zero within the vegetative dormancy stage). We will use the zero-truncated negative binomial distribution for this vital rate. Our tests of fecundity show no significant overdispersion, but the number of zeros exceeds expectation, suggesting that we use a zero-inflated Poisson distribution. All other vital rates appear to match expectation for the binomial distribution.</p>
+  <p style="text-indent: 20px">The results of these tests show us that size is overdispersed and zero-truncated (the zero truncation is due to the fact that plants of size zero are vegetatively dormant, and the observation status model has already accounted for them). We will use the zero-truncated negative binomial distribution for this vital rate. Our tests of fecundity show no significant overdispersion, but the number of zeros exceeds expectation, suggesting that we use a zero-inflated Poisson distribution. All other vital rates appear to match expectation for the binomial distribution.</p>
   
 #### Step 2b. Vertical dataset standardization 
   
@@ -128,7 +128,7 @@ dim(cypvert)
 #summary(cypvert)
 ```
   
-  <p style="text-indent: 20px">This dataset has more rows and fewer columns, because we constructed the dataset by splitting the data for each individual across multiple rows. After three columns of identifying information (`plantid`, `patch`, and `censor`), a single column designates the time of occasion *t*, given as `year2`. This dataset then includes columns showing individual state in pairs of consecutive years corresponding to occasions *t* and *t*+1. State in occasion *t*-1 is not presented because this is an ahistorical dataset. This dataset includes the `plantid` variable, which is an individual identity term that allows us to associate rows with their individuals and so allows conversion. The `historicalize3()` function uses individual identity to reorganize datasets into historical vertical format.</p>
+  <p style="text-indent: 20px">This dataset has more rows and fewer columns, because we constructed the dataset by splitting the data for each individual across multiple rows. After five columns of identifying information (`plantid`, `patch`, `X`, `Y`, and `censor`), a single column designates the time of occasion *t*, given as `year2`. This dataset then includes columns showing individual state in pairs of consecutive years corresponding to occasions *t* and *t*+1. State in occasion *t*-1 is not presented because this is an ahistorical dataset. This dataset includes the `plantid` variable, which is an individual identity term that allows us to associate rows with their individuals and so allows conversion. The `historicalize3()` function uses individual identity to reorganize datasets into historical vertical format.</p>
 ```{r Ch5.6}
 vertdata2 <- historicalize3(data = cypvert, patchidcol = "patch",
   individcol = "plantid", year2col = "year2", sizea2col = "Inf2.2", 
@@ -194,7 +194,7 @@ cypsupp2 <- supplemental(stage3 = c("SD", "P1", "P2", "P3", "SL", "SL", "Dorm",
   
 #### Step 3. Tests of history, and vital rate modeling  
   
-  <p style="text-indent: 20px">Matrix estimation can proceed either via raw matrix methods, as initially outlined in @ehrlen_dynamics_2000, or via function-based matrix development, essentially equivalent to the creation of discretized complex integral projection models per @ellner_integral_2006 and as further described in the non-Gaussian case in @shefferson_life_2014. In the raw MPM case, no vital rate models are estimated, whereas in function-based MPMs, vital rates are first analyzed via linear or non-linear models of the raw demographic dataset, and then functions are created that estimate these vital rates according the inputs given. Matrices are estimated using these functions, as opposed to the raw data.</p>
+  <p style="text-indent: 20px">Matrix estimation can proceed either via raw matrix methods, as initially outlined in @ehrlen_dynamics_2000, or via function-based matrix development, essentially equivalent to the creation of discretized complex integral projection models per @ellner_integral_2006 and as further described in the non-Gaussian case in @shefferson_life_2014. In the raw MPM case, no vital rate models are estimated, whereas in function-based MPMs, vital rates are first analyzed via linear or non-linear models of the raw demographic dataset, and then functions are created that estimate these vital rates according to the inputs given. Matrices are estimated using these functions, as opposed to the raw data.</p>
   
 #### Step 3a. General modeling strategy 
   
@@ -210,7 +210,7 @@ cypsupp2 <- supplemental(stage3 = c("SD", "P1", "P2", "P3", "SL", "SL", "Dorm",
   
 #### Step 3c. Model building and selection  
   
-  <p style="text-indent: 20px">In `lefko3`, function `modelsearch()` is the workhorse that conducts vital rate model estimation. Here, we will create a full suite of vital rate models for the *Cypripedium candidum* dataset. Before proceeding, we still need to decide on the the correct vital rates to model, the proper statistical distributions for estimated vital rates, the proper parameterization of each vital rate, and the strategy for determination of the best-fit model for each vital rate.</p>
+  <p style="text-indent: 20px">In `lefko3`, function `modelsearch()` is the workhorse that conducts vital rate model estimation. Here, we will create a full suite of vital rate models for the *Cypripedium candidum* dataset. Before proceeding, we still need to decide on the correct vital rates to model, the proper statistical distributions for estimated vital rates, the proper parameterization of each vital rate, and the strategy for determination of the best-fit model for each vital rate.</p>
   
   <p style="text-indent: 20px">Function `modelsearch()` estimates up to fourteen vital rate models:</p>
   
@@ -246,9 +246,9 @@ cypsupp2 <- supplemental(stage3 = c("SD", "P1", "P2", "P3", "SL", "SL", "Dorm",
   
   <p style="text-indent: 20px">Next, we need to set the proper statistical distribution for size and fecundity. Size was measured as the number of stems and so is a count variable. Likewise, fecundity is estimated as the number of fruits produced per plant, and so is also a count variable. We have already performed tests for overdispersion and zero-inflation, and we are also aware that size in observed stages cannot equal 0, requiring zero truncation in that parameter. So we will set size to the zero-truncated negative binomial distribution, and fecundity to the zero-inflated Poisson distribution.</p>
   
-  <p style="text-indent: 20px">Now we need to parameterize each vital rate, using the `suite` option. The default, `suite = "main"`, under the mixed model setting (`approach = "mixed"`) starts with the estimation of global models that include size and reproductive status in occasions *t* and *t*-1 as fixed factors, with individual identity and time in occasion *t* (year *t*) set as random categorical terms. Other terms can be specified, including individual covariates, spatial density, and age. Setting `suite = "full"` will yield global models that also include all two-way interactions. The default under the GLM setting (`approach = "glm"`) makes time in occasion *t* a fixed term and drops individual identity from consideration. The global model under `suite = "full"` then includes all fixed factors noted before, plus all two-way interactions between fixed factors (`"full"` is the only setting with interaction terms). If the population is not stratified by reproductive status, then `suite = "size"` will eliminate reproductive status terms and use all others in the global model. If size is not important, then `suite = "rep"` will eliminate size but keep reproductive status and all other terms. Finally, `suite = "cons"` will result in a global model in which neither reproductive status nor size are considered, although optional terms such as age or spatial density may be still be incorporated. We will set `suite = "main"` to keep the time used by the function manageable, though in a real analysis we would probably set `suite = "full"`. </p>
+  <p style="text-indent: 20px">Now we need to parameterize each vital rate, using the `suite` option. The default, `suite = "main"`, under the mixed model setting (`approach = "mixed"`) starts with the estimation of global models that include size and reproductive status in occasions *t* and *t*-1 as fixed factors, with individual identity and time in occasion *t* (year *t*) set as random categorical terms. Other terms can be specified, including individual covariates, spatial density, and age. Setting `suite = "full"` will yield global models that also include all two-way interactions. The default under the GLM setting (`approach = "glm"`) makes time in occasion *t* a fixed term and drops individual identity from consideration. The global model under `suite = "full"` then includes all fixed factors noted before, plus all two-way interactions between fixed factors (`"full"` is the only setting with interaction terms). If the population is not stratified by reproductive status, then `suite = "size"` will eliminate reproductive status terms and use all others in the global model. If size is not important, then `suite = "rep"` will eliminate size but keep reproductive status and all other terms. Finally, `suite = "cons"` will result in a global model in which neither reproductive status nor size are considered, although optional terms such as age or spatial density may still be incorporated. We will set `suite = "main"` to keep the time used by the function manageable, though in a real analysis we would probably set `suite = "full"`. </p>
   
-  <p style="text-indent: 20px">Finally, we need to determine the proper strategy for the determination of the best-fit model. Model building proceeds through the `dredge` function in package `MuMIn` [@barton_mumin_2014], and each model has an associated AICc value. The default setting in `lefko3` (`bestfit = "AICc&k"`) will compare all models within 2.0 AICc units of the model with $\Delta AICc = 0$, and choose the one with the lowest degrees of freedom. This approach is generally better than the alternative, which simply uses the model with $\Delta AICc = 0$ (`bestfit = "AICc"`), as all models within 2.0 AICc units of that model are equally parsimonious and so fewer degrees of freedom result from fewer parameters estimated [@burnham_model_2002].</p>
+  <p style="text-indent: 20px">Finally, we need to determine the proper strategy for the determination of the best-fit model. Model building proceeds through the `dredge` function in package `MuMIn` [@barton_mumin_2014], and each model has an associated AICc value. The default setting in `lefko3` (`bestfit = "AICc&k"`) will compare all models within 2.0 AICc units of the model with $\Delta AICc = 0$, and choose the one with the fewest parameters. This approach is generally better than the alternative, which simply uses the model with $\Delta AICc = 0$ (`bestfit = "AICc"`), as all models within 2.0 AICc units of that model are equally parsimonious and so fewer degrees of freedom result from fewer parameters estimated [@burnham_model_2002].</p>
 ```{r Ch5.8}
 cypmodels3 <- modelsearch(vertdata, historical = TRUE, approach = "mixed", 
   vitalrates = c("surv", "obs", "size", "repst", "fec"), sizedist = "negbin", 
@@ -276,7 +276,7 @@ cypmodels2 <- modelsearch(vertdata, historical = FALSE, approach = "mixed",
 ```{r Ch5.10}
 cypmatrix2 <- flefko2(stageframe = cypframe, supplement = cypsupp2, 
   modelsuite = cypmodels2, data = vertdata, patch = NULL)
-#summary(cypmatrix2, cycle_check = FALSE)
+#summary(cypmatrix2, check_cycle = FALSE)
 ```
   
   <p style="text-indent: 20px">A glance at the summary highlights that these are large, dense matrices - here, 2,459 out of 2,916 total elements have been estimated (84.3%). In raw matrices, elements associated with transitions from specific stages are only estimated when individuals actually move through those transitions, and so the numbers of transitions estimated and of stages identified are strongly limited by the size of the dataset. In function-based matrices, in contrast, the linear models estimated allow the estimation of all elements that are theoretically possible (i.e. only structural zeros are not estimated), and so stages may be developed for the full range of sizes experienced by individuals.</p>
@@ -373,12 +373,12 @@ set.seed(42)
 cypann3s_boot <- slambda3(cypmatrix3_boot)
 
 # Standard errors for ahistorical and historical lambda
-sd(cyplambda2$lambdas) / sqrt(3)
-sd(cyplambda3$lambdas) / sqrt(3)
+sd(cyplambda2$lambdas)
+sd(cyplambda3$lambdas)
 
 # Standard errors for ahistorical and historical stochastic lambda
-sd(cypann2s_boot$a) / sqrt(3)
-sd(cypann3s_boot$a) / sqrt(3)
+sd(cypann2s_boot$a)
+sd(cypann3s_boot$a)
 ```
   
   <p style="text-indent: 20px">Next let's take a look at a plot of annual deterministic growth rates (stochastic growth rate is calculated as a single value across time, and so is not included). We find that annual $\lambda$ estimates differ only slightly between ahistorical and historical analyses.</p>
@@ -511,7 +511,7 @@ which(as.matrix(tm3elas_s$h_elasmats[[1]]) ==
   max(as.matrix(tm3elas_s$h_elasmats[[1]])))
 ```
   
-  <p style="text-indent: 20px">Ahistorical and historical, deterministic and stochastic analyses suggest that population growth rate is most elastic in response to stasis as 1-sprouted non-flowering adult (element 331). Indeed, element 962,611 in the historical case is actually stasis in this stage across times *t*-1, *t*, and *t*+1 (column: `round(962611 / 2916) = 331`; row: `962611 %% 2916 = 331`). This is a remarkably consistent result, reinforcing the importance of this stage as seen in sensitivity analyses.</p>
+  <p style="text-indent: 20px">Ahistorical and historical, deterministic and stochastic analyses suggest that population growth rate is most elastic in response to stasis as 1-sprouted non-flowering adult (element 331). Indeed, element 962,611 in the historical case is actually stasis in this stage across times *t*-1, *t*, and *t*+1 (column: `ceiling(962611 / 2916) = 331`; row: `962611 %% 2916 = 331`). This is a remarkably consistent result, reinforcing the importance of this stage as seen in sensitivity analyses.</p>
   
   <p style="text-indent: 20px">Now let's compare the elasticity of population growth rate in relation to the core life history stages, via a barplot comparison.</p>
 ```{r Ch5.25, fig.cap = "Figure 5.8. Ahistorical vs. historically-corrected deterministic and stochastic elasticity to stage"}
@@ -519,7 +519,7 @@ elas_put_together <- cbind.data.frame(colSums(tm2elas$ah_elasmats[[1]]),
   Matrix::colSums(tm3elas$ah_elasmats[[1]]), colSums(tm2elas_s$ah_elasmats[[1]]),
   Matrix::colSums(tm3elas_s$ah_elasmats[[1]]))
 names(elas_put_together) <- c("det ahist", "det hist", "sto ahist", "sto hist")
-rownames(elas_put_together) <- tm2elas$ah_stages$stage_id
+rownames(elas_put_together) <- tm2elas$ahstages$stage_id
 
 barplot(t(elas_put_together), beside=T, ylab = "Elasticity", xlab = "Stage",
   col = c("black", "orangered", "grey", "darkred"), bty = "n")
@@ -548,13 +548,13 @@ legend("topright", c("det ahist", "det hist", "sto ahist", "sto hist"),
   col = c("black", "orangered", "grey", "darkred"), pch = 15, bty = "n")
 ```
   
-  <p style="text-indent: 20px">Some users of `lefko3` may wish to use conduct custom projections, perhaps involving density dependence or projected individual covariate inputs. Beginning with version 5.0, `lefko3` includes function `f_projection3()`, which allows users to conduct projection simulations of function-based MPMs. This function takes the vital rate models that constitute the `lefkoMod` object input into matrix generating functions `flefko3()`, `flefko2()`, `aflefko2()`, and `afleslie()`, and builds matrices projecting the population forward according to whatever inputs the user has in mind. Function `f_projection3()` is different from function `projection3()` in that the latter requires a `lefkoMat` object as input, and uses the matrices in whatever projection the user has in mind. The former actually creates these matrices from scratch at each time step and so does not take matrices as inputs.</p>
+  <p style="text-indent: 20px">Some users of `lefko3` may wish to conduct custom projections, perhaps involving density dependence or projected individual covariate inputs. Beginning with version 5.0, `lefko3` includes function `f_projection3()`, which allows users to conduct projection simulations of function-based MPMs. This function takes the vital rate models that constitute the `lefkoMod` object input into matrix generating functions `flefko3()`, `flefko2()`, `aflefko2()`, and `fleslie()`, and builds matrices projecting the population forward according to whatever inputs the user has in mind. Function `f_projection3()` is different from function `projection3()` in that the latter requires a `lefkoMat` object as input, and uses the matrices in whatever projection the user has in mind. The former actually creates these matrices from scratch at each time step and so does not take matrices as inputs.</p>
   
   <p style="text-indent: 20px">To illustrate how we might use this function, let's run a conservation-focused analysis using the ahistorical vital rate models created above. We will ask what happens if we artificially pollinate these plants enough to double their fecundity. Let's first create a `lefkoDens` object, which holds the density dependence information. Let's also create an alternative supplement table with doubled fecundity.</p>
 ```{r Ch5.27}
 c2d <- density_input(cypmatrix2, stage3 = c("SD", "P1", "SD", "P1"),
   stage2 = c("SD", "SD", "rep", "rep"), style = 1,
-  time_delay = 1, alpha = 1, beta = 0, type = c(1, 1, 2, 2))
+  time_delay = 1, alpha = 0.95, beta = 0.00005, type = c(1, 1, 2, 2))
 #c2d
 
 cypsupp2alt <- supplemental(stage3 = c("SD", "P1", "P2", "P3", "SL", "SL", "Dorm",
@@ -587,17 +587,17 @@ alttrial <- f_projection3(format = 3, data = vertdata, supplement = cypsupp2alt,
   <p style="text-indent: 20px">Let's compare these two projections with plots.</p>
 ```{r Ch5.29, fig.cap = "Figure 5.10. Projected *Cypripedium* population dynamics against boosted fecundity"}
 par(mfrow = c(1,2))
-plot(basetrial, ylim = c(0, 100))
-plot(alttrial, ylim = c(0, 100))
+plot(basetrial, ylim = c(0, 150))
+plot(alttrial, ylim = c(0, 150))
 ```
   
-  <p style="text-indent: 20px">Each plot shows 10 lines, one for each replicate. Both projections show decline, but the population appears to reach a higher high size early under the boosted fecundity scenario. So, while boosting fecundity does not prevent extinction, it does seem to boost the population and probably lowers the overall chances of extinction within a short time window.</p>
+  <p style="text-indent: 20px">Each plot shows 10 lines, one for each replicate. Both projections show decline, but the population appears to reach a higher peak size early under the boosted fecundity scenario. So, while boosting fecundity does not prevent extinction, it does seem to boost the population and probably lowers the overall chances of extinction within a short time window.</p>
   
   <p style="text-indent: 20px">Package `lefko3` also includes functions to conduct many other analyses, including deterministic and stochastic life table response experiments, and general projection including quasi-extinction analysis and density dependent analysis. Users wishing to conduct these analyses should see our free e-manual called <a href = "https://revolutionarydemography-lefko3gentle.share.connect.posit.cloud/">*lefko3: a gentle introduction*</a>, as well as through the resources found on the <a href = "http://www.revolutionarydemography.com/projects.html">**{r}evolutionary demography**</a> website.</p>
   
 ## Acknowledgements 
   
-  <p style="text-indent: 20px">We are grateful to Joyce and George Proper, Ken Klick, and the many other volunteers who have helped amass the *Cypripedium dataset*, as well as to two anonymous reviewers whose scrutiny improved the quality of this vignette. The project resulting in this package and this tutorial was funded by Grant-In-Aid 19H03298 from the Japan Society for the Promotion of Science.</p>
+  <p style="text-indent: 20px">We are grateful to Joyce and George Proper, Ken Klick, and the many other volunteers who have helped amass the *Cypripedium* dataset, as well as to two anonymous reviewers whose scrutiny improved the quality of this vignette. The project resulting in this package and this tutorial was funded by Grant-In-Aid 19H03298 from the Japan Society for the Promotion of Science.</p>
   
   
 ## Literature cited

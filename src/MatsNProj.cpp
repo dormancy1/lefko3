@@ -11591,7 +11591,13 @@ Rcpp::List mpm_create(bool historical = false, bool stage = true, bool age = fal
     if (StringVector::is_na(patch_input(0))) patch_input(0) = "all";
     
     if (stringcompare_simple(String(patch_input(0)), "all", false)) {
-      patch_ = mainpatches_;
+      // If no patch variable could be identified (e.g. patch is "none" in the
+      // modelsuite's paramnames), mainpatches_ holds only NA. Leave patch_
+      // empty so the list of years falls back to the default patch "1", as
+      // happens when patch = NULL.
+      if (patch_var_int != -1) {
+        patch_ = mainpatches_;
+      }
       
     } else {
       for (int i = 0; i < patch_input.length(); i++) {
